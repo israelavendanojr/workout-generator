@@ -36,18 +36,28 @@ class WorkoutDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    split_id = db.Column(db.Integer, db.ForeignKey('workout_split.id'), nullable=False)
-
     exercises = db.relationship('ExerciseRole', backref='workout_day', cascade="all, delete-orphan")
+
+# Association table for many-to-many relationship, can associate same WorkoutDay to multiples WorkoutSplits
+split_day_association = db.Table('split_day_association',
+    db.Column('workout_split_id', db.Integer, db.ForeignKey('workout_split.id'), primary_key=True),
+    db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True)
+)
 
 # Defines function of an exercise, e.g. horizontal push, vertical pull, curl, eyc
 class ExerciseRole(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(100), unique=True, nullable=False)
-    day_id = db.Column(db.Integer, db.ForeignKey('workout_day.id'), nullable=False)
+
+# Association table for many-to-many relationship, can associate same ExerciseRole to multiple WorkoutDays
+day_role_association = db.Table('day_role_association',
+    db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True),
+    db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id'), primary_key=True)
+)
+
 
 # Stores exercise information
-class Exercise(db.model):
+class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False)

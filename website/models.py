@@ -28,15 +28,32 @@ class WorkoutSplit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    # create relationship to create plan structure
-    workout_days = db.relationship('WorkoutDay', backref='split', cascade="all, delete-orphan")
+    # Create many-to-many relationship to WorkoutDay via split_day_association
+    workout_days = db.relationship(
+        'WorkoutDay', 
+        secondary='split_day_association', 
+        backref=db.backref('workout_splits_association', lazy='dynamic'),  # Use a unique name here
+    )
 
 # Holds structure of given workout day, e.g. Push, Pull, and Leg days in PPL
+# WorkoutDay model
 class WorkoutDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
-    exercises = db.relationship('ExerciseRole', backref='workout_day', cascade="all, delete-orphan")
+    # Many-to-many relationship with ExerciseRole
+    exercises = db.relationship(
+        'ExerciseRole', 
+        secondary='day_role_association', 
+        backref='workout_day'
+    )
+
+    # Many-to-many relationship with WorkoutSplit, using the split_day_association
+    workout_splits = db.relationship(
+        'WorkoutSplit', 
+        secondary='split_day_association', 
+        backref=db.backref('workout_days_association', lazy='dynamic'),  # Use a unique name here
+    )
 
 # Association table for many-to-many relationship, can associate same WorkoutDay to multiples WorkoutSplits
 split_day_association = db.Table('split_day_association',
@@ -54,7 +71,6 @@ day_role_association = db.Table('day_role_association',
     db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True),
     db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id'), primary_key=True)
 )
-
 
 # Stores exercise information
 class Exercise(db.Model):

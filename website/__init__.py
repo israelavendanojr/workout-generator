@@ -18,12 +18,11 @@ def create_app():
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     
-    from .models import User, Note
+    from .models import User, WorkoutPreferences, WorkoutSplit, WorkoutDay, ExerciseRole, Exercise
 
     with app.app_context():
         db.create_all()
 
-    
     login_manager = LoginManager()
     # where we send user if no user logged in
     login_manager.login_view = 'auth.login' 

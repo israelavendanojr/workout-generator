@@ -66,5 +66,4 @@ def sign_up():
             home_page = redirect(url_for('views.home'))
             return home_page
         
-
     return render_template("sign_up.html")

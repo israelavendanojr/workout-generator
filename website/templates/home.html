@@ -1,6 +1,66 @@
-{% extends "base.html" %} 
-
-{% block title %}Home{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+%}
 <h1>home page</h1>
+
+<form>
+    <!-- DAYS AVAILABLE -->
+    <p>How many days per week?</p>
+
+    <input type="range" id="days_available" name="days_available" min="1" max="6" step="1" value="3"
+        oninput="updateValue(this.value)">
+    <span id="rangeValue">3</span>
+
+    <!-- update slider number dynamically -->
+    <script>
+        function updateValue(val) {
+            document.getElementById("rangeValue").textContent = val;
+        }
+    </script>
+
+    <p>Session length?</p>
+    <select name="session_length" id="session_length">
+        <option value="short">45-60 mins</option>
+        <option value="medium">60-90 mins</option>
+        <option value="long">90-120 mins</option>
+    </select>
+
+    <p>Primary Goal?</p>
+    <select name="session_length" id="session_length">
+        <option value="hyperthrophy">Hypertrophy</option>
+        <option value="strength">Strength</option>
+    </select>
+
+    <p>Desired Look?</p>
+    <input type="radio" name="sex" value="Masculine" required>
+    <label>Masculine</label>
+    <input type="radio" name="sex" value="Feminine"> 
+    <label>Feminine</label>
+
+    <p>Equipment available?</p>
+    
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Barbell</label>
+
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Dumbbells</label>
+    <br>
+
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Bodyweight</label>
+
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Calisthenic Equipment</label>
+    <br>
+
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Cable Machines</label>
+
+    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
+    <label for="vehicle1"> Gym Machines</label>
+    <br>
+
+    <p>Finish</p>
+    <button type="submit">Generate Plan</button>
+
+</form>
 {% endblock %}

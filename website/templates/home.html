@@ -5,7 +5,7 @@
 {% block content %}
 <h1 class="text-center">Home Page</h1>
 
-<form method="POST" action="{{ url_for('views.generate_plan') }}">
+<form method="POST">
     <!-- DAYS AVAILABLE -->
     <div class="mb-3">
         <label for="days_available" class="form-label">How many days per week?</label>
@@ -19,7 +19,7 @@
         <label for="session_length" class="form-label">Session Length?</label>
         <select name="session_length" id="session_length" class="form-select">
             <option value="Short">45-60 mins</option>
-            <option value="Medium">60-90 mins</option>
+            <option value="Medium" selected>60-90 mins</option>
             <option value="Long">90-120 mins</option>
         </select>
     </div>
@@ -33,16 +33,16 @@
         </select>
     </div>
 
-    <!-- DESIRED LOOK -->
-    <div class="mb-3">
-        <label class="form-label">Desired Look?</label>
+    <!-- SEX -->
+    <!-- <div class="mb-3">
+        <label class="form-label">Sex</label>
         <div>
-            <input type="radio" id="masculine" name="sex" value="Masculine" required>
+            <input type="radio" id="masculine" name="sex" value="Masculine" required checked>
             <label for="masculine">Masculine</label>
             <input type="radio" id="feminine" name="sex" value="Feminine">
             <label for="feminine">Feminine</label>
         </div>
-    </div>
+    </div> -->
 
     <!-- EQUIPMENT AVAILABLE -->
     <div class="mb-3">

@@ -19,7 +19,8 @@ class WorkoutPreferences(db.Model):
     
     # Goals, can later include muscles to prioritze/deprioritze, injuries, and strength metrics
     goal = db.Column(db.String(100), nullable=False)
-    sex = db.Column(db.String(100), nullable=False)
+    # sex can be useful, but deemed not neccesary for generalized plan and MVP
+    # sex = db.Column(db.String(100), nullable=False)
 
     # Logistics
     equipment = db.Column(db.Text, nullable=False)

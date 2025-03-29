@@ -1,66 +1,81 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
-%}
-<h1>home page</h1>
+{% extends "base.html" %}
 
-<form>
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Home Page</h1>
+
+<form method="POST">
     <!-- DAYS AVAILABLE -->
-    <p>How many days per week?</p>
+    <div class="mb-3">
+        <label for="days_available" class="form-label">How many days per week?</label>
+        <input type="range" id="days_available" name="days_available" min="1" max="6" step="1" value="3"
+            class="form-range" oninput="updateValue(this.value)">
+        <span id="rangeValue">3</span>
+    </div>
 
-    <input type="range" id="days_available" name="days_available" min="1" max="6" step="1" value="3"
-        oninput="updateValue(this.value)">
-    <span id="rangeValue">3</span>
+    <!-- SESSION LENGTH -->
+    <div class="mb-3">
+        <label for="session_length" class="form-label">Session Length?</label>
+        <select name="session_length" id="session_length" class="form-select">
+            <option value="short">45-60 mins</option>
+            <option value="medium">60-90 mins</option>
+            <option value="long">90-120 mins</option>
+        </select>
+    </div>
 
-    <!-- update slider number dynamically -->
-    <script>
-        function updateValue(val) {
-            document.getElementById("rangeValue").textContent = val;
-        }
-    </script>
+    <!-- PRIMARY GOAL -->
+    <div class="mb-3">
+        <label for="goal" class="form-label">Primary Goal?</label>
+        <select name="goal" id="goal" class="form-select">
+            <option value="hypertrophy">Hypertrophy</option>
+            <option value="strength">Strength</option>
+        </select>
+    </div>
 
-    <p>Session length?</p>
-    <select name="session_length" id="session_length">
-        <option value="short">45-60 mins</option>
-        <option value="medium">60-90 mins</option>
-        <option value="long">90-120 mins</option>
-    </select>
+    <!-- DESIRED LOOK -->
+    <div class="mb-3">
+        <label class="form-label">Desired Look?</label>
+        <div>
+            <input type="radio" id="masculine" name="sex" value="Masculine" required>
+            <label for="masculine">Masculine</label>
+            <input type="radio" id="feminine" name="sex" value="Feminine">
+            <label for="feminine">Feminine</label>
+        </div>
+    </div>
 
-    <p>Primary Goal?</p>
-    <select name="session_length" id="session_length">
-        <option value="hyperthrophy">Hypertrophy</option>
-        <option value="strength">Strength</option>
-    </select>
+    <!-- EQUIPMENT AVAILABLE -->
+    <div class="mb-3">
+        <label class="form-label">Equipment Available?</label><br>
+        <input type="checkbox" id="barbell" name="equipment" value="Barbell">
+        <label for="barbell">Barbell</label><br>
 
-    <p>Desired Look?</p>
-    <input type="radio" name="sex" value="Masculine" required>
-    <label>Masculine</label>
-    <input type="radio" name="sex" value="Feminine"> 
-    <label>Feminine</label>
+        <input type="checkbox" id="dumbbells" name="equipment" value="Dumbbells">
+        <label for="dumbbells">Dumbbells</label><br>
 
-    <p>Equipment available?</p>
-    
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Barbell</label>
+        <input type="checkbox" id="bodyweight" name="equipment" value="Bodyweight">
+        <label for="bodyweight">Bodyweight</label><br>
 
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Dumbbells</label>
-    <br>
+        <input type="checkbox" id="calisthenic" name="equipment" value="Calisthenic Equipment">
+        <label for="calisthenic">Calisthenic Equipment</label><br>
 
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Bodyweight</label>
+        <input type="checkbox" id="cable_machines" name="equipment" value="Cable Machines">
+        <label for="cable_machines">Cable Machines</label><br>
 
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Calisthenic Equipment</label>
-    <br>
+        <input type="checkbox" id="gym_machines" name="equipment" value="Gym Machines">
+        <label for="gym_machines">Gym Machines</label>
+    </div>
 
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Cable Machines</label>
-
-    <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-    <label for="vehicle1"> Gym Machines</label>
-    <br>
-
-    <p>Finish</p>
-    <button type="submit">Generate Plan</button>
-
+    <!-- GENERATE PLAN BUTTON -->
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">Generate Plan</button>
+    </div>
 </form>
+
+<script>
+    function updateValue(val) {
+        document.getElementById("rangeValue").textContent = val;
+    }
+</script>
+
 {% endblock %}

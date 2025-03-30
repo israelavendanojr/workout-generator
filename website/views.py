@@ -38,9 +38,15 @@ def generate_plan(days_available, equipment):
     for split in workout_splits:
         print("ID: ", split.id, "NAME: ", split.name)
 
+        print("STRUCTURE OF SPLIT: ")
+        print(len(split.workout_days))
+        for i in range(len(split.workout_days)):
+            day = split.workout_days[i]
+            print(day.name)
 
-
-
+    # generate plan for each split
+    for split in workout_splits:
+        pass
 
     
     # return render_template("generate_plan.html")

@@ -9,25 +9,38 @@ def home():
     if request.method == "POST":
         # get preferences from form
         days_available = int(request.form.get("days_available"))
-        session_length = request.form.get("session_length")
-        goal = request.form.get("goal")
+        # session_length = request.form.get("session_length")
+        # goal = request.form.get("goal")
         equipment = request.form.getlist("equipment")
 
         # validate preferences
-        if days_available < 1 and 6 < days_available:
+        if days_available < 1 or 6 < days_available:
             flash('Days per week must be within 1-6', category='error')
-        elif session_length == None:
-            flash('Session length field required', category='error')
-        elif goal == None:
-            flash('Goal field required', category='error')
+        # elif not session_length:
+        #     flash('Session length field required', category='error')
+        # elif not goal:
+        #     flash('Goal field required', category='error')
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
+            generate_plan(days_available, equipment)
             flash('Generated workout plan!', category='success')
 
     return render_template("home.html")
 
-@views.route('/generate-workout', methods=['GET', 'POST'])
-def generate_plan():
+def generate_plan(days_available, equipment):
+    from .models import User, WorkoutPreferences, WorkoutSplit, WorkoutDay, ExerciseRole, Exercise
 
-    return render_template("generate_plan.html")
+    # find workout split
+    workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
+    
+    print("SUITABLE SPLITS FOR", days_available, "DAYS A WEEK")
+    for split in workout_splits:
+        print("ID: ", split.id, "NAME: ", split.name)
+
+
+
+
+
+    
+    # return render_template("generate_plan.html")

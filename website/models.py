@@ -13,22 +13,15 @@ class WorkoutPreferences(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
     
-    # Schedule
     weekly_days = db.Column(db.Integer, nullable=False)
-    session_length = db.Column(db.Integer, nullable=False)
-    
-    # Goals, can later include muscles to prioritze/deprioritze, injuries, and strength metrics
     goal = db.Column(db.String(100), nullable=False)
-    # sex can be useful, but deemed not neccesary for generalized plan and MVP
-    # sex = db.Column(db.String(100), nullable=False)
-
-    # Logistics
     equipment = db.Column(db.Text, nullable=False)
 
 # Workout splits, i.e. PPL, Upper/Lower, etc
 class WorkoutSplit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    days_per_week = db.Column(db.Integer, nullable=False)
 
     # Create many-to-many relationship to WorkoutDay via split_day_association
     workout_days = db.relationship(
@@ -41,7 +34,7 @@ class WorkoutSplit(db.Model):
 # WorkoutDay model
 class WorkoutDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
 
     # Many-to-many relationship with ExerciseRole
     exercises = db.relationship(
@@ -54,7 +47,7 @@ class WorkoutDay(db.Model):
     workout_splits = db.relationship(
         'WorkoutSplit', 
         secondary='split_day_association', 
-        backref=db.backref('workout_days_association', lazy='dynamic'),  # Use a unique name here
+        backref=db.backref('workout_days_association', lazy='dynamic'), 
     )
 
 # Association table for many-to-many relationship, can associate same WorkoutDay to multiples WorkoutSplits

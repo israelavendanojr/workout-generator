@@ -34,16 +34,13 @@ def generate_plan(days_available, equipment):
     # find workout split
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
-    print("SUITABLE SPLITS FOR", days_available, "DAYS A WEEK")
+    print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")
     for split in workout_splits:
-        print("ID: ", split.id, "NAME: ", split.name)
+        print("STRUCTURE OF SPLIT: ", split.name)
+        for day in split.workout_days:
+            print(day.name)
 
-        print("STRUCTURE OF SPLIT: ")
-        print(len(split.workout_days))
-        for i in range(len(split.workout_days)):
-            day = split.workout_days[i]
-            print(day.id, day.name)
-
+        print("\n")
     # generate plan for each split
     for split in workout_splits:
         pass

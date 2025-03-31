@@ -1,16 +1,17 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, ExerciseRole, Exercise
 
 app = create_app()
 
+# clears database
 def clear():
     with app.app_context():
         db.session.query(WorkoutSplit).delete()
         db.session.query(WorkoutDay).delete()
         db.session.commit()
 
+# adds WorkoutSplit and stores in order of insertion
 def add_split(name, days_per_week, workout_days):
-    """ Adds a WorkoutSplit and ensures workout days are stored in order """
     split = WorkoutSplit(name=name, days_per_week=days_per_week)
     db.session.add(split)
     db.session.commit()  # Commit to get split.id
@@ -29,26 +30,26 @@ def add_split(name, days_per_week, workout_days):
 def populate():
     with app.app_context():
         # Create workout days
-        full_A = WorkoutDay(name="Full Body")
-        full_B = WorkoutDay(name="Full Body")
-        full_C = WorkoutDay(name="Full Body")
+        full_A = WorkoutDay(name="Full Body A")
+        full_B = WorkoutDay(name="Full Body B")
+        full_C = WorkoutDay(name="Full Body C")
 
-        upper_A = WorkoutDay(name="Upper")
-        lower_A = WorkoutDay(name="Lower")
-        upper_B = WorkoutDay(name="Upper")
-        lower_B = WorkoutDay(name="Lower")
+        upper_A = WorkoutDay(name="Upper A")
+        lower_A = WorkoutDay(name="Lower A")
+        upper_B = WorkoutDay(name="Upper B")
+        lower_B = WorkoutDay(name="Lower B")
 
-        push_A = WorkoutDay(name="Push")
-        pull_A = WorkoutDay(name="Pull")
-        legs_A = WorkoutDay(name="Legs")
-        push_B = WorkoutDay(name="Push")
-        pull_B = WorkoutDay(name="Pull")
-        legs_B = WorkoutDay(name="Legs")
+        push_A = WorkoutDay(name="Push A")
+        pull_A = WorkoutDay(name="Pull A")
+        legs_A = WorkoutDay(name="Legs A")
+        push_B = WorkoutDay(name="Push B")
+        pull_B = WorkoutDay(name="Pull B")
+        legs_B = WorkoutDay(name="Legs B")
 
-        chestback_A = WorkoutDay(name="Chest + Back")
-        arms_A = WorkoutDay(name="Arms")
-        chestback_B = WorkoutDay(name="Chest + Back")
-        arms_B = WorkoutDay(name="Arms")
+        chestback_A = WorkoutDay(name="Chest + Back A")
+        arms_A = WorkoutDay(name="Arms A")
+        chestback_B = WorkoutDay(name="Chest + Back B")
+        arms_B = WorkoutDay(name="Arms B")
 
         db.session.add_all([full_A, full_B, full_C, 
                             upper_A, lower_A, upper_B, lower_B,
@@ -68,6 +69,28 @@ def populate():
         add_split("Push Pull Legs", 6, [push_A, pull_A, legs_A, push_B, pull_B, legs_B])
         add_split("Arnold", 6, [chestback_A, arms_A, legs_A, chestback_B, arms_B, legs_B])
         add_split("Push Pull Legs + Arnold", 6, [push_A, pull_A, legs_A, chestback_A, arms_A, legs_B])
+
+        # Add exercise roles
+
+        horizontal_push_incline = ExerciseRole(role="Horizontal Incline Push")
+        horizontal_push = ExerciseRole(role="Horizontal Push")
+        vertical_push = ExerciseRole(role="Vertical Push")
+        side_delt_isolation = ExerciseRole(role="Side Delt Isolation")
+        tricep_isolation = ExerciseRole(role="Tricep Isolation")
+
+        horizontal_pull = ExerciseRole(role="Horizontal Pull")
+        vertical_pull = ExerciseRole(role="Vertical Pull")
+        rear_delt_isolation = ExerciseRole(role="Rear Delt Isolation")
+        bicep_isolation = ExerciseRole(role="Bicep Isolation")
+        lat_isolation = ExerciseRole(role="Lat Isolation")
+
+        squat = ExerciseRole(role="Squat")
+        hinge = ExerciseRole(role="Hinge")
+        quad_isolation = ExerciseRole(role="Quad Isolation")
+        hamstring_isolation = ExerciseRole(role="Hamstring Isolation")
+        calf_isolation = ExerciseRole(role="Calf Isolation")
+
+        
 
 if __name__ == "__main__":
     clear()

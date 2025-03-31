@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
 
 app = create_app()
 
@@ -28,13 +28,16 @@ def add_split(name, days_per_week, workout_days):
     return split
 
 # associate exercise roles with workout day
-# def add_exercises_to_day(workout_day, exercises):
-#     for exercise in exercises:
-#         db.session.execute(day_role_association.insert().values(
-#             workout_day_id=workout_day.id,
-#             exercise_role_id=exercise.id
-#         ))
-#     db.session.commit()
+def add_exercises_to_day(workout_day, exercises):
+    for exercise in exercises:
+        if exercise.id is None:
+            print(f"Error: ExerciseRole '{exercise.role}' has no ID assigned!")
+
+        db.session.execute(day_role_association.insert().values(
+            workout_day_id=workout_day.id,
+            exercise_role_id=exercise.id
+        ))
+    db.session.commit()
 
 def populate():
     with app.app_context():
@@ -80,31 +83,38 @@ def populate():
         add_split("Push Pull Legs + Arnold", 6, [push_A, pull_A, legs_A, chestback_A, arms_A, legs_B])
 
         # Add exercise roles
-        # horizontal_incline_push = ExerciseRole(role="Horizontal Incline Push")
-        # horizontal_push = ExerciseRole(role="Horizontal Push")
-        # vertical_push = ExerciseRole(role="Vertical Push")
-        # side_delt_isolation = ExerciseRole(role="Side Delt Isolation")
-        # tricep_isolation = ExerciseRole(role="Tricep Isolation")
+        horizontal_incline_push = ExerciseRole(role="Horizontal Incline Push")
+        horizontal_push = ExerciseRole(role="Horizontal Push")
+        vertical_push = ExerciseRole(role="Vertical Push")
+        side_delt_isolation = ExerciseRole(role="Side Delt Isolation")
+        tricep_isolation = ExerciseRole(role="Tricep Isolation")
 
-        # horizontal_pull = ExerciseRole(role="Horizontal Pull")
-        # vertical_pull = ExerciseRole(role="Vertical Pull")
-        # rear_delt_isolation = ExerciseRole(role="Rear Delt Isolation")
-        # bicep_isolation = ExerciseRole(role="Bicep Isolation")
-        # lat_isolation = ExerciseRole(role="Lat Isolation")
+        horizontal_pull = ExerciseRole(role="Horizontal Pull")
+        vertical_pull = ExerciseRole(role="Vertical Pull")
+        rear_delt_isolation = ExerciseRole(role="Rear Delt Isolation")
+        bicep_isolation = ExerciseRole(role="Bicep Isolation")
+        lat_isolation = ExerciseRole(role="Lat Isolation")
 
-        # squat = ExerciseRole(role="Squat")
-        # hinge = ExerciseRole(role="Hinge")
-        # quad_isolation = ExerciseRole(role="Quad Isolation")
-        # hamstring_isolation = ExerciseRole(role="Hamstring Isolation")
-        # calf_isolation = ExerciseRole(role="Calf Isolation")
+        squat = ExerciseRole(role="Squat")
+        hinge = ExerciseRole(role="Hinge")
+        quad_isolation = ExerciseRole(role="Quad Isolation")
+        hamstring_isolation = ExerciseRole(role="Hamstring Isolation")
+        calf_isolation = ExerciseRole(role="Calf Isolation")
+
+        db.session.add_all([
+            horizontal_incline_push, horizontal_push, vertical_push, side_delt_isolation, tricep_isolation, 
+            horizontal_pull, vertical_pull, rear_delt_isolation, bicep_isolation, lat_isolation, 
+            squat, hinge, quad_isolation, hamstring_isolation, calf_isolation
+        ])
+        db.session.commit()  # Ensure IDs are assigned
 
         # add exercises
-        # add_exercises_to_day(push_A, [horizontal_incline_push, horizontal_incline_push, vertical_push, side_delt_isolation, tricep_isolation])
-        # add_exercises_to_day(pull_A, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
-        # add_exercises_to_day(legs_A, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
-        # add_exercises_to_day(push_B, [vertical_push, side_delt_isolation, horizontal_incline_push, horizontal_incline_push, tricep_isolation])
-        # add_exercises_to_day(pull_B, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
-        # add_exercises_to_day(legs_B, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
+        add_exercises_to_day(push_A, [horizontal_incline_push, horizontal_push, vertical_push, side_delt_isolation, tricep_isolation])
+        add_exercises_to_day(pull_A, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
+        add_exercises_to_day(legs_A, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
+        add_exercises_to_day(push_B, [vertical_push, side_delt_isolation, horizontal_incline_push, horizontal_push, tricep_isolation])
+        add_exercises_to_day(pull_B, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
+        add_exercises_to_day(legs_B, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
 
 
 

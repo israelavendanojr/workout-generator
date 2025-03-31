@@ -42,7 +42,7 @@ def generate_plan(days_available, equipment):
         print(len(split.workout_days))
         for i in range(len(split.workout_days)):
             day = split.workout_days[i]
-            print(day.name)
+            print(day.id, day.name)
 
     # generate plan for each split
     for split in workout_splits:

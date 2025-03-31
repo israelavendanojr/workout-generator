@@ -17,18 +17,28 @@ class WorkoutPreferences(db.Model):
     goal = db.Column(db.String(100), nullable=False)
     equipment = db.Column(db.Text, nullable=False)
 
+# Association table for many-to-many relationship, can associate same WorkoutDay to multiples WorkoutSplits
+split_day_association = db.Table('split_day_association',
+    db.Column('workout_split_id', db.Integer, db.ForeignKey('workout_split.id'), primary_key=True),
+    db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True),
+    db.Column('order', db.Integer, nullable=False) 
+)
+
+# Workout splits, i.e. PPL, Upper/Lower, etc
 # Workout splits, i.e. PPL, Upper/Lower, etc
 class WorkoutSplit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     days_per_week = db.Column(db.Integer, nullable=False)
 
-    # Create many-to-many relationship to WorkoutDay via split_day_association
+    # Ordered Relationship
     workout_days = db.relationship(
-        'WorkoutDay', 
-        secondary='split_day_association', 
-        backref=db.backref('workout_splits_association', lazy='dynamic'),  # Use a unique name here
+        'WorkoutDay',
+        secondary=split_day_association,
+        order_by=split_day_association.c.order, 
+        backref='workout_splits_association'  # Changed the backref name here
     )
+
 
 # Holds structure of given workout day, e.g. Push, Pull, and Leg days in PPL
 # WorkoutDay model
@@ -49,12 +59,6 @@ class WorkoutDay(db.Model):
         secondary='split_day_association', 
         backref=db.backref('workout_days_association', lazy='dynamic'), 
     )
-
-# Association table for many-to-many relationship, can associate same WorkoutDay to multiples WorkoutSplits
-split_day_association = db.Table('split_day_association',
-    db.Column('workout_split_id', db.Integer, db.ForeignKey('workout_split.id'), primary_key=True),
-    db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True)
-)
 
 # Defines function of an exercise, e.g. horizontal push, vertical pull, curl, eyc
 class ExerciseRole(db.Model):

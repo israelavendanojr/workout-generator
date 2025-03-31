@@ -36,9 +36,14 @@ def generate_plan(days_available, equipment):
     
     print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")
     for split in workout_splits:
-        print("STRUCTURE OF SPLIT: ", split.name)
+        print("STRUCTURE OF SPLIT: ", split.name + "\n")
         for day in split.workout_days:
             print(day.name)
+
+            for role in day.structure:
+                print(role.role)
+            
+            print("\n")
 
         print("\n")
     # generate plan for each split

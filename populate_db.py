@@ -4,10 +4,19 @@ from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exer
 app = create_app()
 
 # clears database
+# clears database
 def clear():
     with app.app_context():
+        # First delete associations to prevent foreign key errors
+        db.session.query(day_role_association).delete()
+        db.session.query(split_day_association).delete()
+
+        # Then delete the main tables
         db.session.query(WorkoutSplit).delete()
         db.session.query(WorkoutDay).delete()
+        db.session.query(ExerciseRole).delete()
+
+        # Commit changes to the database
         db.session.commit()
 
 # adds WorkoutSplit and stores in order of insertion
@@ -108,13 +117,22 @@ def populate():
         ])
         db.session.commit()  # Ensure IDs are assigned
 
-        # add exercises
+        # add structure to splits
         add_exercises_to_day(push_A, [horizontal_incline_push, horizontal_push, vertical_push, side_delt_isolation, tricep_isolation])
         add_exercises_to_day(pull_A, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
         add_exercises_to_day(legs_A, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
         add_exercises_to_day(push_B, [vertical_push, side_delt_isolation, horizontal_incline_push, horizontal_push, tricep_isolation])
         add_exercises_to_day(pull_B, [vertical_pull, horizontal_pull, lat_isolation, rear_delt_isolation, bicep_isolation])
         add_exercises_to_day(legs_B, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
+
+        add_exercises_to_day(upper_A, [horizontal_incline_push, vertical_pull, horizontal_push, horizontal_pull, side_delt_isolation, bicep_isolation, tricep_isolation])
+        add_exercises_to_day(lower_A, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
+        add_exercises_to_day(upper_B, [horizontal_incline_push, vertical_pull, horizontal_push, horizontal_pull, side_delt_isolation, bicep_isolation, tricep_isolation])
+        add_exercises_to_day(lower_B, [squat, hinge, quad_isolation, hamstring_isolation, calf_isolation])
+
+        
+
+
 
 
 

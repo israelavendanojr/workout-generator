@@ -44,7 +44,7 @@ class WorkoutDay(db.Model):
     name = db.Column(db.String(100), nullable=False)
 
     # Many-to-many relationship with ExerciseRole
-    exercises = db.relationship(
+    structure = db.relationship(
         'ExerciseRole', 
         secondary='day_role_association', 
         backref='workout_days'

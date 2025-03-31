@@ -25,23 +25,20 @@ split_day_association = db.Table('split_day_association',
 )
 
 # Workout splits, i.e. PPL, Upper/Lower, etc
-# Workout splits, i.e. PPL, Upper/Lower, etc
 class WorkoutSplit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     days_per_week = db.Column(db.Integer, nullable=False)
 
-    # Ordered Relationship
+    # Ordered Many-to-Many Relationship with WorkoutDay
     workout_days = db.relationship(
         'WorkoutDay',
         secondary=split_day_association,
         order_by=split_day_association.c.order, 
-        backref='workout_splits_association'  # Changed the backref name here
+        back_populates='workout_splits',
+        overlaps="workout_days_association"
     )
 
-
-# Holds structure of given workout day, e.g. Push, Pull, and Leg days in PPL
-# WorkoutDay model
 class WorkoutDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -50,14 +47,15 @@ class WorkoutDay(db.Model):
     exercises = db.relationship(
         'ExerciseRole', 
         secondary='day_role_association', 
-        backref='workout_day'
+        backref='workout_days'
     )
 
-    # Many-to-many relationship with WorkoutSplit, using the split_day_association
+    # Many-to-Many Relationship with WorkoutSplit
     workout_splits = db.relationship(
         'WorkoutSplit', 
-        secondary='split_day_association', 
-        backref=db.backref('workout_days_association', lazy='dynamic'), 
+        secondary=split_day_association, 
+        back_populates='workout_days',
+        overlaps="workout_splits_association"
     )
 
 # Defines function of an exercise, e.g. horizontal push, vertical pull, curl, eyc
@@ -74,8 +72,6 @@ day_role_association = db.Table('day_role_association',
 # Stores exercise information
 class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False)
-
-    # Relationship to link exercises to roles
+    name = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False)  # Ensure this is present
     role = db.relationship('ExerciseRole', backref='exercises')

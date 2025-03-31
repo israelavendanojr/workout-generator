@@ -14,38 +14,51 @@ def clear():
 def populate():
     with app.app_context():
         # create workout days
-        full = WorkoutDay(name="Full Body")
+        full_A = WorkoutDay(name="Full Body")
+        full_B = WorkoutDay(name="Full Body")
+        full_C = WorkoutDay(name="Full Body")
 
-        upper = WorkoutDay(name="Upper")
-        lower = WorkoutDay(name="Lower")
+        upper_A = WorkoutDay(name="Upper")
+        lower_A = WorkoutDay(name="Lower")
+        upper_B = WorkoutDay(name="Upper")
+        lower_B = WorkoutDay(name="Lower")
 
-        push = WorkoutDay(name="Push")
-        pull = WorkoutDay(name="Pull")
-        legs = WorkoutDay(name="Legs")
 
-        chest_back = WorkoutDay(name="Chest + Back")
-        arms = WorkoutDay(name="Arms")
+        push_A = WorkoutDay(name="Push")
+        pull_A = WorkoutDay(name="Pull")
+        push_B = WorkoutDay(name="Push")
+        legs_A = WorkoutDay(name="Legs")
+        pull_B = WorkoutDay(name="Pull")
+        legs_B = WorkoutDay(name="Legs")
 
-        db.session.add_all([push,pull,legs,upper,lower,full])
+        chestback_A = WorkoutDay(name="Chest + Back")
+        chestback_B = WorkoutDay(name="Chest + Back")
+        arms_A = WorkoutDay(name="Arms")
+        arms_B = WorkoutDay(name="Arms")
+
+        db.session.add_all([full_A, full_B, full_C, 
+                            upper_A, lower_A, upper_B, lower_B,
+                            push_A, pull_A, legs_A, push_B, pull_B, legs_B,
+                            chestback_A, chestback_B, arms_A, arms_B])
 
         # create workout splits
-        fb1 = WorkoutSplit(name="Full Body", days_per_week="1", workout_days=[full])
+        fb1 = WorkoutSplit(name="Full Body", days_per_week="1", workout_days=[full_A])
 
-        fb2 = WorkoutSplit(name="Full Body", days_per_week="2", workout_days=[full, full])
+        fb2 = WorkoutSplit(name="Full Body", days_per_week="2", workout_days=[full_A, full_B])
 
-        fb3 = WorkoutSplit(name="Full Body", days_per_week="3", workout_days=[full, full, full])
-        ul_fb = WorkoutSplit(name="Upper Lower + Full Body", days_per_week="3", workout_days=[upper, lower, full])    
+        fb3 = WorkoutSplit(name="Full Body", days_per_week="3", workout_days=[full_A, full_B, full_C])
+        ul_fb = WorkoutSplit(name="Upper Lower + Full Body", days_per_week="3", workout_days=[upper_A, lower_A, full_A])    
         
-        ul = WorkoutSplit(name="Upper Lower", days_per_week="4", workout_days=[upper, lower, upper, lower])
+        ul = WorkoutSplit(name="Upper Lower", days_per_week="4", workout_days=[upper_A, lower_A, upper_B, lower_B])
         # pp = WorkoutSplit(name="Push Pull", days_per_week="4")
 
-        ppl_ul = WorkoutSplit(name="Push Pull Legs + Upper Lower", days_per_week="5", workout_days=[push, pull, legs, upper, lower])
-        arnold_ul = WorkoutSplit(name="Arnold + Upper Lower", days_per_week="5", workout_days=[chest_back, arms, legs, upper, lower])
-        ul_arms = WorkoutSplit(name="Upper Lower + Arms", days_per_week="5", workout_days=[upper, lower, upper, lower, arms])
+        ppl_ul = WorkoutSplit(name="Push Pull Legs + Upper Lower", days_per_week="5", workout_days=[push_A, pull_A, legs_A, upper_A, lower_A])
+        arnold_ul = WorkoutSplit(name="Arnold + Upper Lower", days_per_week="5", workout_days=[chestback_A, arms_A, legs_A, upper_A, lower_A])
+        ul_arms = WorkoutSplit(name="Upper Lower + Arms", days_per_week="5", workout_days=[upper_A, lower_A, upper_B, lower_B, arms_A])
 
-        ppl = WorkoutSplit(name="Push Pull Legs", days_per_week="6", workout_days=[push, pull, legs, push, pull, legs])
-        arnold = WorkoutSplit(name="Arnold", days_per_week="6", workout_days=[chest_back, arms, legs, chest_back, arms, legs])
-        ppl_arnold = WorkoutSplit(name="Push Pull Legs + Arnold", days_per_week="6", workout_days=[push, pull, legs, chest_back, arms, legs])
+        ppl = WorkoutSplit(name="Push Pull Legs", days_per_week="6", workout_days=[push_A, pull_A, legs_A, push_B, pull_B, legs_B])
+        arnold = WorkoutSplit(name="Arnold", days_per_week="6", workout_days=[chestback_A, arms_A, legs_A, chestback_B, arms_B, legs_B])
+        ppl_arnold = WorkoutSplit(name="Push Pull Legs + Arnold", days_per_week="6", workout_days=[push_A, pull_A, legs_A, chestback_A, arms_A, legs_A])
 
         db.session.add_all([fb1,
                             fb2,

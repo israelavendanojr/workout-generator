@@ -14,8 +14,7 @@
             <ul>
                 {% for exercise in day.exercises %}
                     <li>
-                        {{ exercise.name }}
-                        {{exercise.sets}} x {{exercise.start_reps}}-{{exercise.end_reps}}
+                        {{ exercise.name }} : {{exercise.sets}} x {{exercise.start_reps}}-{{exercise.end_reps}}
                     </li>
                     {% endfor%}
                 </ul>

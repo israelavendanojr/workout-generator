@@ -45,6 +45,14 @@ def add_structure_to_day(workout_day, exercises):
 
     db.session.commit()
 
+def add_equipment_to_exercise(exercise, equipment_list):
+    for equipment in equipment_list:
+        db.session.execute(exercise_equipment_association.insert().values(
+            exercise_id=exercise.id,
+            equipment_id=equipment.id
+        ))
+    db.session.commit()
+
 def populate():
     # Create workout days
     full_A = WorkoutDay(name="Full Body A")
@@ -391,6 +399,8 @@ def populate():
     ])
 
     db.session.commit()
+
+
 
 if __name__ == "__main__":
     with app.app_context():

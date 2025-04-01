@@ -9,17 +9,11 @@ def home():
     if request.method == "POST":
         # get preferences from form
         days_available = int(request.form.get("days_available"))
-        # session_length = request.form.get("session_length")
-        # goal = request.form.get("goal")
         equipment = request.form.getlist("equipment")
 
         # validate preferences
         if days_available < 1 or 6 < days_available:
             flash('Days per week must be within 1-6', category='error')
-        # elif not session_length:
-        #     flash('Session length field required', category='error')
-        # elif not goal:
-        #     flash('Goal field required', category='error')
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
@@ -30,20 +24,21 @@ def home():
 
 def generate_plan(days_available, equipment):
     from website import db
-    from .models import WorkoutSplit, WorkoutDay, ExerciseRole, day_role_association
+    from models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, Equipment, exercise_equipment_association
 
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
     print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")
     
+    # generate plan for each workout split
     for split in workout_splits:
         print("STRUCTURE OF SPLIT: ", split.name + "\n")
         
+        # get workout day from split
         for day in split.workout_days:
             print(day.name)
 
-            # Get the exercises for the workout day, ordered by the 'order' in the association table
             ordered_roles = (
                 db.session.query(ExerciseRole)
                 .join(day_role_association)
@@ -52,11 +47,9 @@ def generate_plan(days_available, equipment):
                 .all()
             )
 
-            # Print role names in order
+            # find suitable exercises based on exercise role and equipment available
             for role in ordered_roles:
                 print(role.role)
+                db.session.query(Exercise)
 
             print("\n")
-    # generate plan for each split
-    for split in workout_splits:
-        pass

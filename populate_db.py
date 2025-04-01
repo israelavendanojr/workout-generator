@@ -236,169 +236,94 @@ def populate():
         tricep_isolation 
     ])
 
-    # add equipment
+    # # add equipment
+    # barbell = Equipment(name="Barbell")
+    # dumbbell = Equipment(name="Dumbbell")
+    # machine = Equipment(name="Machine")
+    # cable = Equipment(name="Cable")
+    # bodyweight = Equipment(name="Bodyweight")
 
-    barbell = Equipment(name="Barbell")
-    dumbbell = Equipment(name="Dumbbell")
-    machine = Equipment(name="Machine")
-    cable = Equipment(name="Cable")
-    bodyweight = Equipment(name="Bodyweight")
+    # db.session.add_all([barbell, dumbbell, machine, cable, bodyweight])
+    # db.session.commit()
 
-    db.session.add_all([barbell, dumbbell, machine, cable, bodyweight])
-    db.session.commit()
-
-    # add exercises
-
-    # Horizontal Incline Push
-    incline_barbell_bench_press = Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push)
-    incline_dumbbell_press = Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push)
-    incline_machine_press = Exercise(name="Incline Machine Press", role=horizontal_incline_push)
-    decline_push_ups = Exercise(name="Decline Push-Ups", role=horizontal_push)
-
-    # Horizontal Push
-    flat_barbell_bench_press = Exercise(name="Flat Barbell Bench Press", role=horizontal_push)
-    flat_dumbbell_press = Exercise(name="Flat Dumbbell Press", role=horizontal_push)
-    machine_chest_press = Exercise(name="Machine Chest Press", role=horizontal_push)
-    push_ups = Exercise(name="Push-Ups", role=horizontal_push)
-
-    # Vertical Push
-    overhead_barbell_press = Exercise(name="Overhead Barbell Press", role=vertical_push)
-    seated_dumbbell_shoulder_press = Exercise(name="Seated Dumbbell Shoulder Press", role=vertical_push)
-    machine_shoulder_press = Exercise(name="Machine Shoulder Press", role=vertical_push)
-
-    # Side Delt Isolation
-    dumbbell_lateral_raise = Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation)
-    cable_lateral_raise = Exercise(name="Cable Lateral Raise", role=side_delt_isolation)
-    machine_lateral_raise = Exercise(name="Machine Lateral Raise", role=side_delt_isolation)
-
-    # Tricep Isolation
-    cable_tricep_pushdown = Exercise(name="Cable Tricep Pushdown", role=tricep_isolation)
-    skull_crushers = Exercise(name="Skull Crushers", role=tricep_isolation)
-
-    # Horizontal Pull
-    barbell_row = Exercise(name="Barbell Row", role=horizontal_pull)
-    dumbbell_row = Exercise(name="Dumbbell Row", role=horizontal_pull)
-    machine_row = Exercise(name="Machine Row", role=horizontal_pull)
-
-    # Vertical Pull
-    pull_ups = Exercise(name="Pull Ups", role=vertical_pull)
-    lat_pulldown = Exercise(name="Lat Pulldown", role=vertical_pull)
-
-    # Rear Delt Isolation
-    reverse_pec_deck_fly = Exercise(name="Reverse Pec Deck Fly", role=rear_delt_isolation)
-    cable_rear_delt_fly = Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation)
-    dumbbell_rear_delt_fly = Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation)
-
-    # Bicep Isolation
-    dumbbell_incline_curl = Exercise(name="Dumbbell Incline Curl", role=bicep_isolation)
-    barbell_curl = Exercise(name="Barbell Curl", role=bicep_isolation)
-    preacher_curl = Exercise(name="Preacher Curl", role=bicep_isolation)
-
-    # Lat Isolation
-    straight_arm_lat_pulldown = Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation)
-    machine_lat_pullover = Exercise(name="Machine Lat Pullover", role=lat_isolation)
-
-    # Squat
-    barbell_squat = Exercise(name="Barbell Squat", role=squat)
-    hack_squat = Exercise(name="Hack Squat", role=squat)
-    leg_press = Exercise(name="Leg Press", role=squat)
-
-    # Hinge
-    barbell_deadlift = Exercise(name="Barbell Deadlift", role=hinge)
-    barbell_romanian_deadlift = Exercise(name="Barbell Romanian Deadlift", role=hinge)
-    machine_hip_thrust = Exercise(name="Machine Hip Thrust", role=hinge)
-    back_extension = Exercise(name="Back Extension", role=hinge)
-
-    # Quad Isolation
-    leg_extensions = Exercise(name="Leg Extensions", role=quad_isolation)
-    sissy_squats = Exercise(name="Sissy Squats", role=quad_isolation)
-    adduction_machine = Exercise(name="Adduction Machine", role=quad_isolation)
-
-    # Hamstring Isolation
-    lying_hamstring_curl = Exercise(name="Lying Hamstring Curl", role=hamstring_isolation)
-    seated_hamstring_curl = Exercise(name="Seated Hamstring Curl", role=hamstring_isolation)
-
-    # Calf Isolation
-    standing_calf_raise = Exercise(name="Standing Calf Raise", role=calf_isolation)
-    seated_calf_raise = Exercise(name="Seated Calf Raise", role=calf_isolation)
-
-    # Add all exercises to the database
-    db.session.add_all([
+    # Add exercises
+    exercises = [
         # Horizontal Incline Push
-        incline_barbell_bench_press,
-        incline_dumbbell_press,
-        incline_machine_press,
-        decline_push_ups,
+        Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment="Barbell"),
+        Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment="Dumbbell"),
+        Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment="Machine"),
+        Exercise(name="Decline Push-Ups", role=horizontal_push, equipment="Bodyweight"),
 
         # Horizontal Push
-        flat_barbell_bench_press,
-        flat_dumbbell_press,
-        machine_chest_press,
-        push_ups,
+        Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment="Barbell"),
+        Exercise(name="Flat Dumbbell Press", role=horizontal_push, equipment="Dumbbell"),
+        Exercise(name="Machine Chest Press", role=horizontal_push, equipment="Machine"),
+        Exercise(name="Push-Ups", role=horizontal_push, equipment="Bodyweight"),
 
         # Vertical Push
-        overhead_barbell_press,
-        seated_dumbbell_shoulder_press,
-        machine_shoulder_press,
+        Exercise(name="Overhead Barbell Press", role=vertical_push, equipment="Barbell"),
+        Exercise(name="Seated Dumbbell Shoulder Press", role=vertical_push, equipment="Dumbbell"),
+        Exercise(name="Machine Shoulder Press", role=vertical_push, equipment="Machine"),
 
         # Side Delt Isolation
-        dumbbell_lateral_raise,
-        cable_lateral_raise,
-        machine_lateral_raise,
+        Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation, equipment="Dumbbell"),
+        Exercise(name="Cable Lateral Raise", role=side_delt_isolation, equipment="Cable"),
+        Exercise(name="Machine Lateral Raise", role=side_delt_isolation, equipment="Machine"),
 
         # Tricep Isolation
-        cable_tricep_pushdown,
-        skull_crushers,
+        Exercise(name="Cable Tricep Pushdown", role=tricep_isolation, equipment="Cable"),
+        Exercise(name="Skull Crushers", role=tricep_isolation, equipment="Barbell"),
 
         # Horizontal Pull
-        barbell_row,
-        dumbbell_row,
-        machine_row,
+        Exercise(name="Barbell Row", role=horizontal_pull, equipment="Barbell"),
+        Exercise(name="Dumbbell Row", role=horizontal_pull, equipment="Dumbbell"),
+        Exercise(name="Machine Row", role=horizontal_pull, equipment="Machine"),
 
         # Vertical Pull
-        pull_ups,
-        lat_pulldown,
+        Exercise(name="Pull Ups", role=vertical_pull, equipment="Bodyweight"),
+        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Cable"),
 
         # Rear Delt Isolation
-        reverse_pec_deck_fly,
-        cable_rear_delt_fly,
-        dumbbell_rear_delt_fly,
+        Exercise(name="Reverse Pec Deck Fly", role=rear_delt_isolation, equipment="Machine"),
+        Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment="Cable"),
+        Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation, equipment="Dumbbell"),
 
         # Bicep Isolation
-        dumbbell_incline_curl,
-        barbell_curl,
-        preacher_curl,
+        Exercise(name="Dumbbell Incline Curl", role=bicep_isolation, equipment="Dumbbell"),
+        Exercise(name="Barbell Curl", role=bicep_isolation, equipment="Barbell"),
+        Exercise(name="Preacher Curl", role=bicep_isolation, equipment="Machine"),
 
         # Lat Isolation
-        straight_arm_lat_pulldown,
-        machine_lat_pullover,
+        Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation, equipment="Cable"),
+        Exercise(name="Machine Lat Pullover", role=lat_isolation, equipment="Machine"),
 
         # Squat
-        barbell_squat,
-        hack_squat,
-        leg_press,
+        Exercise(name="Barbell Squat", role=squat, equipment="Barbell"),
+        Exercise(name="Hack Squat", role=squat, equipment="Machine"),
+        Exercise(name="Leg Press", role=squat, equipment="Machine"),
 
         # Hinge
-        barbell_deadlift,
-        barbell_romanian_deadlift,
-        machine_hip_thrust,
-        back_extension,
+        Exercise(name="Barbell Deadlift", role=hinge, equipment="Barbell"),
+        Exercise(name="Barbell Romanian Deadlift", role=hinge, equipment="Barbell"),
+        Exercise(name="Machine Hip Thrust", role=hinge, equipment="Machine"),
+        Exercise(name="Back Extension", role=hinge, equipment="Bodyweight"),
 
         # Quad Isolation
-        leg_extensions,
-        sissy_squats,
-        adduction_machine,
+        Exercise(name="Leg Extensions", role=quad_isolation, equipment="Machine"),
+        Exercise(name="Sissy Squats", role=quad_isolation, equipment="Bodyweight"),
+        Exercise(name="Adduction Machine", role=quad_isolation, equipment="Machine"),
 
         # Hamstring Isolation
-        lying_hamstring_curl,
-        seated_hamstring_curl,
+        Exercise(name="Lying Hamstring Curl", role=hamstring_isolation, equipment="Machine"),
+        Exercise(name="Seated Hamstring Curl", role=hamstring_isolation, equipment="Machine"),
 
         # Calf Isolation
-        standing_calf_raise,
-        seated_calf_raise
-    ])
+        Exercise(name="Standing Calf Raise", role=calf_isolation, equipment="Machine"),
+        Exercise(name="Seated Calf Raise", role=calf_isolation, equipment="Machine")
+    ]
 
-    db.session.commit()
+    # Add all exercises to the database
+    db.session.add_all(exercises)
 
 
 

@@ -59,6 +59,7 @@ def generate_plan(days_available, equipment):
 
                 for exercise in exercises:
                     print(exercise.name)
+                    
                 print("\n")
 
             print("\n")

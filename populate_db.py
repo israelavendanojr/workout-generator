@@ -6,7 +6,7 @@ app = create_app()
 # clears database
 def clear():
     with app.app_context():
-        # First delete associations to prevent foreign key errors
+        # Delete associations to prevent foreign key errors
         db.session.query(day_role_association).delete()
         db.session.query(split_day_association).delete()
 
@@ -199,6 +199,37 @@ def populate():
             hamstring_isolation, 
             calf_isolation
         ])
+
+        add_exercises_to_day(chestback_A, [
+            horizontal_incline_push, 
+            horizontal_pull, 
+            horizontal_push, 
+            vertical_pull, 
+        ])
+
+        add_exercises_to_day(arms_A, [
+            vertical_push, 
+            side_delt_isolation, 
+            rear_delt_isolation, 
+            bicep_isolation,
+            tricep_isolation 
+        ])
+
+        add_exercises_to_day(chestback_B, [
+            vertical_pull, 
+            horizontal_incline_push, 
+            horizontal_pull, 
+            horizontal_push, 
+        ])
+
+        add_exercises_to_day(arms_B, [
+            vertical_push, 
+            side_delt_isolation, 
+            rear_delt_isolation, 
+            bicep_isolation,
+            tricep_isolation 
+        ])
+
 
 
 if __name__ == "__main__":

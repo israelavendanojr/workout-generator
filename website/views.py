@@ -53,6 +53,7 @@ def generate_plan(days_available, equipment):
                 exercises = (
                     db.session.query(Exercise)
                     .filter(Exercise.role_id == role.id)
+                    .filter(Exercise.equipment.in_(equipment))
                     .all()
                 )
 

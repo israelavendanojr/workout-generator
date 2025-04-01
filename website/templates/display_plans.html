@@ -3,4 +3,9 @@
 {% block title %}Generated Plan{% endblock %}
 {% block content %}
 <h1>Show Plan Here</h1>
+
+{% for plan in plans %}
+    <h2>{{ plan.split_name }}</h2>
+{% endfor %}
+
 {% endblock %}

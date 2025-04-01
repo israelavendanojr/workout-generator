@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, current_user
+import json
 
 
 views = Blueprint('views', __name__)
@@ -17,10 +18,33 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            print(generate_plans(days_available, equipment))
+            workout_plans = generate_plans(days_available, equipment)
             flash('Generated workout plan!', category='success')
 
+            # session to store across requests, convert to json bc session can only store simple types
+            session['workout_plans'] = json.dumps(workout_plans)
+            return redirect(url_for('views.display_plans'))
+
+
     return render_template("home.html")
+
+@views.route('/display_plans')
+def display_plans():
+    # Retrieve the workout plan from session
+    workout_plans_json = session.get('workout_plans')
+
+    if not workout_plans_json:
+        flash("No workout plan found. Please generate a plan first.", category='error')
+        return redirect(url_for('views.home'))
+    
+    try:
+        # convert back into list of dictionary for usage
+        workout_plans = json.loads(workout_plans_json)
+    except Exception as e:
+        flash(f"Error decoding workout plans: {str(e)}", category='error')
+        return redirect(url_for('views.home'))
+    
+    return render_template("display_plans.html", plans=workout_plans)
 
 def generate_plans(days_available, equipment):
     from website import db

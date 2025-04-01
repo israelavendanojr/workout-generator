@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, Equipment, exercise_equipment_association
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
 
 app = create_app()
 
@@ -252,7 +252,7 @@ def populate():
         Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment="Barbell"),
         Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment="Dumbbell"),
         Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment="Machine"),
-        Exercise(name="Decline Push-Ups", role=horizontal_push, equipment="Bodyweight"),
+        Exercise(name="Decline Push-Ups", role=horizontal_incline_push, equipment="Bodyweight"),
 
         # Horizontal Push
         Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment="Barbell"),
@@ -281,7 +281,7 @@ def populate():
 
         # Vertical Pull
         Exercise(name="Pull Ups", role=vertical_pull, equipment="Bodyweight"),
-        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Cable"),
+        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Machine"),
 
         # Rear Delt Isolation
         Exercise(name="Reverse Pec Deck Fly", role=rear_delt_isolation, equipment="Machine"),
@@ -324,6 +324,7 @@ def populate():
 
     # Add all exercises to the database
     db.session.add_all(exercises)
+    db.session.commit()
 
 
 

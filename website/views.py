@@ -24,12 +24,12 @@ def home():
 
 def generate_plan(days_available, equipment):
     from website import db
-    from models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, Equipment, exercise_equipment_association
+    from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
 
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
-    print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")
+    print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n", "WITH EQUIPMENT: ", equipment)
     
     # generate plan for each workout split
     for split in workout_splits:
@@ -49,7 +49,15 @@ def generate_plan(days_available, equipment):
 
             # find suitable exercises based on exercise role and equipment available
             for role in ordered_roles:
-                print(role.role)
-                db.session.query(Exercise)
+                print("ROLE: ", role.role)
+                exercises = (
+                    db.session.query(Exercise)
+                    .filter(Exercise.role_id == role.id)
+                    .all()
+                )
+
+                for exercise in exercises:
+                    print(exercise.name)
+                print("\n")
 
             print("\n")

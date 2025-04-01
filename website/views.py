@@ -17,12 +17,12 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            generate_plan(days_available, equipment)
+            generate_plans(days_available, equipment)
             flash('Generated workout plan!', category='success')
 
     return render_template("home.html")
 
-def generate_plan(days_available, equipment):
+def generate_plans(days_available, equipment):
     from website import db
     from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
     import random

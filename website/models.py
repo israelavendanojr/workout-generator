@@ -70,6 +70,12 @@ day_role_association = db.Table('day_role_association',
     db.Column('order', db.Integer, nullable=False) 
 )
 
+exercise_equipment_association = db.Table(
+    'exercise_equipment_association',
+    db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
+    db.Column('equipment_id', db.Integer, db.ForeignKey('equipment.id'), primary_key=True)
+)
+
 # Stores exercise information
 class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -78,17 +84,12 @@ class Exercise(db.Model):
     role = db.relationship('ExerciseRole', backref='exercises')
 
     # Many-to-Many relationship with Equipment
-    equipment = db.relationship('Equipment', secondary='exercise_equipment', back_populates='exercises')
+    equipment = db.relationship('Equipment', secondary='exercise_equipment_association', back_populates='exercises')
 
 class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), unique=True, nullable=False)
 
     # Relationship to Exercise
-    exercises = db.relationship('Exercise', secondary='exercise_equipment', back_populates='equipment')
+    exercises = db.relationship('Exercise', secondary='exercise_equipment_association', back_populates='equipment')
 
-exercise_equipment_association = db.Table(
-    'exercise_equipment_association',
-    db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
-    db.Column('equipment_id', db.Integer, db.ForeignKey('equipment.id'), primary_key=True)
-)

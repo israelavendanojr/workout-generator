@@ -17,7 +17,7 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            generate_plans(days_available, equipment)
+            print(generate_plans(days_available, equipment))
             flash('Generated workout plan!', category='success')
 
     return render_template("home.html")
@@ -27,6 +27,9 @@ def generate_plans(days_available, equipment):
     from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
     import random
 
+    # Dictionary to store plan information
+    workout_plans = []
+
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
@@ -34,11 +37,24 @@ def generate_plans(days_available, equipment):
     
     # generate plan for each workout split
     for split in workout_splits:
+
+        # insert split name into dictionary and establish workout days
+        plan = {
+            "split_name": split.name,
+            "days": []
+        }
+
         print("STRUCTURE OF SPLIT: ", split.name + "\n")
         
         # get workout day from split
         for day in split.workout_days:
             print(day.name)
+
+            # insert day name into dictionary and establish exercises
+            day_info = {
+                "name": day.name,
+                "exercises": []
+            }
 
             ordered_roles = (
                 db.session.query(ExerciseRole)
@@ -62,11 +78,32 @@ def generate_plans(days_available, equipment):
                     random_index = random.randint(0, len(exercises)-1)
                     random_exercise = exercises[random_index]
                     print(random_exercise.name)
+
+                    # insert exercises into dictionary
+                    day_info["exercises"].append({
+                        "name": random_exercise.name,
+                        "sets": 2,
+                        "start reps": 6,
+                        "end reps": 8
+                    })
                 else:
                     print("No suitable exercise for ", role.role, " found")
-                # for exercise in exercises:
-                #     print(exercise.name)
+                    # insert null exercise into dictionary if none found
+                    null_exercise_message = "No suitable exercise for " + role.role + " found"
+                    day_info["exercises"].append({
+                        "name": null_exercise_message,
+                        "sets": 0,
+                        "start reps": 0,
+                        "end reps": 0
+                    })
 
-                # print("\n")
+            # add workout days to current workout plan being constructed
+            plan["days"].append(day_info)
 
             print("\n")
+
+        # add completed workout plan to list of generated plans
+        workout_plans.append(plan)
+
+    # return dictionary of all generated plans
+    return workout_plans

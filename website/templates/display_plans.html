@@ -1,26 +1,53 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
 {% block title %}Generated Plan{% endblock %}
+
 {% block content %}
-<h1>Generated Plans</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Generated Workout Plans</h1>
 
-{% for plan in plans %}
-    <h2>{{ plan.split_name }}</h2>
-
-    <ul>
-        {% for day in plan.days %}
-        <li>
-            <strong>{{ day.name }}</strong>
-            <ul>
-                {% for exercise in day.exercises %}
-                    <li>
-                        {{ exercise.name }} : {{exercise.sets}} x {{exercise.start_reps}}-{{exercise.end_reps}}
-                    </li>
-                    {% endfor%}
-                </ul>
-        </li>
-        {% endfor %}
-    </ul>
-{% endfor %}
-
+    {% if plans %}
+    <div id="workoutCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for plan in plans %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <div class="card mx-auto" style="max-width: 500px;">
+                    <div class="card-header text-center">
+                        <h5 class="card-title">{{ plan.split_name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            {% for day in plan.days %}
+                            <li class="list-group-item">
+                                <strong>{{ day.name }}</strong>
+                                <ul>
+                                    {% for exercise in day.exercises %}
+                                    <li>{{ exercise.name }} : {{exercise.sets}} x {{exercise.start_reps}}-{{exercise.end_reps}}</li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#workoutCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#workoutCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+        {% else %}
+        <p class="text-center">No workout plans available. Please generate a plan first.</p>
+    {% endif %}
+</div>
 {% endblock %}
+
+

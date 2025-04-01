@@ -3,7 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<h1 class="text-center">Home Page</h1>
+<h1 class="text-center">Generate Workout Plan</h1>
 
 <form method="POST">
     <!-- DAYS AVAILABLE -->
@@ -14,27 +14,17 @@
         <span id="rangeValue">4</span>
     </div>
 
-    <!-- SESSION LENGTH -->
-    <!-- <div class="mb-3">
-        <label for="approach" class="form-label">Session Length?</label>
-        <select name="approach" id="approach" class="form-select">
-            <option value="Short">Low volume / High intensity</option>
-            <option value="Medium" selected>60-90 mins</option>
-            <option value="Long">90-120 mins</option>
-        </select>
-    </div> -->
-
     <!-- APPROACH -->
-    <!-- <div class="mb-3">
+    <div class="mb-3">
         <label for="goal" class="form-label">How do you want to structure your workout?</label>
         <select name="goal" id="goal" class="form-select">
             <option value="Hypertrophy">Low Volume + High Intensity</option>
             <option value="Strength">Moderate Volume + Moderate Intensity</option>
         </select>
-    </div> -->
+    </div>
 
     <!-- SEX -->
-    <!-- <div class="mb-3">
+    <div class="mb-3">
         <label class="form-label">Sex</label>
         <div>
             <input type="radio" id="masculine" name="sex" value="Masculine" required checked>
@@ -42,7 +32,7 @@
             <input type="radio" id="feminine" name="sex" value="Feminine">
             <label for="feminine">Feminine</label>
         </div>
-    </div> -->
+    </div>
 
     <!-- EQUIPMENT AVAILABLE -->
     <div class="mb-3">
@@ -56,9 +46,6 @@
         <input type="checkbox" id="bodyweight" name="equipment" value="Bodyweight" checked>
         <label for="bodyweight">Bodyweight</label><br>
 
-        <!-- <input type="checkbox" id="calisthenic" name="equipment" value="Calisthenic Equipment" checked>
-        <label for="calisthenic">Calisthenic Equipment</label><br>
- -->
         <input type="checkbox" id="cable_machines" name="equipment" value="Cable" checked>
         <label for="cable_machines">Cables</label><br>
 

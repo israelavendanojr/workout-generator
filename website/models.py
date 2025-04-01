@@ -66,7 +66,8 @@ class ExerciseRole(db.Model):
 # Association table for many-to-many relationship, can associate same ExerciseRole to multiple WorkoutDays
 day_role_association = db.Table('day_role_association',
     db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True),
-    db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id'), primary_key=True)
+    db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id'), primary_key=True),
+    db.Column('order', db.Integer, nullable=False) 
 )
 
 # Stores exercise information

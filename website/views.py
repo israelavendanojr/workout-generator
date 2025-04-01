@@ -29,26 +29,34 @@ def home():
     return render_template("home.html")
 
 def generate_plan(days_available, equipment):
-    from .models import User, WorkoutPreferences, WorkoutSplit, WorkoutDay, ExerciseRole, Exercise
+    from website import db
+    from .models import WorkoutSplit, WorkoutDay, ExerciseRole, day_role_association
 
-    # find workout split
+    # Find workout split
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
     print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")
+    
     for split in workout_splits:
         print("STRUCTURE OF SPLIT: ", split.name + "\n")
+        
         for day in split.workout_days:
             print(day.name)
 
-            for role in day.structure:
-                print(role.role)
-            
-            print("\n")
+            # Get the exercises for the workout day, ordered by the 'order' in the association table
+            ordered_roles = (
+                db.session.query(ExerciseRole)
+                .join(day_role_association)
+                .filter(day_role_association.c.workout_day_id == day.id)
+                .order_by(day_role_association.c.order)  # Order by the 'order' column in the association table
+                .all()
+            )
 
-        print("\n")
+            # Print role names in order
+            for role in ordered_roles:
+                print(role.role)
+
+            print("\n")
     # generate plan for each split
     for split in workout_splits:
         pass
-
-    
-    # return render_template("generate_plan.html")

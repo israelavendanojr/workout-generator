@@ -25,6 +25,7 @@ def home():
 def generate_plan(days_available, equipment):
     from website import db
     from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
+    import random
 
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
@@ -49,7 +50,7 @@ def generate_plan(days_available, equipment):
 
             # find suitable exercises based on exercise role and equipment available
             for role in ordered_roles:
-                print("ROLE: ", role.role)
+                # print("ROLE: ", role.role)
                 exercises = (
                     db.session.query(Exercise)
                     .filter(Exercise.role_id == role.id)
@@ -57,9 +58,15 @@ def generate_plan(days_available, equipment):
                     .all()
                 )
 
-                for exercise in exercises:
-                    print(exercise.name)
-                    
-                print("\n")
+                if exercises:
+                    random_index = random.randint(0, len(exercises)-1)
+                    random_exercise = exercises[random_index]
+                    print(random_exercise.name)
+                else:
+                    print("No suitable exercise for ", role.role, " found")
+                # for exercise in exercises:
+                #     print(exercise.name)
+
+                # print("\n")
 
             print("\n")

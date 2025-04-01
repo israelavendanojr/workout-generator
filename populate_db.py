@@ -35,8 +35,8 @@ def add_split(name, days_per_week, workout_days):
     db.session.commit()
 
 # associate exercise roles with workout day
-def add_exercises_to_day(workout_day, exercises):
-    # Add exercises to the day with the correct order
+def add_structure_to_day(workout_day, exercises):
+    # Add exerciseRoles to the day with the correct order
     for index, exercise in enumerate(exercises):
         db.session.execute(day_role_association.insert().values(
             workout_day_id=workout_day.id,
@@ -116,7 +116,7 @@ def populate():
         db.session.commit()  # Ensure IDs are assigned
 
         # Add exercises to each day with the correct order
-        add_exercises_to_day(push_A, [
+        add_structure_to_day(push_A, [
             horizontal_incline_push, 
             horizontal_push, 
             vertical_push, 
@@ -124,7 +124,7 @@ def populate():
             tricep_isolation
         ])
         
-        add_exercises_to_day(pull_A, [
+        add_structure_to_day(pull_A, [
             vertical_pull, 
             horizontal_pull, 
             lat_isolation, 
@@ -132,7 +132,7 @@ def populate():
             bicep_isolation
         ])
         
-        add_exercises_to_day(legs_A, [
+        add_structure_to_day(legs_A, [
             squat, 
             hinge, 
             quad_isolation, 
@@ -140,7 +140,7 @@ def populate():
             calf_isolation
         ])
         
-        add_exercises_to_day(push_B, [
+        add_structure_to_day(push_B, [
             vertical_push, 
             side_delt_isolation, 
             horizontal_incline_push, 
@@ -148,7 +148,7 @@ def populate():
             tricep_isolation
         ])
         
-        add_exercises_to_day(pull_B, [
+        add_structure_to_day(pull_B, [
             vertical_pull, 
             horizontal_pull, 
             lat_isolation, 
@@ -156,7 +156,7 @@ def populate():
             bicep_isolation
         ])
         
-        add_exercises_to_day(legs_B, [
+        add_structure_to_day(legs_B, [
             squat, 
             hinge, 
             quad_isolation, 
@@ -164,7 +164,7 @@ def populate():
             calf_isolation
         ])
 
-        add_exercises_to_day(upper_A, [
+        add_structure_to_day(upper_A, [
             horizontal_incline_push, 
             vertical_pull, 
             horizontal_push, 
@@ -174,7 +174,7 @@ def populate():
             tricep_isolation
         ])
         
-        add_exercises_to_day(lower_A, [
+        add_structure_to_day(lower_A, [
             squat, 
             hinge, 
             quad_isolation, 
@@ -182,7 +182,7 @@ def populate():
             calf_isolation
         ])
         
-        add_exercises_to_day(upper_B, [
+        add_structure_to_day(upper_B, [
             horizontal_incline_push, 
             vertical_pull, 
             horizontal_push, 
@@ -192,7 +192,7 @@ def populate():
             tricep_isolation
         ])
         
-        add_exercises_to_day(lower_B, [
+        add_structure_to_day(lower_B, [
             squat, 
             hinge, 
             quad_isolation, 
@@ -200,14 +200,14 @@ def populate():
             calf_isolation
         ])
 
-        add_exercises_to_day(chestback_A, [
+        add_structure_to_day(chestback_A, [
             horizontal_incline_push, 
             horizontal_pull, 
             horizontal_push, 
             vertical_pull, 
         ])
 
-        add_exercises_to_day(arms_A, [
+        add_structure_to_day(arms_A, [
             vertical_push, 
             side_delt_isolation, 
             rear_delt_isolation, 
@@ -215,14 +215,14 @@ def populate():
             tricep_isolation 
         ])
 
-        add_exercises_to_day(chestback_B, [
+        add_structure_to_day(chestback_B, [
             vertical_pull, 
             horizontal_incline_push, 
             horizontal_pull, 
             horizontal_push, 
         ])
 
-        add_exercises_to_day(arms_B, [
+        add_structure_to_day(arms_B, [
             vertical_push, 
             side_delt_isolation, 
             rear_delt_isolation, 

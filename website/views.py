@@ -32,7 +32,7 @@ def generate_plan(days_available, equipment):
     from website import db
     from .models import WorkoutSplit, WorkoutDay, ExerciseRole, day_role_association
 
-    # Find workout split
+    # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
     
     print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n")

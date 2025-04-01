@@ -107,8 +107,8 @@ def generate_plans(days_available, equipment):
                     day_info["exercises"].append({
                         "name": random_exercise.name,
                         "sets": 2,
-                        "start reps": 6,
-                        "end reps": 8
+                        "start_reps": 6,
+                        "end_reps": 8
                     })
                 else:
                     print("No suitable exercise for ", role.role, " found")
@@ -117,8 +117,8 @@ def generate_plans(days_available, equipment):
                     day_info["exercises"].append({
                         "name": null_exercise_message,
                         "sets": 0,
-                        "start reps": 0,
-                        "end reps": 0
+                        "start_reps": 0,
+                        "end_reps": 0
                     })
 
             # add workout days to current workout plan being constructed

@@ -2,10 +2,26 @@
 
 {% block title %}Generated Plan{% endblock %}
 {% block content %}
-<h1>Show Plan Here</h1>
+<h1>Generated Plans</h1>
 
 {% for plan in plans %}
     <h2>{{ plan.split_name }}</h2>
+
+    <ul>
+        {% for day in plan.days %}
+        <li>
+            <strong>{{ day.name }}</strong>
+            <ul>
+                {% for exercise in day.exercises %}
+                    <li>
+                        {{ exercise.name }}
+                        {{exercise.sets}} x {{exercise.start_reps}}-{{exercise.end_reps}}
+                    </li>
+                    {% endfor%}
+                </ul>
+        </li>
+        {% endfor %}
+    </ul>
 {% endfor %}
 
 {% endblock %}

@@ -55,26 +55,26 @@ def add_structure_to_day(workout_day, exercises):
 
 def populate():
     # Create workout days
-    full_A = WorkoutDay(name="Full Body A")
-    full_B = WorkoutDay(name="Full Body B")
-    full_C = WorkoutDay(name="Full Body C")
+    full_A = WorkoutDay(name="Full Body")
+    full_B = WorkoutDay(name="Full Body")
+    full_C = WorkoutDay(name="Full Body")
 
-    upper_A = WorkoutDay(name="Upper A")
-    lower_A = WorkoutDay(name="Lower A")
-    upper_B = WorkoutDay(name="Upper B")
-    lower_B = WorkoutDay(name="Lower B")
+    upper_A = WorkoutDay(name="Upper")
+    lower_A = WorkoutDay(name="Lower")
+    upper_B = WorkoutDay(name="Upper")
+    lower_B = WorkoutDay(name="Lower")
 
-    push_A = WorkoutDay(name="Push A")
-    pull_A = WorkoutDay(name="Pull A")
-    legs_A = WorkoutDay(name="Legs A")
-    push_B = WorkoutDay(name="Push B")
-    pull_B = WorkoutDay(name="Pull B")
-    legs_B = WorkoutDay(name="Legs B")
+    push_A = WorkoutDay(name="Push")
+    pull_A = WorkoutDay(name="Pull")
+    legs_A = WorkoutDay(name="Legs")
+    push_B = WorkoutDay(name="Push")
+    pull_B = WorkoutDay(name="Pull")
+    legs_B = WorkoutDay(name="Legs")
 
-    chestback_A = WorkoutDay(name="Chest + Back A")
-    arms_A = WorkoutDay(name="Arms A")
-    chestback_B = WorkoutDay(name="Chest + Back B")
-    arms_B = WorkoutDay(name="Arms B")
+    chestback_A = WorkoutDay(name="Chest + Back")
+    arms_A = WorkoutDay(name="Arms")
+    chestback_B = WorkoutDay(name="Chest + Back")
+    arms_B = WorkoutDay(name="Arms")
 
     db.session.add_all([full_A, full_B, full_C, 
                         upper_A, lower_A, upper_B, lower_B,

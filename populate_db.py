@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan
 
 app = create_app()
 

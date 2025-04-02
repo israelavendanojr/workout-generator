@@ -1,12 +1,16 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+import json
 
+    
 # User login details
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
+
+    plans = db.relationship('SavedPlan', backref='owner', lazy=True)
 
 # User selected workout preferences to generate plan from
 class WorkoutPreferences(db.Model):
@@ -94,3 +98,15 @@ class Exercise(db.Model):
 #     # Relationship to Exercise
 #     exercises = db.relationship('Exercise', secondary='exercise_equipment_association', back_populates='equipment')
 
+# Saved workout plan attached to user
+class SavedPlan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    plan = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    def __init__(self, plan_data, user_id):
+        self.plan_data = json.dumps(plan_data)  # Convert dict to JSON string
+        self.user_id = user_id
+
+    def get_plan(self):
+        return json.loads(self.plan_data)

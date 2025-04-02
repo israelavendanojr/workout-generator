@@ -1,63 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Create Your Workout Plan{% endblock %}
 
 {% block content %}
-<h1 class="text-center">Generate Workout Plan</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-4 text-primary">Create Your Workout Plan!</h1>
 
-<form method="POST">
-    <!-- DAYS AVAILABLE -->
-    <div class="mb-3">
-        <label for="days_available" class="form-label">How many days per week?</label>
-        <input type="range" id="days_available" name="days_available" min="1" max="6" step="1" value="4"
-            class="form-range" oninput="updateValue(this.value)">
-        <span id="rangeValue">4</span>
-    </div>
-
-    <!-- APPROACH -->
-    <div class="mb-3">
-        <label for="goal" class="form-label">How do you want to structure your workout?</label>
-        <select name="goal" id="goal" class="form-select">
-            <option value="Hypertrophy">Low Volume + High Intensity</option>
-            <option value="Strength">Moderate Volume + Moderate Intensity</option>
-        </select>
-    </div>
-
-    <!-- SEX -->
-    <div class="mb-3">
-        <label class="form-label">Sex</label>
-        <div>
-            <input type="radio" id="masculine" name="sex" value="Masculine" required checked>
-            <label for="masculine">Masculine</label>
-            <input type="radio" id="feminine" name="sex" value="Feminine">
-            <label for="feminine">Feminine</label>
+    <form method="POST">
+        <!-- DAYS AVAILABLE -->
+        <div class="mb-4">
+            <label for="days_available" class="form-label">How many days per week?</label>
+            <input type="range" id="days_available" name="days_available" min="1" max="6" step="1" value="4"
+                class="form-range" oninput="updateValue(this.value)">
+            <div class="text-center mt-2">
+                <span id="rangeValue" class="h5">4</span>
+            </div>
         </div>
-    </div>
 
-    <!-- EQUIPMENT AVAILABLE -->
-    <div class="mb-3">
-        <label class="form-label">Equipment Available?</label><br>
-        <input type="checkbox" id="barbell" name="equipment" value="Barbell" checked>
-        <label for="barbell">Barbell</label><br>
+        <!-- APPROACH -->
+        <div class="mb-4">
+            <label for="goal" class="form-label">How do you want to structure your workout?</label>
+            <select name="goal" id="goal" class="form-select form-select-lg">
+                <option value="Hypertrophy">Low Volume + High Intensity</option>
+                <option value="Strength">Moderate Volume + Moderate Intensity</option>
+            </select>
+        </div>
 
-        <input type="checkbox" id="dumbbells" name="equipment" value="Dumbbell" checked>
-        <label for="dumbbells">Dumbbells</label><br>
+        <!-- SEX -->
+        <div class="mb-4">
+            <label class="form-label">Sex</label>
+            <div>
+                <input type="radio" id="masculine" name="sex" value="Masculine" required checked>
+                <label for="masculine">Masculine</label>
+                <input type="radio" id="feminine" name="sex" value="Feminine">
+                <label for="feminine">Feminine</label>
+            </div>
+        </div>
 
-        <input type="checkbox" id="bodyweight" name="equipment" value="Bodyweight" checked>
-        <label for="bodyweight">Bodyweight</label><br>
+        <!-- EQUIPMENT AVAILABLE -->
+        <div class="mb-4">
+            <label class="form-label">Equipment Available?</label><br>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="barbell" name="equipment" value="Barbell" checked class="form-check-input">
+                <label for="barbell" class="form-check-label">Barbell</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="dumbbells" name="equipment" value="Dumbbell" checked class="form-check-input">
+                <label for="dumbbells" class="form-check-label">Dumbbells</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="bodyweight" name="equipment" value="Bodyweight" checked class="form-check-input">
+                <label for="bodyweight" class="form-check-label">Bodyweight</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="cable_machines" name="equipment" value="Cable" checked class="form-check-input">
+                <label for="cable_machines" class="form-check-label">Cables</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input type="checkbox" id="gym_machines" name="equipment" value="Machine" checked class="form-check-input">
+                <label for="gym_machines" class="form-check-label">Machines</label>
+            </div>
+        </div>
 
-        <input type="checkbox" id="cable_machines" name="equipment" value="Cable" checked>
-        <label for="cable_machines">Cables</label><br>
-
-        <input type="checkbox" id="gym_machines" name="equipment" value="Machine" checked>
-        <label for="gym_machines">Machines</label>
-    </div>
-
-    <!-- GENERATE PLAN BUTTON -->
-    <div class="text-center">
-        <button type="submit" class="btn btn-primary">Generate Plan</button>
-    </div>
-</form>
+        <!-- GENERATE PLAN BUTTON -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-lg btn-primary">Generate Plan</button>
+        </div>
+    </form>
+</div>
 
 <!-- update slider display -->
 <script>

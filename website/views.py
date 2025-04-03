@@ -57,9 +57,7 @@ def generate_plans(days_available, equipment):
 
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
-    
-    print("\nSUITABLE SPLITS FOR", days_available, "DAYS A WEEK\n", "WITH EQUIPMENT: ", equipment)
-    
+        
     # generate plan for each workout split
     for split in workout_splits:
 
@@ -68,13 +66,9 @@ def generate_plans(days_available, equipment):
             "split_name": split.name,
             "days": []
         }
-
-        print("STRUCTURE OF SPLIT: ", split.name + "\n")
         
         # get workout day from split
         for day in split.workout_days:
-            print(day.name)
-
             # insert day name into dictionary and establish exercises
             day_info = {
                 "name": day.name,
@@ -91,7 +85,6 @@ def generate_plans(days_available, equipment):
 
             # find suitable exercises based on exercise role and equipment available
             for role in ordered_roles:
-                # print("ROLE: ", role.role)
                 exercises = (
                     db.session.query(Exercise)
                     .filter(Exercise.role_id == role.id)
@@ -102,7 +95,6 @@ def generate_plans(days_available, equipment):
                 if exercises:
                     random_index = random.randint(0, len(exercises)-1)
                     random_exercise = exercises[random_index]
-                    print(random_exercise.name)
 
                     # insert exercises into dictionary
                     day_info["exercises"].append({
@@ -112,7 +104,6 @@ def generate_plans(days_available, equipment):
                         "end_reps": 8
                     })
                 else:
-                    print("No suitable exercise for ", role.role, " found")
                     # insert null exercise into dictionary if none found
                     null_exercise_message = "No suitable exercise for " + role.role + " found"
                     day_info["exercises"].append({
@@ -124,8 +115,6 @@ def generate_plans(days_available, equipment):
 
             # add workout days to current workout plan being constructed
             plan["days"].append(day_info)
-
-            print("\n")
 
         # add completed workout plan to list of generated plans
         workout_plans.append(plan)

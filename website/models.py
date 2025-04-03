@@ -105,7 +105,7 @@ class SavedPlan(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, plan_data, user_id):
-        self.plan_data = json.dumps(plan_data)  # Convert dict to JSON string
+        self.plan = json.dumps(plan_data)  # Convert dict to JSON string
         self.user_id = user_id
 
     def get_plan(self):

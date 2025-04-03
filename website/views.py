@@ -126,6 +126,7 @@ def generate_plans(days_available, equipment):
 @login_required
 def save_plan():
     plan_data = request.form.get('plan_data')
+    print("\n\n\n\n\n"f"Received plan data: {plan_data}")  # Debugging line
 
     if not plan_data:
         flash("Missing plan data.", "error")
@@ -136,4 +137,5 @@ def save_plan():
     db.session.commit()
     
     flash("Plan saved successfully!", "success")
+ 
     return redirect(url_for('views.display_plans'))

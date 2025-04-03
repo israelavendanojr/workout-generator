@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
 from flask_login import login_required, current_user
 import json
+from website import db
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan
+
 
 
 views = Blueprint('views', __name__)
@@ -47,8 +50,6 @@ def display_plans():
     return render_template("display_plans.html", plans=workout_plans)
 
 def generate_plans(days_available, equipment):
-    from website import db
-    from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association
     import random
 
     # Dictionary to store plan information
@@ -131,3 +132,19 @@ def generate_plans(days_available, equipment):
 
     # return dictionary of all generated plans
     return workout_plans
+
+@views.route('/save_plan', methods=['POST'])
+@login_required
+def save_plan():
+    plan_data = request.form.get('plan_data')
+
+    if not plan_data:
+        flash("Missing plan data.", "error")
+        return redirect(url_for('views.display_plans'))
+
+    new_plan = SavedPlan(plan_data=plan_data, user_id=current_user.id)
+    db.session.add(new_plan)
+    db.session.commit()
+    
+    flash("Plan saved successfully!", "success")
+    return redirect(url_for('views.display_plans'))

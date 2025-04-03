@@ -29,6 +29,13 @@
                             {% endfor %}
                         </ul>
                     </div>
+                    <div class="card-footer text-center">
+                        <!-- Save Form -->
+                        <form method="POST" action="{{ url_for('views.save_plan') }}">
+                            <input type="hidden" name="plan_data" value="{{ plan | tojson | safe }}">
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </form>
+                    </div>
                 </div>
             </div>
             {% endfor %}

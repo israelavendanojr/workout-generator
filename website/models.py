@@ -101,12 +101,21 @@ class Exercise(db.Model):
 # Saved workout plan attached to user
 class SavedPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    plan = db.Column(db.Text, nullable=False)
+    split_name = db.Column(db.String(100), nullable=False)
+    # stored as json 
+    plan = db.Column(db.Text, nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    def __init__(self, plan_data, user_id):
+    def __init__(self, split_name, plan_data, user_id):
+        self.split_name = split_name
         self.plan = json.dumps(plan_data)  # Convert dict to JSON string
         self.user_id = user_id
 
-    def get_plan(self):
-        return json.loads(self.plan_data)
+    def get_plan_data(self):
+            """Ensure the stored plan is returned as a dictionary"""
+            try:
+                print("Encoded JSON:")
+                return json.loads(self.plan)  # Convert JSON string back to dict
+            except json.JSONDecodeError as e:
+                print("Error decoding JSON:", e)
+                return {} 

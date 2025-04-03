@@ -125,24 +125,50 @@ def generate_plans(days_available, equipment):
 @views.route('/save_plan', methods=['POST'])
 @login_required
 def save_plan():
+    split_name = request.form.get('split_name')
     plan_data = request.form.get('plan_data')
-    print("\n\n\n"f"Received plan data: {plan_data}""\n\n\n")  # Debugging line
+
+    # Print raw received plan data for debugging
+    print(f"Received plan data: {plan_data}")  # Check what's being passed from the frontend
 
     if not plan_data:
         flash("Missing plan data.", "error")
         return redirect(url_for('views.generated_plans'))
 
-    new_plan = SavedPlan(plan_data=plan_data, user_id=current_user.id)
+    # Try to load it as JSON
+    try:
+        plan_data = json.loads(plan_data)
+    except json.JSONDecodeError as e:
+        flash(f"Error decoding plan data: {str(e)}", "error")
+        return redirect(url_for('views.generated_plans'))
+
+    new_plan = SavedPlan(split_name=split_name, plan_data=plan_data, user_id=current_user.id)
     db.session.add(new_plan)
     db.session.commit()
-    
+
     flash("Plan saved successfully!", "success")
- 
-    return redirect(url_for('views.generated_plans'), user=current_user)
+    return redirect(url_for('views.generated_plans'))
 
 @views.route('/saved_plans')
 @login_required
 def saved_plans():
-    return render_template("saved_plans.html", user=current_user)
+    plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
+    for plan in plans:
+        print("\n", plan.split_name)
 
+        plan_data = plan.get_plan_data()
+        print("Type of plan_data:", type(plan_data))
+        # print(plan_data.get)
+    return render_template("saved_plans.html", user=current_user, plans=plans)
+
+@views.route('/debug_saved_plans')
+@login_required
+def debug_saved_plans():
+    plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
+    for plan in plans:
+        print("\n", plan.split_name)
+        print("\nRaw plan field in DB:", plan.plan)  # Check raw stored data
+        print("\nDecoded plan_data:", json.loads(plan.plan))  # Ensure it's valid JSON
+    
+    return "Check console for debug output"
 

@@ -26,13 +26,13 @@ def home():
 
             # session to store across requests, convert to json bc session can only store simple types
             session['workout_plans'] = json.dumps(workout_plans)
-            return redirect(url_for('views.display_plans'))
+            return redirect(url_for('views.generated_plans'))
 
 
-    return render_template("home.html")
+    return render_template("home.html", user=current_user)
 
-@views.route('/display_plans')
-def display_plans():
+@views.route('/generated_plans')
+def generated_plans():
     # Retrieve the workout plan from session
     workout_plans_json = session.get('workout_plans')
 
@@ -47,7 +47,7 @@ def display_plans():
         flash(f"Error decoding workout plans: {str(e)}", category='error')
         return redirect(url_for('views.home'))
     
-    return render_template("display_plans.html", plans=workout_plans)
+    return render_template("generated_plans.html", user=current_user, plans=workout_plans)
 
 def generate_plans(days_available, equipment):
     import random
@@ -126,11 +126,11 @@ def generate_plans(days_available, equipment):
 @login_required
 def save_plan():
     plan_data = request.form.get('plan_data')
-    print("\n\n\n\n\n"f"Received plan data: {plan_data}")  # Debugging line
+    print("\n\n\n"f"Received plan data: {plan_data}""\n\n\n")  # Debugging line
 
     if not plan_data:
         flash("Missing plan data.", "error")
-        return redirect(url_for('views.display_plans'))
+        return redirect(url_for('views.generated_plans'))
 
     new_plan = SavedPlan(plan_data=plan_data, user_id=current_user.id)
     db.session.add(new_plan)
@@ -138,4 +138,4 @@ def save_plan():
     
     flash("Plan saved successfully!", "success")
  
-    return redirect(url_for('views.display_plans'))
+    return redirect(url_for('views.generated_plans'), user=current_user)

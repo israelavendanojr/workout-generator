@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center mb-4">Workout Plan(s)</h1>
+    <h1 class="text-center mb-4">Saved Workout Plans</h1>
 
     {% if plans %}
     <div id="workoutCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -28,6 +28,14 @@
                             </li>
                             {% endfor %}
                         </ul>
+
+                    <div class="card-footer text-center">
+                        <!-- Delete Form -->
+                        <form method="POST" action="{{ url_for('views.delete_plan', plan_id=plan.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this plan?');">Delete</button>
+                        </form>                    
+                    </div>
+    
                     </div>
                 </div>
             </div>

@@ -172,3 +172,19 @@ def debug_saved_plans():
     
     return "Check console for debug output"
 
+@views.route('/delete_plan/<int:plan_id>', methods=['POST'])
+@login_required
+def delete_plan(plan_id):
+    # find saved plan by ID
+    plan = SavedPlan.query.get_or_404(plan_id)
+
+    if plan.user_id != current_user.id:
+        flash("You cannot delete plans you do not own.", "error")
+        return redirect(url_for('views.saved_plans'))
+
+    # delete plan
+    db.session.delete(plan)
+    db.session.commit()
+
+    flash("Plan deleted successfully!", "success")
+    return redirect(url_for('views.saved_plans'))

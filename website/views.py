@@ -139,3 +139,10 @@ def save_plan():
     flash("Plan saved successfully!", "success")
  
     return redirect(url_for('views.generated_plans'), user=current_user)
+
+@views.route('/saved_plans')
+@login_required
+def saved_plans():
+    return render_template("saved_plans.html", user=current_user)
+
+

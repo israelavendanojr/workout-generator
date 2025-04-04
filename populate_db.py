@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
 
 app = create_app()
 
@@ -248,109 +248,109 @@ def populate():
 
     # Add exercises
     exercises = [
-        # Horizontal Incline Push
-        Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment="Barbell"),
-        Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment="Dumbbell"),
-        Exercise(name="Decline Push-Ups", role=horizontal_incline_push, equipment="Bodyweight"),
-        Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment="Machine"),
-        Exercise(name="Smith Incline Bench Press", role=horizontal_incline_push, equipment="Machine"),
+        # Horizontal Incline Push (Compound)
+        Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Decline Push-Ups", role=horizontal_incline_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Smith Incline Bench Press", role=horizontal_incline_push, equipment="Machine", type=ExerciseType.COMPOUND),
 
-        # Horizontal Push
-        Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment="Barbell"),
-        Exercise(name="Flat Dumbbell Press", role=horizontal_push, equipment="Dumbbell"),
-        Exercise(name="Push-Ups", role=horizontal_push, equipment="Bodyweight"),
-        Exercise(name="Machine Chest Press", role=horizontal_push, equipment="Machine"),
-        Exercise(name="Smith Flat Bench Press", role=horizontal_incline_push, equipment="Machine"),
+        # Horizontal Push (Compound)
+        Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Flat Dumbbell Press", role=horizontal_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Push-Ups", role=horizontal_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Machine Chest Press", role=horizontal_push, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Smith Flat Bench Press", role=horizontal_push, equipment="Machine", type=ExerciseType.COMPOUND),
 
-        # Vertical Push
-        Exercise(name="Overhead Barbell Press", role=vertical_push, equipment="Barbell"),
-        Exercise(name="Dumbbell Shoulder Press", role=vertical_push, equipment="Dumbbell"),
-        Exercise(name="Pike Push-Ups", role=vertical_push, equipment="Bodyweight"),
-        Exercise(name="Machine Shoulder Press", role=vertical_push, equipment="Machine"),
+        # Vertical Push (Compound)
+        Exercise(name="Overhead Barbell Press", role=vertical_push, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Dumbbell Shoulder Press", role=vertical_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Pike Push-Ups", role=vertical_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Machine Shoulder Press", role=vertical_push, equipment="Machine", type=ExerciseType.COMPOUND),
 
         # Side Delt Isolation
-        Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation, equipment="Dumbbell"),
-        Exercise(name="Cable Lateral Raise", role=side_delt_isolation, equipment="Cable"),
-        Exercise(name="Machine Lateral Raise", role=side_delt_isolation, equipment="Machine"),
+        Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Cable Lateral Raise", role=side_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Machine Lateral Raise", role=side_delt_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
 
         # Tricep Isolation
-        Exercise(name="Barbell Skull Crushers", role=tricep_isolation, equipment="Barbell"),
-        Exercise(name="Dumbbell Skull Crushers", role=tricep_isolation, equipment="Dumbbell"),
-        Exercise(name="Tricep Dips", role=tricep_isolation, equipment="Bodyweight"),
-        Exercise(name="Tricep Pushdown", role=tricep_isolation, equipment="Cable"),
-        Exercise(name="Cable Tricep Kickbacks", role=tricep_isolation, equipment="Cable"),
+        Exercise(name="Barbell Skull Crushers", role=tricep_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Skull Crushers", role=tricep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Tricep Dips", role=tricep_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Tricep Pushdown", role=tricep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Cable Tricep Kickbacks", role=tricep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
 
+        # Horizontal Pull (Compound)
+        Exercise(name="Barbell Row", role=horizontal_pull, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Single Arm Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Inverted Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Chest-Supported Machine Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Seated Cable Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="T-Bar Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
 
-        # Horizontal Pull
-        Exercise(name="Barbell Row", role=horizontal_pull, equipment="Barbell"),
-        Exercise(name="Dumbbell Row", role=horizontal_pull, equipment="Dumbbell"),
-        Exercise(name="Single Arm Dumbbell Row", role=horizontal_pull, equipment="Dumbbell"),
-        Exercise(name="Inverted Row", role=horizontal_pull, equipment="Dumbbell"),
-        Exercise(name="Chest-Supported Machine Row", role=horizontal_pull, equipment="Machine"),
-        Exercise(name="Seated Cable Row", role=horizontal_pull, equipment="Machine"),
-        Exercise(name="T-Bar Row", role=horizontal_pull, equipment="Machine"),
-
-        # Vertical Pull
-        Exercise(name="Pull-Ups", role=vertical_pull, equipment="Bodyweight"),
-        Exercise(name="Chin-Ups", role=vertical_pull, equipment="Bodyweight"),
-        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Machine"),
-        Exercise(name="Kneeling Lat Pulldown", role=vertical_pull, equipment="Cable"),
+        # Vertical Pull (Compound)
+        Exercise(name="Pull-Ups", role=vertical_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Chin-Ups", role=vertical_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Kneeling Lat Pulldown", role=vertical_pull, equipment="Cable", type=ExerciseType.COMPOUND),
 
         # Rear Delt Isolation
-        Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation, equipment="Dumbbell"),
-        Exercise(name="Reverse Pec Deck", role=rear_delt_isolation, equipment="Machine"),
-        Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment="Cable"),
-        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Cable"),
-        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Bodyweight"),
+        Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Reverse Pec Deck", role=rear_delt_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
 
         # Bicep Isolation
-        Exercise(name="Barbell Curl", role=bicep_isolation, equipment="Barbell"),
-        Exercise(name="Dumbbell Curl", role=bicep_isolation, equipment="Dumbbell"),
-        Exercise(name="Dumbbell Incline Curl", role=bicep_isolation, equipment="Dumbbell"),
-        Exercise(name="Preacher Curl", role=bicep_isolation, equipment="Dumbbell"),
-        Exercise(name="Dumbbell Hammer Curl", role=bicep_isolation, equipment="Dumbbell"),
-        Exercise(name="Machine Preacher Curl", role=bicep_isolation, equipment="Machine"),
-        Exercise(name="Cable Hammer Curl", role=bicep_isolation, equipment="Cable"),
-        Exercise(name="Bayesian Curl", role=bicep_isolation, equipment="Cable"),
+        Exercise(name="Barbell Curl", role=bicep_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Incline Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Preacher Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Hammer Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Machine Preacher Curl", role=bicep_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Cable Hammer Curl", role=bicep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Bayesian Curl", role=bicep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
 
         # Lat Isolation
-        Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation, equipment="Cable"),
-        Exercise(name="Machine Lat Pullover", role=lat_isolation, equipment="Machine"),
-        Exercise(name="Front Lever Raise", role=lat_isolation, equipment="Bodyweight"),
+        Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Machine Lat Pullover", role=lat_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Front Lever Raise", role=lat_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
 
-        # Squat
-        Exercise(name="Barbell Squat", role=squat, equipment="Barbell"),
-        Exercise(name="Front Squat", role=squat, equipment="Barbell"),
-        Exercise(name="Hack Squat", role=squat, equipment="Machine"),
-        Exercise(name="Smith Squat", role=squat, equipment="Machine"),
-        Exercise(name="Leg Press", role=squat, equipment="Machine"),
-        Exercise(name="Bulgarian Split Squat", role=squat, equipment="Dumbbell"),
+        # Squat (Compound)
+        Exercise(name="Barbell Squat", role=squat, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Front Squat", role=squat, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Hack Squat", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Smith Squat", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Leg Press", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Bulgarian Split Squat", role=squat, equipment="Dumbbell", type=ExerciseType.COMPOUND),
 
-        # Hinge
-        Exercise(name="Barbell Deadlift", role=hinge, equipment="Barbell"),
-        Exercise(name="Barbell Romanian Deadlift", role=hinge, equipment="Barbell"),
-        Exercise(name="Good Mornings", role=hinge, equipment="Barbell"),
-        Exercise(name="Dumbbell Romanian Deadlift", role=hinge, equipment="Dumbbell"),
-        Exercise(name="Barbell Hip Thrust", role=hinge, equipment="Barbell"),
-        Exercise(name="Machine Hip Thrust", role=hinge, equipment="Machine"),
-        Exercise(name="Back Extension", role=hinge, equipment="Bodyweight"),
+        # Hinge (Compound)
+        Exercise(name="Barbell Deadlift", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Barbell Romanian Deadlift", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Good Mornings", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Dumbbell Romanian Deadlift", role=hinge, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Barbell Hip Thrust", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Machine Hip Thrust", role=hinge, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Back Extension", role=hinge, equipment="Bodyweight", type=ExerciseType.COMPOUND),
 
         # Quad Isolation
-        Exercise(name="Leg Extensions", role=quad_isolation, equipment="Machine"),
-        Exercise(name="Sissy Squats", role=quad_isolation, equipment="Bodyweight"),
-        Exercise(name="Adduction Machine", role=quad_isolation, equipment="Machine"),
-        Exercise(name="Reverse Nordic Curl", role=quad_isolation, equipment="Bodyweight"),
+        Exercise(name="Leg Extensions", role=quad_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Sissy Squats", role=quad_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Adduction Machine", role=quad_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Reverse Nordic Curl", role=quad_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
 
         # Hamstring Isolation
-        Exercise(name="Lying Hamstring Curl", role=hamstring_isolation, equipment="Machine"),
-        Exercise(name="Seated Hamstring Curl", role=hamstring_isolation, equipment="Machine"),
-        Exercise(name="Nordic Curl", role=hamstring_isolation, equipment="Bodyweight"),
+        Exercise(name="Lying Hamstring Curl", role=hamstring_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Seated Hamstring Curl", role=hamstring_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Nordic Curl", role=hamstring_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+
         # Calf Isolation
-        Exercise(name="Standing Calf Raise", role=calf_isolation, equipment="Machine"),
-        Exercise(name="Seated Calf Raise", role=calf_isolation, equipment="Machine"),
-        Exercise(name="Leg Press Calf Raise", role=calf_isolation, equipment="Machine"),
-        Exercise(name="Barbell Calf Raise", role=calf_isolation, equipment="Barbell"),
-        Exercise(name="Dumbbell Calf Raise", role=calf_isolation, equipment="Dumbbell"),
+        Exercise(name="Standing Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Seated Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Leg Press Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Barbell Calf Raise", role=calf_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Calf Raise", role=calf_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
     ]
 
     # Add all exercises to the database

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
 
 
 
@@ -14,6 +14,7 @@ def home():
         # get preferences from form
         days_available = int(request.form.get("days_available"))
         equipment = request.form.getlist("equipment")
+        approach = request.form.get("approach")
 
         # validate preferences
         if days_available < 1 or 6 < days_available:
@@ -21,7 +22,7 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            workout_plans = generate_plans(days_available, equipment)
+            workout_plans = generate_plans(days_available, equipment, approach)
             flash('Generated workout plan!', category='success')
 
             # session to store across requests, convert to json bc session can only store simple types
@@ -49,7 +50,7 @@ def generated_plans():
     
     return render_template("generated_plans.html", user=current_user, plans=workout_plans)
 
-def generate_plans(days_available, equipment):
+def generate_plans(days_available, equipment, approach):
     import random
 
     # Dictionary to store plan information
@@ -95,13 +96,45 @@ def generate_plans(days_available, equipment):
                 if exercises:
                     random_index = random.randint(0, len(exercises)-1)
                     random_exercise = exercises[random_index]
+                    
+                    sets = 0
+                    start_reps = 0
+                    end_reps = 0
+                    if approach == "low_volume":
+                        if random_exercise.type == "COMPOUND":
+                            sets = 2
+                            start_reps = 4
+                            end_reps = 8
+                        elif random_exercise.type == "ISOLATION":
+                            sets = 1
+                            start_reps = 6
+                            end_reps = 8
+                    elif approach == "moderate_volume":
+                        if random_exercise.type == "COMPOUND":
+                            sets = 3
+                            start_reps = 6
+                            end_reps = 10
+                        elif random_exercise.type == "ISOLATION":
+                            sets = 2
+                            start_reps = 8
+                            end_reps = 12
+                    elif approach == "high_volume":
+                        if random_exercise.type == "COMPOUND":
+                            sets = 4
+                            start_reps = 8
+                            end_reps = 12
+                        elif random_exercise.type == "ISOLATION":
+                            sets = 3
+                            start_reps = 10
+                            end_reps = 15
+
 
                     # insert exercises into dictionary
                     day_info["exercises"].append({
                         "name": random_exercise.name,
-                        "sets": 2,
-                        "start_reps": 6,
-                        "end_reps": 8
+                        "sets": sets,
+                        "start_reps": start_reps,
+                        "end_reps": end_reps
                     })
                 else:
                     # insert null exercise into dictionary if none found
@@ -153,12 +186,6 @@ def save_plan():
 @login_required
 def saved_plans():
     plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
-    for plan in plans:
-        print("\n", plan.split_name)
-
-        plan_data = plan.get_plan_data()
-        print("Type of plan_data:", type(plan_data))
-        # print(plan_data.get)
     return render_template("saved_plans.html", user=current_user, plans=plans)
 
 @views.route('/debug_saved_plans')

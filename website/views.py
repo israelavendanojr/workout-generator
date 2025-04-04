@@ -134,7 +134,7 @@ def generate_plans(days_available, equipment, approach):
                             if roll == 1:
                                 sets = 2
                                 start_reps = 8
-                                end_reps = 12
+                                end_reps = 10
                             else:
                                 sets = 3
                                 start_reps = 8
@@ -147,8 +147,8 @@ def generate_plans(days_available, equipment, approach):
                                 end_reps = 12
                             else:
                                 sets = 3
-                                start_reps = 8
-                                end_reps = 12
+                                start_reps = 10
+                                end_reps = 15
                         elif random_exercise.type == ExerciseType.ISOLATION:
                             if roll == 1:
                                 sets = 3

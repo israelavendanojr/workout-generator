@@ -15,24 +15,20 @@ body {
     font-weight: 400;
 }
 
-/* Headings, labels, buttons */
 h1, h2, h3, h4, h5, h6,
 .form-label,
 .btn {
     font-weight: 600;
 }
 
-/* Navbar */
 .navbar {
     background-color: var(--bs-primary) !important;
 }
-
 .navbar-nav .nav-link.active {
     background-color: var(--bs-secondary) !important;
     border-radius: 5px;
 }
 
-/* Buttons */
 .btn-primary {
     background-color: var(--bs-secondary);
     border-color: var(--bs-secondary);
@@ -42,7 +38,6 @@ h1, h2, h3, h4, h5, h6,
     background-color: #c94f1f;
     border-color: #c94f1f;
 }
-
 .btn-theme {
     background-color: var(--bs-secondary);
     color: white;
@@ -57,7 +52,6 @@ h1, h2, h3, h4, h5, h6,
     background-color: #c94f1f;
 }
 
-/* Text + background helpers override */
 .text-primary { color: var(--bs-primary) !important; }
 .text-secondary { color: var(--bs-secondary) !important; }
 .text-dark { color: var(--bs-dark) !important; }
@@ -68,7 +62,6 @@ h1, h2, h3, h4, h5, h6,
 .bg-primary { background-color: var(--bs-primary) !important; }
 .bg-secondary { background-color: var(--bs-secondary) !important; }
 
-/* Card styling */
 .card {
     background-color: var(--bs-light);
     color: var(--bs-dark);
@@ -82,57 +75,16 @@ h1, h2, h3, h4, h5, h6,
     color: white;
     border: none;
 }
-
-/* List group items (inside cards) */
 .list-group-item {
     background-color: var(--bs-light);
     color: var(--bs-dark);
     border-color: rgba(0,0,0,0.1);
 }
 
-/* Carousel controls */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     background-color: var(--bs-secondary);
     border-radius: 50%;
-}
-
-/* Form inputs – checkboxes, radios, sliders */
-input[type="checkbox"],
-input[type="radio"],
-input[type="range"] {
-    accent-color: var(--bs-secondary);
-}
-
-/* Improve visual look for checkboxes and radios */
-input[type="checkbox"]:checked,
-input[type="radio"]:checked {
-    accent-color: var(--bs-secondary);
-}
-
-/* Range slider specific tweaks */
-input[type="range"] {
-    height: 1.5rem;
-    width: 100%;
-    background: transparent;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    background-color: var(--bs-secondary);
-    border: none;
-}
-
-input[type="range"]::-webkit-slider-runnable-track {
-    background-color: var(--bs-primary);
-}
-
-input[type="range"]::-moz-range-thumb {
-    background-color: var(--bs-secondary);
-    border: none;
-}
-
-input[type="range"]::-moz-range-track {
-    background-color: var(--bs-primary);
 }
 
 .form-check-label {
@@ -140,21 +92,31 @@ input[type="range"]::-moz-range-track {
     font-weight: 500;
 }
 
-/* --- SLIDER OVERRIDES --- */
+/* --- RANGE SLIDER --- */
+input[type="range"] {
+    width: 100%;
+    height: 1.5rem;
+    background: transparent;
+    outline: none;
+    accent-color: var(--bs-secondary);
+}
+input[type="range"]:focus {
+    outline: none;
+    box-shadow: none;
+}
 
-/* Chrome, Safari, Edge (WebKit) */
+/* WebKit (Chrome, Safari, Edge) */
 input[type="range"]::-webkit-slider-thumb {
     background-color: var(--bs-secondary);
     border: none;
-    box-shadow: 0 0 0 3px var(--bs-light); /* optional for better contrast */
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--bs-light);
 }
-input[type="range"]::-webkit-slider-thumb:active {
-    background-color: var(--bs-secondary);
-}
+input[type="range"]::-webkit-slider-thumb:active,
 input[type="range"]::-webkit-slider-thumb:focus {
     background-color: var(--bs-secondary);
+    box-shadow: 0 0 0 3px var(--bs-light);
 }
-
 input[type="range"]::-webkit-slider-runnable-track {
     background-color: var(--bs-primary);
 }
@@ -163,42 +125,131 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-moz-range-thumb {
     background-color: var(--bs-secondary);
     border: none;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px var(--bs-light);
 }
 input[type="range"]::-moz-range-thumb:active,
 input[type="range"]::-moz-range-thumb:focus {
     background-color: var(--bs-secondary);
+    box-shadow: 0 0 0 3px var(--bs-light);
 }
-
 input[type="range"]::-moz-range-track {
     background-color: var(--bs-primary);
 }
 
-
-/* --- CHECKBOX OVERRIDES --- */
-
-/* WebKit/Blink (Chrome, Safari) */
+/* --- CUSTOM CHECKBOXES --- */
 input[type="checkbox"] {
-    accent-color: var(--bs-secondary);
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--bs-light);
+    border: 2px solid var(--bs-secondary);
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 0.2rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 input[type="checkbox"]:checked {
-    accent-color: var(--bs-secondary);
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
 }
-input[type="checkbox"]:checked:focus {
-    accent-color: var(--bs-secondary);
+input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.3rem;
+    top: 0.1rem;
+    width: 0.25rem;
+    height: 0.5rem;
+    border: solid white;
+    border-width: 0 0.15rem 0.15rem 0;
+    transform: rotate(45deg);
 }
-input[type="checkbox"]:checked:hover {
-    accent-color: var(--bs-secondary);
-}
-input[type="checkbox"]:focus {
-    accent-color: var(--bs-secondary);
+input[type="checkbox"]:focus,
+input[type="checkbox"]:active {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(235, 94, 40, 0.3);
 }
 
-/* Same for radio buttons */
+/* --- RADIO BUTTONS --- */
 input[type="radio"] {
-    accent-color: var(--bs-secondary);
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--bs-light);
+    border: 2px solid var(--bs-secondary);
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
-input[type="radio"]:checked:focus,
+input[type="radio"]:checked {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+}
+input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    width: 0.5rem;
+    height: 0.5rem;
+    top: 0.2rem;
+    left: 0.2rem;
+    border-radius: 50%;
+    background-color: white;
+}
 input[type="radio"]:focus,
-input[type="radio"]:checked:hover {
-    accent-color: var(--bs-secondary);
+input[type="radio"]:active {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(235, 94, 40, 0.3);
+}
+
+/* --- SELECT / DROPDOWN --- */
+select {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+    border: 1px solid var(--bs-dark);
+    padding: 0.375rem 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    transition: border-color 0.2s ease;
+}
+select:focus {
+    outline: none;
+    border-color: var(--bs-secondary);
+    box-shadow: 0 0 0 2px rgba(235, 94, 40, 0.3);
+}
+
+/* --- REMOVE BLUE FOCUS RING --- */
+input[type="range"]:focus,
+input[type="checkbox"]:focus,
+input[type="radio"]:focus,
+select:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(235, 94, 40, 0.25); /* Orange-glow focus */
+}
+
+/* --- SELECT DROPDOWN OVERRIDE (WEBKIT + FIREFOX) --- */
+select {
+    background-color: var(--bs-light) !important;
+    color: var(--bs-dark) !important;
+    border: 1px solid var(--bs-dark);
+    padding: 0.375rem 0.75rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    transition: border-color 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Optional: Add a custom arrow using background image */
+select {
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23252422' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2rem;
 }

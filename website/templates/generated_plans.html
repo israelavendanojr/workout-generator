@@ -33,9 +33,8 @@
                         <!-- Save Form -->
                         <form method="POST" action="{{ url_for('views.save_plan') }}">
                             <input type="hidden" name="split_name" value="{{ plan.split_name }}">
-                            <!-- Using JavaScript to set the plan_data input value -->
                             <input type="hidden" name="plan_data" id="plan_data_{{ loop.index }}">
-                            <button type="submit" class="btn btn-success">Save</button>
+                            <button type="submit" class="btn btn-theme">Save</button>
                         </form>
                     </div>
                 </div>

@@ -1,10 +1,9 @@
 {% extends "base.html" %}
-
-{% block title %}Create Your Workout Plan{% endblock %}
+{% block title %}Create Your Workout Routine{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center mb-4 text-primary">Create Your Workout Plan!</h1>
+    <h1 class="text-center mb-4" style="color: var(--bs-primary);">Create Your Workout Routine!</h1>
 
     <form method="POST">
         <!-- DAYS AVAILABLE -->
@@ -13,7 +12,7 @@
             <input type="range" id="days_available" name="days_available" min="2" max="6" step="1" value="4"
                 class="form-range" oninput="updateValue(this.value)">
             <div class="text-center mt-2">
-                <span id="rangeValue" class="h5">4</span>
+                <span id="rangeValue" class="h5" style="color: var(--bs-primary);">4</span>
             </div>
         </div>
 
@@ -27,66 +26,38 @@
             </select>
         </div>
 
-        <!-- SEX -->
-        <!-- <div class="mb-4">
-            <label class="form-label">Sex</label>
-            <div>
-                <input type="radio" id="Man" name="sex" value="Man" required checked>
-                <label for="Man">Man</label>
-                <input type="radio" id="Woman" name="sex" value="Woman">
-                <label for="Woman">Woman</label>
-            </div>
-        </div> -->
-
-        <!-- EQUIPMENT AVAILABLE -->
+        <!-- EQUIPMENT -->
         <div class="mb-4">
             <label class="form-label">Equipment Available?</label><br>
+            {% for label, value in [('Barbell', 'barbell'), ('Dumbbells', 'dumbbells'), ('Bodyweight', 'bodyweight'), ('Cables', 'cable_machines'), ('Machines', 'gym_machines')] %}
             <div class="form-check form-check-inline">
-                <input type="checkbox" id="barbell" name="equipment" value="Barbell" checked class="form-check-input">
-                <label for="barbell" class="form-check-label">Barbell</label>
+                <input type="checkbox" id="{{ value }}" name="equipment" value="{{ label }}" checked class="form-check-input">
+                <label for="{{ value }}" class="form-check-label">{{ label }}</label>
             </div>
-            <div class="form-check form-check-inline">
-                <input type="checkbox" id="dumbbells" name="equipment" value="Dumbbell" checked class="form-check-input">
-                <label for="dumbbells" class="form-check-label">Dumbbells</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input type="checkbox" id="bodyweight" name="equipment" value="Bodyweight" checked class="form-check-input">
-                <label for="bodyweight" class="form-check-label">Bodyweight</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input type="checkbox" id="cable_machines" name="equipment" value="Cable" checked class="form-check-input">
-                <label for="cable_machines" class="form-check-label">Cables</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input type="checkbox" id="gym_machines" name="equipment" value="Machine" checked class="form-check-input">
-                <label for="gym_machines" class="form-check-label">Machines</label>
-            </div>
+            {% endfor %}
         </div>
 
         <!-- OPTIONS -->
         <div class="mb-4">
             <label class="form-label">In the case that more than 1 workout plan is found</label>
             <div>
-                <input type="radio" id="No" name="see_plans" value="No"  required checked>
+                <input type="radio" id="No" name="see_plans" value="No" required checked>
                 <label for="No">Choose the best workout for me</label>
                 <input type="radio" id="Yes" name="see_plans" value="Yes">
                 <label for="Yes">Show all possible options</label>
             </div>
         </div>
-        
 
-        <!-- GENERATE PLAN BUTTON --> 
+        <!-- BUTTON -->
         <div class="text-center">
             <button type="submit" class="btn btn-lg btn-primary">Generate Plan</button>
         </div>
     </form>
 </div>
 
-<!-- update slider display -->
 <script>
     function updateValue(val) {
         document.getElementById("rangeValue").textContent = val;
     }
 </script>
-
 {% endblock %}

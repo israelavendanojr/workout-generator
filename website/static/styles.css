@@ -1,7 +1,204 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+:root {
+    --bs-primary: #403D39;
+    --bs-secondary: #EB5E28;
+    --bs-light: #FFFCF2;
+    --bs-dark: #252422;
+    --bs-body-color: var(--bs-dark);
+}
+
+body {
+    background-color: var(--bs-light);
+    color: var(--bs-body-color);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+}
+
+/* Headings, labels, buttons */
+h1, h2, h3, h4, h5, h6,
+.form-label,
+.btn {
+    font-weight: 600;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--bs-primary) !important;
+}
+
+.navbar-nav .nav-link.active {
+    background-color: var(--bs-secondary) !important;
+    border-radius: 5px;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #c94f1f;
+    border-color: #c94f1f;
+}
+
+.btn-theme {
+    background-color: var(--bs-secondary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s ease;
+}
+.btn-theme:hover {
+    background-color: #c94f1f;
+}
+
+/* Text + background helpers override */
+.text-primary { color: var(--bs-primary) !important; }
+.text-secondary { color: var(--bs-secondary) !important; }
+.text-dark { color: var(--bs-dark) !important; }
+.text-light { color: var(--bs-light) !important; }
+
+.bg-dark { background-color: var(--bs-dark) !important; }
+.bg-light { background-color: var(--bs-light) !important; }
+.bg-primary { background-color: var(--bs-primary) !important; }
+.bg-secondary { background-color: var(--bs-secondary) !important; }
+
+/* Card styling */
+.card {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+    border: 1px solid var(--bs-dark);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+}
+.card .card-header,
+.card .card-footer {
+    background-color: var(--bs-secondary);
+    color: white;
+    border: none;
+}
+
+/* List group items (inside cards) */
+.list-group-item {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
+    border-color: rgba(0,0,0,0.1);
+}
+
+/* Carousel controls */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--bs-secondary);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
+}
+
+/* Form inputs – checkboxes, radios, sliders */
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+    accent-color: var(--bs-secondary);
+}
+
+/* Improve visual look for checkboxes and radios */
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    accent-color: var(--bs-secondary);
+}
+
+/* Range slider specific tweaks */
+input[type="range"] {
+    height: 1.5rem;
+    width: 100%;
+    background: transparent;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background-color: var(--bs-secondary);
+    border: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background-color: var(--bs-primary);
+}
+
+input[type="range"]::-moz-range-thumb {
+    background-color: var(--bs-secondary);
+    border: none;
+}
+
+input[type="range"]::-moz-range-track {
+    background-color: var(--bs-primary);
+}
+
+.form-check-label {
+    color: var(--bs-dark);
+    font-weight: 500;
+}
+
+/* --- SLIDER OVERRIDES --- */
+
+/* Chrome, Safari, Edge (WebKit) */
+input[type="range"]::-webkit-slider-thumb {
+    background-color: var(--bs-secondary);
+    border: none;
+    box-shadow: 0 0 0 3px var(--bs-light); /* optional for better contrast */
+}
+input[type="range"]::-webkit-slider-thumb:active {
+    background-color: var(--bs-secondary);
+}
+input[type="range"]::-webkit-slider-thumb:focus {
+    background-color: var(--bs-secondary);
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    background-color: var(--bs-primary);
+}
+
+/* Firefox */
+input[type="range"]::-moz-range-thumb {
+    background-color: var(--bs-secondary);
+    border: none;
+}
+input[type="range"]::-moz-range-thumb:active,
+input[type="range"]::-moz-range-thumb:focus {
+    background-color: var(--bs-secondary);
+}
+
+input[type="range"]::-moz-range-track {
+    background-color: var(--bs-primary);
+}
+
+
+/* --- CHECKBOX OVERRIDES --- */
+
+/* WebKit/Blink (Chrome, Safari) */
+input[type="checkbox"] {
+    accent-color: var(--bs-secondary);
+}
+input[type="checkbox"]:checked {
+    accent-color: var(--bs-secondary);
+}
+input[type="checkbox"]:checked:focus {
+    accent-color: var(--bs-secondary);
+}
+input[type="checkbox"]:checked:hover {
+    accent-color: var(--bs-secondary);
+}
+input[type="checkbox"]:focus {
+    accent-color: var(--bs-secondary);
+}
+
+/* Same for radio buttons */
+input[type="radio"] {
+    accent-color: var(--bs-secondary);
+}
+input[type="radio"]:checked:focus,
+input[type="radio"]:focus,
+input[type="radio"]:checked:hover {
+    accent-color: var(--bs-secondary);
 }

@@ -236,6 +236,41 @@ def populate():
         tricep_isolation 
     ])
 
+    add_structure_to_day(full_A, [
+        horizontal_push,
+        vertical_push,
+        vertical_pull,
+        bicep_isolation,
+        tricep_isolation,
+        quad_isolation,
+        hamstring_isolation,
+        calf_isolation
+    ])
+
+    add_structure_to_day(full_B, [
+        squat,
+        hinge,
+        horizontal_incline_push,
+        horizontal_pull,
+        rear_delt_isolation,
+        calf_isolation,
+        bicep_isolation,
+        tricep_isolation
+    ])
+
+    add_structure_to_day(full_C, [
+        hinge,
+        horizontal_incline_push,
+        vertical_pull,
+        side_delt_isolation,
+        squat,
+        bicep_isolation,
+        tricep_isolation,
+        calf_isolation,
+])
+
+
+
     # # add equipment
     # barbell = Equipment(name="Barbell")
     # dumbbell = Equipment(name="Dumbbell")
@@ -284,7 +319,7 @@ def populate():
         Exercise(name="Barbell Row", role=horizontal_pull, equipment="Barbell", type=ExerciseType.COMPOUND),
         Exercise(name="Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
         Exercise(name="Single Arm Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Inverted Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Inverted Row", role=horizontal_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
         Exercise(name="Chest-Supported Machine Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
         Exercise(name="Seated Cable Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
         Exercise(name="T-Bar Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),

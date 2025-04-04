@@ -29,7 +29,7 @@
         <!-- EQUIPMENT -->
         <div class="mb-4">
             <label class="form-label">Equipment Available?</label><br>
-            {% for label, value in [('Barbell', 'barbell'), ('Dumbbells', 'dumbbells'), ('Bodyweight', 'bodyweight'), ('Cables', 'cable_machines'), ('Machines', 'gym_machines')] %}
+            {% for label, value in [('Barbell', 'Barbell'), ('Dumbbell', 'Dumbbell'), ('Bodyweight', 'Bodyweight'), ('Cable', 'Cable'), ('Machine', 'Machine')] %}
             <div class="form-check form-check-inline">
                 <input type="checkbox" id="{{ value }}" name="equipment" value="{{ label }}" checked class="form-check-input">
                 <label for="{{ value }}" class="form-check-label">{{ label }}</label>

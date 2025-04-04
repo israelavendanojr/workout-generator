@@ -4,8 +4,6 @@ import json
 from website import db
 from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
 
-
-
 views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
@@ -15,6 +13,7 @@ def home():
         days_available = int(request.form.get("days_available"))
         equipment = request.form.getlist("equipment")
         approach = request.form.get("approach")
+        see_plans = request.form.get("see_plans")
 
         # validate preferences
         if days_available < 1 or 6 < days_available:
@@ -22,7 +21,7 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            workout_plans = generate_plans(days_available, equipment, approach)
+            workout_plans = generate_plans(days_available, equipment, approach, see_plans)
             flash('Generated workout plan!', category='success')
 
             # session to store across requests, convert to json bc session can only store simple types
@@ -50,7 +49,7 @@ def generated_plans():
     
     return render_template("generated_plans.html", user=current_user, plans=workout_plans)
 
-def generate_plans(days_available, equipment, approach):
+def generate_plans(days_available, equipment, approach, see_plans):
     import random
 
     # Dictionary to store plan information
@@ -58,7 +57,7 @@ def generate_plans(days_available, equipment, approach):
 
     # Find workout splits
     workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
-        
+    
     # generate plan for each workout split
     for split in workout_splits:
 
@@ -182,6 +181,9 @@ def generate_plans(days_available, equipment, approach):
 
         # add completed workout plan to list of generated plans
         workout_plans.append(plan)
+        #if user does not want to see all plans, only show first plan 
+        if see_plans == "No":
+            break
 
     # return dictionary of all generated plans
     return workout_plans

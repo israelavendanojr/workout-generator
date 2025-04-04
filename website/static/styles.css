@@ -32,7 +32,7 @@ h1, h2, h3, h4, h5, h6,
 .btn-primary {
     background-color: var(--bs-secondary);
     border-color: var(--bs-secondary);
-    color: white;
+    color: var(--bs-light);
 }
 .btn-primary:hover {
     background-color: #c94f1f;
@@ -40,7 +40,7 @@ h1, h2, h3, h4, h5, h6,
 }
 .btn-theme {
     background-color: var(--bs-secondary);
-    color: white;
+    color: var(--bs-light);
     border: none;
     padding: 0.5rem 1.25rem;
     font-weight: 600;
@@ -65,14 +65,14 @@ h1, h2, h3, h4, h5, h6,
 .card {
     background-color: var(--bs-light);
     color: var(--bs-dark);
-    border: 1px solid var(--bs-dark);
-    border-radius: 0.75rem;
+    /* border: 1px solid var(--bs-dark);
+    border-radius: 0.75rem; */
     box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
 }
 .card .card-header,
 .card .card-footer {
     background-color: var(--bs-secondary);
-    color: white;
+    color: var(--bs-light);
     border: none;
 }
 .list-group-item {
@@ -90,6 +90,9 @@ h1, h2, h3, h4, h5, h6,
 .form-check-label {
     color: var(--bs-dark);
     font-weight: 500;
+}
+.card-title {
+    color: var(--bs-light);
 }
 
 /* --- RANGE SLIDER --- */
@@ -205,8 +208,9 @@ input[type="radio"]:active {
 }
 
 /* --- SELECT / DROPDOWN --- */
+/* --- SELECT / DROPDOWN --- */
 select {
-    background-color: var(--bs-light);
+    background-color: var(--bs-light) !important;
     color: var(--bs-dark);
     border: 1px solid var(--bs-dark);
     padding: 0.375rem 0.75rem;
@@ -215,41 +219,21 @@ select {
     border-radius: 0.375rem;
     transition: border-color 0.2s ease;
 }
+
 select:focus {
     outline: none;
     border-color: var(--bs-secondary);
     box-shadow: 0 0 0 2px rgba(235, 94, 40, 0.3);
 }
 
-/* --- REMOVE BLUE FOCUS RING --- */
-input[type="range"]:focus,
-input[type="checkbox"]:focus,
-input[type="radio"]:focus,
-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(235, 94, 40, 0.25); /* Orange-glow focus */
+select option {
+    background-color: var(--bs-light);
+    color: var(--bs-dark);
 }
 
-/* --- SELECT DROPDOWN OVERRIDE (WEBKIT + FIREFOX) --- */
-select {
-    background-color: var(--bs-light) !important;
-    color: var(--bs-dark) !important;
-    border: 1px solid var(--bs-dark);
-    padding: 0.375rem 0.75rem;
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    border-radius: 0.375rem;
-    transition: border-color 0.2s ease;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
+/* Optional: style for the hover effect on option items */
+select option:hover {
+    background-color: var(--bs-secondary);
+    color: var(--bs-light);
 }
 
-/* Optional: Add a custom arrow using background image */
-select {
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%23252422' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 1rem;
-    padding-right: 2rem;
-}

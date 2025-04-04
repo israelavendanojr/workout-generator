@@ -100,33 +100,64 @@ def generate_plans(days_available, equipment, approach):
                     sets = 0
                     start_reps = 0
                     end_reps = 0
+                    roll = random.randint(1,2)
                     if approach == "low_volume":
-                        if random_exercise.type == "COMPOUND":
-                            sets = 2
-                            start_reps = 4
-                            end_reps = 8
-                        elif random_exercise.type == "ISOLATION":
-                            sets = 1
-                            start_reps = 6
-                            end_reps = 8
+                        if random_exercise.type == ExerciseType.COMPOUND:
+                            if roll == 1:
+                                sets = 2
+                                start_reps = 4
+                                end_reps = 6
+                            else:
+                                sets = 2
+                                start_reps = 6
+                                end_reps = 8
+                        elif random_exercise.type == ExerciseType.ISOLATION:
+                            if roll == 1:
+                                sets = 2
+                                start_reps = 6
+                                end_reps = 8
+                            else:
+                                sets = 1
+                                start_reps = 8
+                                end_reps = 10
                     elif approach == "moderate_volume":
-                        if random_exercise.type == "COMPOUND":
-                            sets = 3
-                            start_reps = 6
-                            end_reps = 10
-                        elif random_exercise.type == "ISOLATION":
-                            sets = 2
-                            start_reps = 8
-                            end_reps = 12
+                        if random_exercise.type == ExerciseType.COMPOUND:
+                            if roll == 1:
+                                sets = 3
+                                start_reps = 6
+                                end_reps = 10
+                            else:
+                                sets = 3
+                                start_reps = 8
+                                end_reps = 12
+                        elif random_exercise.type == ExerciseType.ISOLATION:
+                            if roll == 1:
+                                sets = 2
+                                start_reps = 8
+                                end_reps = 12
+                            else:
+                                sets = 3
+                                start_reps = 8
+                                end_reps = 12
                     elif approach == "high_volume":
-                        if random_exercise.type == "COMPOUND":
-                            sets = 4
-                            start_reps = 8
-                            end_reps = 12
-                        elif random_exercise.type == "ISOLATION":
-                            sets = 3
-                            start_reps = 10
-                            end_reps = 15
+                        if random_exercise.type == ExerciseType.COMPOUND:
+                            if roll == 1:
+                                sets = 4
+                                start_reps = 8
+                                end_reps = 12
+                            else:
+                                sets = 3
+                                start_reps = 8
+                                end_reps = 12
+                        elif random_exercise.type == ExerciseType.ISOLATION:
+                            if roll == 1:
+                                sets = 3
+                                start_reps = 8
+                                end_reps = 12
+                            else:
+                                sets = 3
+                                start_reps = 10
+                                end_reps = 15
 
 
                     # insert exercises into dictionary

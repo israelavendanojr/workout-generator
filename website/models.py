@@ -110,7 +110,7 @@ class SavedPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     split_name = db.Column(db.String(100), nullable=False)
     # stored as json 
-    plan = db.Column(db.Text, nullable=False) 
+    plan = db.Column(db.Text, unique=True, nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __init__(self, split_name, plan_data, user_id):

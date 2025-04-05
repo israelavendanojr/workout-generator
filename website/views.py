@@ -17,12 +17,12 @@ def home():
 
         # validate preferences
         if days_available < 1 or 6 < days_available:
-            flash('Days per week must be within 1-6', category='error')
+            flash('Days per week must be within 2-6', category='error')
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
             workout_plans = generate_plans(days_available, equipment, approach, see_plans)
-            flash('Generated workout plan!', category='success')
+            # flash('Generated workout plan!', category='success')
 
             # session to store across requests, convert to json bc session can only store simple types
             session['workout_plans'] = json.dumps(workout_plans)
@@ -212,7 +212,7 @@ def save_plan():
     db.session.add(new_plan)
     db.session.commit()
 
-    flash("Plan saved successfully!", "success")
+    # flash("Plan saved successfully!", "success")
     return redirect(url_for('views.generated_plans'))
 
 @views.route('/saved_plans')
@@ -246,5 +246,5 @@ def delete_plan(plan_id):
     db.session.delete(plan)
     db.session.commit()
 
-    flash("Plan deleted successfully!", "success")
+    # flash("Plan deleted successfully!", "success")
     return redirect(url_for('views.saved_plans'))

@@ -1,10 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap');
 
 :root {
-    --bs-primary: #252422;
-    --bs-secondary: #EB5E28;
-    --bs-light: #FFFCF2;
-    --bs-dark: #252422;
+    --bs-primary: #1e1e24;
+    --bs-secondary: #92140c;
+    --bs-light: #fff8f0;
+    --bs-dark: #1e1e24;
     --bs-body-color: var(--bs-dark);
 }
 
@@ -35,8 +35,8 @@ h1, h2, h3, h4, h5, h6,
     color: var(--bs-light);
 }
 .btn-primary:hover {
-    background-color: #c94f1f;
-    border-color: #c94f1f;
+    background-color: #004643;
+    border-color: #004643;
 }
 .btn-theme {
     background-color: var(--bs-secondary);
@@ -48,7 +48,7 @@ h1, h2, h3, h4, h5, h6,
     transition: background-color 0.2s ease;
 }
 .btn-theme:hover {
-    background-color: #c94f1f;
+    background-color: #004643;
 }
 
 .text-primary { color: var(--bs-primary) !important; }

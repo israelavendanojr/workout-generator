@@ -72,7 +72,7 @@ h1, h2, h3, h4, h5, h6,
 }
 
 .btn-primary:hover,.btn-theme:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
     color: var(--bs-light);
 }
 

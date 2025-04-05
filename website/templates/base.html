@@ -7,6 +7,31 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <title>{% block title %} Base {% endblock %}</title>
+
+  <style>
+    /* Ensure the body takes full height and flexbox is applied */
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Content should grow to take available space */
+    .content {
+      flex-grow: 1;
+    }
+
+    /* Footer styling */
+    footer {
+      background-color: #343a40;
+      color: #fff;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: auto; /* Push the footer to the bottom */
+    }
+  </style>
+  
 </head>
 
 <body class="text-dark">
@@ -69,14 +94,23 @@
 
 <footer class="bg-dark text-light text-center py-4 mt-5">
   <div class="container">
-    <p>Created by <a href="https://www.israelavendanojr.com/" target="_blank" class="text-light">israelavendanojr</a></p>
-    <p>&copy; 2025 MyLiftPlan. All Rights Reserved.</p>
-    <p>
-      <a href="https://linkedin.com/in/israelavendanojr" target="_blank" class="text-light">LinkedIn</a> |
-      <a href="https://github.com/israelavendanojr" target="_blank" class="text-light">GitHub</a> |
-      <a href="mailto:israelavendanojr@gmail.com" class="text-light">Email</a>
-    </p>
+    <div class="d-flex justify-content-center align-items-center">
+      <p class="mb-0 me-3">&copy; 2025 MyLiftPlan. All Rights Reserved.</p>
+      <a href="https://www.israelavendanojr.com/" target="_blank" class="text-light me-3">@israelavendanojr</a>
+    </div>
   </div>
 </footer>
+
+<style>
+  footer {
+    font-size: 0.9rem; /* Slightly smaller text for a more compact look */
+  }
+  footer a {
+    text-decoration: none;
+  }
+  footer a:hover {
+    text-decoration: underline;
+  }
+</style>
 
 </html>

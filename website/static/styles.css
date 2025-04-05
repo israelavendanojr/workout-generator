@@ -21,22 +21,45 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 600;
 }
 
-.navbar {
-    background-color: var(--bs-primary) !important;
+/* Apply Rubik font to the navbar */
+.navbar, .navbar-brand, .navbar-nav .nav-link {
+    font-family: 'Rubik', sans-serif !important;
 }
-.navbar-nav .nav-link.active {
-    background-color: var(--bs-secondary) !important;
-    border-radius: 5px;
+
+/* Customize the navbar */
+.navbar {
+    background-color: var(--bs-primary) !important; /* Using your primary color */
+}
+
+.navbar-brand {
+    color: var(--bs-light) !important; /* Brand text color */
+}
+
+.navbar-nav .nav-link {
+    color: var(--bs-light) !important; /* Links color */
+}
+
+/* Active link color */
+/* Hover effect for navbar links */
+.navbar-nav .nav-link:hover {
+    /* color: var(--bs-secondary) !important; Red color on hover */
+    background-color: var(--bs-secondary); /* Optional: adding a subtle background change on hover */
+}
+
+/* Navbar toggler icon color */
+.navbar-toggler-icon {
+    background-color: var(--bs-light) !important;
 }
 
 .btn-primary {
     background-color: var(--bs-secondary);
     border-color: var(--bs-secondary);
     color: var(--bs-light);
+    transition: background-color 0.2s ease, transform 0.3s ease; 
 }
 .btn-primary:hover {
-    background-color: #004643;
-    border-color: #004643;
+    background-color: #92140c;
+    border-color: #92140c;
 }
 .btn-theme {
     background-color: var(--bs-secondary);
@@ -45,10 +68,12 @@ h1, h2, h3, h4, h5, h6,
     padding: 0.5rem 1.25rem;
     font-weight: 600;
     border-radius: 0.375rem;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.3s ease; 
 }
-.btn-theme:hover {
-    background-color: #004643;
+
+.btn-primary:hover,.btn-theme:hover {
+    transform: scale(1.1);
+    color: var(--bs-light);
 }
 
 .text-primary { color: var(--bs-primary) !important; }
@@ -206,7 +231,6 @@ input[type="radio"]:active {
     box-shadow: 0 0 0 2px rgba(235, 94, 40, 0.3);
 }
 
-/* --- SELECT / DROPDOWN --- */
 /* --- SELECT / DROPDOWN --- */
 select {
     background-color: var(--bs-light) !important;

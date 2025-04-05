@@ -270,5 +270,15 @@ body input[type="radio"] + label {
     color: var(--bs-dark);
 }
 
-
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+main {
+    flex: 1; /* pushes the footer to the bottom */
+}
+  
 

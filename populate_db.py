@@ -385,7 +385,7 @@ def populate():
         Exercise(name="Seated Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
         Exercise(name="Leg Press Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
         Exercise(name="Barbell Calf Raise", role=calf_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Dumbbell Calf Raise", role=calf_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Calf Raise", role=calf_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
     ]
 
     # Add all exercises to the database

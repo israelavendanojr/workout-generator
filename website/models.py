@@ -93,7 +93,7 @@ class Exercise(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False) 
     role = db.relationship('ExerciseRole', backref='exercises')
     equipment = db.Column(db.String(100), nullable=False)
-    type = db.Column(Enum(ExerciseType), nullable=False)
+    type = db.Column(Enum(ExerciseType, name="exercise_type_enum"), nullable=False)
 
     # Many-to-Many relationship with Equipment
     # equipment = db.relationship('Equipment', secondary='exercise_equipment_association', back_populates='exercises')

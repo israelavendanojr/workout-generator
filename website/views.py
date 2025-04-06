@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 import json
 from website import db
 from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
+from collections import defaultdict
 
 views = Blueprint('views', __name__)
 
@@ -219,7 +220,21 @@ def save_plan():
 @login_required
 def saved_plans():
     plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
-    return render_template("saved_plans.html", user=current_user, plans=plans)
+
+    # Group exercises by role for dropdown options
+    exercises = Exercise.query.all()
+    exercises_by_role = defaultdict(list)
+    exercises_by_role_serializable = defaultdict(list)
+
+    for exercise in exercises:
+        role_name = exercise.role.role  # turn ExerciseRole into plain string
+        exercises_by_role_serializable[role_name].append({
+            'id': exercise.id,
+            'name': exercise.name
+        })
+
+
+    return render_template("saved_plans.html", user=current_user, plans=plans, exercises_by_role=exercises_by_role_serializable)
 
 @views.route('/debug_saved_plans')
 @login_required
@@ -248,3 +263,34 @@ def delete_plan(plan_id):
 
     # flash("Plan deleted successfully!", "success")
     return redirect(url_for('views.saved_plans'))
+
+@views.route('/swap-exercise', methods=['POST'])
+@login_required
+def swap_exercise():
+    # Get data from the form
+    exercise_id = request.form['exercise_id']
+    new_exercise_name = request.form['new_exercise_name']
+    sets = request.form['sets']
+    start_reps = request.form['start_reps']
+    end_reps = request.form['end_reps']
+
+    # Fetch the exercise to be swapped
+    exercise = Exercise.query.get(exercise_id)
+
+    # Find the new exercise by name (or handle by ID if needed)
+    new_exercise = Exercise.query.filter_by(name=new_exercise_name).first()
+
+    if new_exercise:
+        # Update the exercise with new values
+        exercise.name = new_exercise.name
+        exercise.sets = sets
+        exercise.start_reps = start_reps
+        exercise.end_reps = end_reps
+        db.session.commit()
+
+        # Redirect back to the saved plans view
+        return redirect(url_for('view_saved_plan', plan_id=exercise.plan_id))
+
+    # If the new exercise is not found, show an error
+    flash('Exercise not found!', 'danger')
+    return redirect(url_for('view_saved_plan', plan_id=exercise.plan_id))

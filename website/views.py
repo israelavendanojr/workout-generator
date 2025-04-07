@@ -24,7 +24,7 @@ def home():
         else:
             workout_plans = generate_plans(days_available, equipment, approach, see_plans)
             # flash('Generated workout plan!', category='success')
-
+            
             # session to store across requests, convert to json bc session can only store simple types
             session['workout_plans'] = json.dumps(workout_plans)
             return redirect(url_for('views.generated_plans'))

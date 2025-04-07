@@ -18,8 +18,8 @@
                     <div class="card-body">
                         <ul class="list-group">
                             {% for day in plan.days %}
-                            <li class="list-group-item">
-                                <strong>{{ day.name }}</strong>
+                            <li class="list-group-item border-top mb-4"> <!-- Added margin bottom for space between days -->
+                                <strong class="mb-2 d-block">{{ day.name }}</strong> <!-- Added margin bottom for spacing between title and exercises -->
                                 <ul>
                                     {% for exercise in day.exercises %}
                                     <li class="list-group-item">

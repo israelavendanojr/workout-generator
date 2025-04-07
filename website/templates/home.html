@@ -3,8 +3,9 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1 class="text-center mb-4" style="color: var(--bs-primary);">Create Your Workout Routine</h1>
+    <h1 class="text-center mb-4" style="color: var(--bs-primary);">Workout Parameters</h1>
 
+    <form method="POST">
     <!-- DAYS AVAILABLE CARD -->
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
@@ -15,10 +16,12 @@
             <p class="card-text">Select the number of days you can commit to working out each week.</p>
 
             <div class="btn-group" role="group" aria-label="Days per Week">
+                <input type="hidden" name="days_available" id="days_available" value="4"> <!-- Default value -->
                 <button type="button" class="btn btn-outline-primary" data-value="1">1</button>
                 <button type="button" class="btn btn-outline-primary" data-value="2">2</button>
                 <button type="button" class="btn btn-outline-primary" data-value="3">3</button>
-                <button type="button" class="btn btn-outline-primary active btn-primary" data-value="4">4</button> <!-- Default selected -->                <button type="button" class="btn btn-outline-primary" data-value="5">5</button>
+                <button type="button" class="btn btn-outline-primary active btn-primary" data-value="4">4</button> <!-- Default selected -->
+                <button type="button" class="btn btn-outline-primary" data-value="5">5</button>
                 <button type="button" class="btn btn-outline-primary" data-value="6">6</button>
             </div>
         </div>
@@ -110,19 +113,18 @@
 {% block scripts %}
 
 <script>
-    // Get all buttons in the group
     const buttons = document.querySelectorAll('.btn-group .btn');
-
-    // Add event listeners to all buttons
-    buttons.forEach(button => {
-        button.addEventListener('click', function () {
-            // Remove active class from all buttons
-            buttons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
-
-            // Add active class to clicked button
-            this.classList.add('active', 'btn-primary');
+        const daysInput = document.getElementById('days_available');
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons
+                buttons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
+                // Add active class to clicked button
+                this.classList.add('active', 'btn-primary');
+                // Update the hidden input value
+                daysInput.value = this.getAttribute('data-value');
+            });
         });
-    });
 </script>
 {% endblock %}
 

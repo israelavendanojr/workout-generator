@@ -27,7 +27,7 @@
                                         data-bs-target="#exerciseModal" 
                                         data-exercise-id="{{ exercise.id }}" 
                                         data-exercise-name="{{ exercise.name }}"
-                                        data-exercise-role="{{ exercise.role }}">
+                                        data-exercise-role="{{ exercise.role.name }}">
                                         {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}-{{ exercise.end_reps }}
                                     </li>
                                     {% endfor %}
@@ -121,8 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Log values for debugging
         console.log('allExercises:', allExercises);
-        console.log('exerciseRole:', exerciseRole);
-
+        console.log('exerciseRole:', exerciseRole);  // This should be a string like 'Horizontal Push'
+        
         // Dynamically set the exercise name in the modal
         document.getElementById('exerciseId').value = exerciseId;
         document.getElementById('exerciseName').innerText = "Editing: " + exerciseName + " ROLE: " + exerciseRole;
@@ -131,8 +131,8 @@ document.addEventListener('DOMContentLoaded', function () {
         dropdown.innerHTML = '';
 
         // Check if the role exists in allExercises and populate the dropdown
-        if (allExercises['Bicep Isolation']) {  // Just check directly for the key in allExercises
-            allExercises['Bicep Isolation'].forEach(ex => {
+        if (allExercises[exerciseRole]) {  // Use exerciseRole directly
+            allExercises[exerciseRole].forEach(ex => {
                 const option = document.createElement('option');
                 option.value = ex.name;
                 option.text = ex.name;

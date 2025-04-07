@@ -165,7 +165,11 @@ def generate_plans(days_available, equipment, approach, see_plans):
                         "name": random_exercise.name,
                         "sets": sets,
                         "start_reps": start_reps,
-                        "end_reps": end_reps
+                        "end_reps": end_reps,
+                        "role": {
+                            "id": role.id,
+                            "role": role.role
+                        }
                     })
                 else:
                     # insert null exercise into dictionary if none found
@@ -174,7 +178,8 @@ def generate_plans(days_available, equipment, approach, see_plans):
                         "name": null_exercise_message,
                         "sets": 0,
                         "start_reps": 0,
-                        "end_reps": 0
+                        "end_reps": 0,
+                        "role": None
                     })
 
             # add workout days to current workout plan being constructed

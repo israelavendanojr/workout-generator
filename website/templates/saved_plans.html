@@ -22,12 +22,13 @@
                                 <strong>{{ day.name }}</strong>
                                 <ul>
                                     {% for exercise in day.exercises %}
+                                    <pre>{{ exercise | tojson }}</pre>
                                     <li class="list-group-item" data-bs-toggle="modal" 
                                         data-bs-target="#exerciseModal" 
                                         data-exercise-id="{{ exercise.id }}" 
                                         data-exercise-name="{{ exercise.name }}"
                                         data-exercise-role="{{ exercise.role }}">
-                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }} - {{ exercise.end_reps }}
+                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}-{{ exercise.end_reps }}
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -119,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const exerciseRole = button.getAttribute('data-exercise-role');
 
         document.getElementById('exerciseId').value = exerciseId;
-        document.getElementById('exerciseName').innerText = "Editing: " + exerciseName;
+        document.getElementById('exerciseName').innerText = "Editing: " + exerciseName + " ROLE: " + exerciseRole;
 
         const dropdown = document.getElementById('new_exercise');
         dropdown.innerHTML = '';

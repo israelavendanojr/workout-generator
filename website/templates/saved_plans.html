@@ -52,7 +52,7 @@
                                         <div class="mb-3">
                                             <label for="new_exercise" class="form-label">New Exercise Name</label>
                                             <select type="text" class="form-control" id="new_exercise" name="new_exercise_name" >
-                                            
+                                                
                                             </select>
                                         </div>
                                         <div class="mb-3">
@@ -117,16 +117,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const exerciseId = button.getAttribute('data-exercise-id');
         const exerciseName = button.getAttribute('data-exercise-name');
-        const exerciseRole = button.getAttribute('data-exercise-role');
+        const exerciseRole = button.getAttribute('data-exercise-role');  // exerciseRole is a string representing role name
 
+        // Log values for debugging
+        console.log('allExercises:', allExercises);
+        console.log('exerciseRole:', exerciseRole);
+
+        // Dynamically set the exercise name in the modal
         document.getElementById('exerciseId').value = exerciseId;
         document.getElementById('exerciseName').innerText = "Editing: " + exerciseName + " ROLE: " + exerciseRole;
 
         const dropdown = document.getElementById('new_exercise');
         dropdown.innerHTML = '';
 
-        if (exerciseRole in allExercises) {
-            allExercises[exerciseRole].forEach(ex => {
+        // Check if the role exists in allExercises and populate the dropdown
+        if (allExercises['Bicep Isolation']) {  // Just check directly for the key in allExercises
+            allExercises['Bicep Isolation'].forEach(ex => {
                 const option = document.createElement('option');
                 option.value = ex.name;
                 option.text = ex.name;
@@ -140,4 +146,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 {% endblock %}

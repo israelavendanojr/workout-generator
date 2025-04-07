@@ -168,12 +168,12 @@ def generate_plans(days_available, equipment, approach, see_plans):
                         "end_reps": end_reps,
                         "role": {
                             "id": role.id,
-                            "role": role.role
+                            "name": role.name
                         }
                     })
                 else:
                     # insert null exercise into dictionary if none found
-                    null_exercise_message = "No suitable exercise for " + role.role + " found"
+                    null_exercise_message = "No suitable exercise for " + role.name + " found"
                     day_info["exercises"].append({
                         "name": null_exercise_message,
                         "sets": 0,
@@ -201,7 +201,7 @@ def save_plan():
     plan_data = request.form.get('plan_data')
 
     # Print raw received plan data for debugging
-    print(f"Received plan data: {plan_data}")  # Check what's being passed from the frontend
+    # print(f"Received plan data: {plan_data}")  # Check what's being passed from the frontend
 
     if not plan_data:
         flash("Missing plan data.", "error")
@@ -232,12 +232,11 @@ def saved_plans():
     exercises_by_role_serializable = defaultdict(list)
 
     for exercise in exercises:
-        role_name = exercise.role.role  # turn ExerciseRole into plain string
+        role_name = exercise.role.name  # turn ExerciseRole into plain string
         exercises_by_role_serializable[role_name].append({
             'id': exercise.id,
-            'name': exercise.name
+            'name': exercise.name,
         })
-
 
     return render_template("saved_plans.html", user=current_user, plans=plans, exercises_by_role=exercises_by_role_serializable)
 

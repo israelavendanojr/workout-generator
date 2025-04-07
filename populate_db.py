@@ -96,23 +96,23 @@ def populate():
     add_split("Push Pull Legs + Arnold", 6, [push_A, pull_A, legs_A, chestback_A, arms_A, legs_B])
 
     # Add exercise roles
-    horizontal_incline_push = ExerciseRole(role="Horizontal Incline Push")
-    horizontal_push = ExerciseRole(role="Horizontal Push")
-    vertical_push = ExerciseRole(role="Vertical Push")
-    side_delt_isolation = ExerciseRole(role="Side Delt Isolation")
-    tricep_isolation = ExerciseRole(role="Tricep Isolation")
+    horizontal_incline_push = ExerciseRole(name="Horizontal Incline Push")
+    horizontal_push = ExerciseRole(name="Horizontal Push")
+    vertical_push = ExerciseRole(name="Vertical Push")
+    side_delt_isolation = ExerciseRole(name="Side Delt Isolation")
+    tricep_isolation = ExerciseRole(name="Tricep Isolation")
 
-    horizontal_pull = ExerciseRole(role="Horizontal Pull")
-    vertical_pull = ExerciseRole(role="Vertical Pull")
-    rear_delt_isolation = ExerciseRole(role="Rear Delt Isolation")
-    bicep_isolation = ExerciseRole(role="Bicep Isolation")
-    lat_isolation = ExerciseRole(role="Lat Isolation")
+    horizontal_pull = ExerciseRole(name="Horizontal Pull")
+    vertical_pull = ExerciseRole(name="Vertical Pull")
+    rear_delt_isolation = ExerciseRole(name="Rear Delt Isolation")
+    bicep_isolation = ExerciseRole(name="Bicep Isolation")
+    lat_isolation = ExerciseRole(name="Lat Isolation")
 
-    squat = ExerciseRole(role="Squat")
-    hinge = ExerciseRole(role="Hinge")
-    quad_isolation = ExerciseRole(role="Quad Isolation")
-    hamstring_isolation = ExerciseRole(role="Hamstring Isolation")
-    calf_isolation = ExerciseRole(role="Calf Isolation")
+    squat = ExerciseRole(name="Squat")
+    hinge = ExerciseRole(name="Hinge")
+    quad_isolation = ExerciseRole(name="Quad Isolation")
+    hamstring_isolation = ExerciseRole(name="Hamstring Isolation")
+    calf_isolation = ExerciseRole(name="Calf Isolation")
 
     db.session.add_all([
         horizontal_incline_push, horizontal_push, vertical_push, side_delt_isolation, tricep_isolation, 
@@ -268,8 +268,6 @@ def populate():
         tricep_isolation,
         calf_isolation,
 ])
-
-
 
     # # add equipment
     # barbell = Equipment(name="Barbell")

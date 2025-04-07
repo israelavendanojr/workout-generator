@@ -67,7 +67,7 @@ class WorkoutDay(db.Model):
 # Defines function of an exercise, e.g. horizontal push, vertical pull, curl, eyc
 class ExerciseRole(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(100), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
 
 # Association table for many-to-many relationship, can associate same ExerciseRole to multiple WorkoutDays
 day_role_association = db.Table('day_role_association',
@@ -121,8 +121,8 @@ class SavedPlan(db.Model):
     def get_plan_data(self):
             """Ensure the stored plan is returned as a dictionary"""
             try:
-                print("Encoded JSON:")
+                # print("Encoded JSON:")
                 return json.loads(self.plan)  # Convert JSON string back to dict
             except json.JSONDecodeError as e:
-                print("Error decoding JSON:", e)
+                # print("Error decoding JSON:", e)
                 return {} 

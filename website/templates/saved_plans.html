@@ -26,8 +26,7 @@
                                         data-exercise-id="{{ exercise.id }}" data-exercise-name="{{ exercise.name }}"
                                         data-exercise-role="{{ exercise.role.name }}" data-sets="{{ exercise.sets }}"
                                         data-start-reps="{{ exercise.start_reps }}"
-                                        data-end-reps="{{ exercise.end_reps }}"
-                                        data-plan-id="{{ plan.id }}">
+                                        data-end-reps="{{ exercise.end_reps }}" data-plan-id="{{ plan.id }}">
                                         {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}-{{
                                         exercise.end_reps }}
                                     </li>
@@ -36,59 +35,6 @@
                             </li>
                             {% endfor %}
                         </ul>
-                    </div>
-
-                    <!-- Modal for Editing Exercise -->
-                    <div class="modal fade" id="exerciseModal" tabindex="-1" aria-labelledby="exerciseModalLabel"
-                        aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <form method="POST" action="{{ url_for('views.swap_exercise') }}">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="exerciseModalLabel">Edit Exercise</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <input type="hidden" name="exercise_id" id="exerciseId">
-                                        <input type="hidden" name="plan_id" id="planId">
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Current Exercise</label>
-                                            <input type="text" id="exerciseName" class="form-control" disabled>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label for="new_exercise" class="form-label">Swap to</label>
-                                            <select class="form-control" id="new_exercise" name="new_exercise_id">
-                                                <!-- Populated by JS -->
-                                            </select>
-                                        </div>
-
-                                        <div class="row mb-3">
-                                            <div class="col-4">
-                                                <label for="sets" class="form-label">Sets</label>
-                                                <input type="number" class="form-control" id="sets" name="sets"
-                                                    required>
-                                            </div>
-                                            <div class="col-4">
-                                                <label for="start_reps" class="form-label">Start Reps</label>
-                                                <input type="number" class="form-control" id="start_reps"
-                                                    name="start_reps" required>
-                                            </div>
-                                            <div class="col-4">
-                                                <label for="end_reps" class="form-label">End Reps</label>
-                                                <input type="number" class="form-control" id="end_reps" name="end_reps"
-                                                    required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="submit" class="btn btn-primary w-100">Apply Changes</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
                     </div>
 
                     <div class="card-footer text-center">
@@ -115,6 +61,55 @@
             </button>
             {% endif %}
     </div>
+
+    <!-- Modal for Editing Exercise -->
+    <div class="modal fade" id="exerciseModal" tabindex="-1" aria-labelledby="exerciseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('views.swap_exercise') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exerciseModalLabel">Edit Exercise</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="exercise_id" id="exerciseId">
+                        <input type="hidden" name="plan_id" id="planId">
+
+                        <div class="mb-3">
+                            <label class="form-label">Current Exercise</label>
+                            <input type="text" id="exerciseName" class="form-control" disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_exercise" class="form-label">Swap to</label>
+                            <select class="form-control" id="new_exercise" name="new_exercise_id">
+                                <!-- Populated by JS -->
+                            </select>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <label for="sets" class="form-label">Sets</label>
+                                <input type="number" class="form-control" id="sets" name="sets" required>
+                            </div>
+                            <div class="col-4">
+                                <label for="start_reps" class="form-label">Start Reps</label>
+                                <input type="number" class="form-control" id="start_reps" name="start_reps" required>
+                            </div>
+                            <div class="col-4">
+                                <label for="end_reps" class="form-label">End Reps</label>
+                                <input type="number" class="form-control" id="end_reps" name="end_reps" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Apply Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
@@ -142,8 +137,8 @@
             const startReps = button.getAttribute('data-start-reps');
             const endReps = button.getAttribute('data-end-reps');
             const planId = button.getAttribute('data-plan-id');
-            
-            
+
+
             // Set the values into the modal form fields
             document.getElementById('exerciseId').value = exerciseId;  // Hidden input for exercise_id
             document.getElementById('exerciseName').value = `${exerciseName} (${exerciseRole})`;

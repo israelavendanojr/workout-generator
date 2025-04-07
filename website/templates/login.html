@@ -2,24 +2,26 @@
 
 {% block title %}Login{% endblock %}
 {% block content %}
-
-<form method="POST" class="container mt-4" style="max-width: 500px;">
-    <h1 class="mb-4 text-center">Login</h1>
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input class="form-control" type="text" id="username" name="username" placeholder="Enter username">
+<div class="container mt-5">
+    <div class="card mx-auto" style="max-width: 500px; border-radius: 10px;">
+        <div class="card-body">
+            <h1 class="mb-4 text-center" style="color: var(--bs-primary); font-size: 2.5rem; font-weight: bold;">Login</h1>
+            <form method="POST">
+                <div class="form-group mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input class="form-control" type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input class="form-control" type="password" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 w-100" style="border-radius: 5px;">Login</button>
+            </form>
+            <p class="mt-3 text-center">
+                Don’t have an account? 
+                <a href="{{ url_for('auth.sign_up') }}" class="text-primary">Sign up here!</a>
+            </p>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="password">Password</label>
-        <input class="form-control" type="password" id="password" name="password" placeholder="Enter password">
-    </div>
-    <button type="submit" class="btn btn-primary mt-3 w-100">Login</button>
-</form>
-
-<p class="mt-3 text-center">
-    Don’t have an account?
-    <a href="{{ url_for('auth.sign_up') }}" class="text-primary">Sign up here!</a>
-</p>
-  
-
+</div>
 {% endblock %}

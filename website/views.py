@@ -272,61 +272,55 @@ def delete_plan(plan_id):
 @views.route('/swap-exercise', methods=['POST'])
 @login_required
 def swap_exercise():
-    # Get data from the form
-    print("\n\nForm data received:", request.form, "\n\n")
+    plan_id = int(request.form['plan_id'])
+    old_exercise_id = int(request.form['exercise_id'])
+    new_exercise_id = int(request.form['new_exercise_id'])
 
-    exercise_id = request.form['exercise_id']
-    new_exercise_name = request.form['new_exercise_name']
-    sets = request.form['sets']
-    start_reps = request.form['start_reps']
-    end_reps = request.form['end_reps']
+    # Optional: custom reps/sets input
+    new_sets = int(request.form.get('sets', 3))
+    new_start_reps = int(request.form.get('start_reps', 8))
+    new_end_reps = int(request.form.get('end_reps', 12))
 
-    # Fetch the exercise to be swapped
-    exercise = Exercise.query.get(exercise_id)
-
-    # Check if the exercise exists
-    if exercise is None:
-        flash('Exercise not found!', 'danger')
+    # Get the plan
+    saved_plan = SavedPlan.query.get_or_404(plan_id)
+    if saved_plan.user_id != current_user.id:
+        flash("Unauthorized plan access", "danger")
         return redirect(url_for('views.saved_plans'))
 
-    # Find the new exercise by name (or handle by ID if needed)
-    new_exercise = Exercise.query.filter_by(name=new_exercise_name).first()
+    # Load JSON and find the old exercise
+    plan_data = saved_plan.get_plan_data()
+    found = False
 
-    if new_exercise:
-        # Update the exercise with new values (note this is just for the swap)
-        exercise.name = new_exercise.name
-        exercise.sets = sets
-        exercise.start_reps = start_reps
-        exercise.end_reps = end_reps
-        db.session.commit()  # Commit the exercise update to the database
+    for day in plan_data['days']:
+        for i, exercise in enumerate(day['exercises']):
+            if exercise['id'] == old_exercise_id:
+                new_exercise = Exercise.query.get(new_exercise_id)
+                if not new_exercise:
+                    flash("New exercise not found", "danger")
+                    return redirect(url_for('views.saved_plans'))
 
-        # Fetch the saved plan containing this exercise from the database
-        saved_plan = SavedPlan.query.filter(SavedPlan.plan.contains(str(exercise_id))).first()
+                # Update exercise info in JSON
+                day['exercises'][i] = {
+                    "name": new_exercise.name,
+                    "sets": new_sets,
+                    "start_reps": new_start_reps,
+                    "end_reps": new_end_reps,
+                    "role": {
+                        "id": new_exercise.role.id,
+                        "name": new_exercise.role.name
+                    },
+                    "id": new_exercise.id
+                }
+                found = True
+                break
 
-        if saved_plan:
-            # Load the plan data from the JSON stored in the database
-            plan_data = json.loads(saved_plan.plan)
+    if not found:
+        flash("Exercise not found in plan", "danger")
+        return redirect(url_for('views.saved_plans'))
 
-            # Find and update the exercise in the plan data
-            for day in plan_data["days"]:
-                for exercise_entry in day['exercises']:
-                    if exercise_entry['id'] == int(exercise_id):
-                        # Replace the old exercise with the new one
-                        exercise_entry['name'] = new_exercise.name
-                        exercise_entry['sets'] = sets
-                        exercise_entry['start_reps'] = start_reps
-                        exercise_entry['end_reps'] = end_reps
+    # Save updated JSON back to the plan
+    saved_plan.plan = json.dumps(plan_data)
+    db.session.commit()
 
-            # Convert the updated plan back to JSON
-            saved_plan.plan = json.dumps(plan_data)
-
-            # Commit the updated plan to the database
-            db.session.commit()
-
-            # Flash success message
-            flash('Exercise swapped successfully!', 'success')
-            return redirect(url_for('views.saved_plans'))
-
-    # If the new exercise is not found, show an error
-    flash('New exercise not found!', 'danger')
-    return redirect(url_for('views.saved_plan'))
+    flash("Exercise swapped successfully!", "success")
+    return redirect(url_for('views.saved_plans'))

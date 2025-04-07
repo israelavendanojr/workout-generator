@@ -169,7 +169,8 @@ def generate_plans(days_available, equipment, approach, see_plans):
                         "role": {
                             "id": role.id,
                             "name": role.name
-                        }
+                        },
+                        "id": random_exercise.id
                     })
                 else:
                     # insert null exercise into dictionary if none found
@@ -272,6 +273,8 @@ def delete_plan(plan_id):
 @login_required
 def swap_exercise():
     # Get data from the form
+    print("\n\nForm data received:", request.form, "\n\n")
+
     exercise_id = request.form['exercise_id']
     new_exercise_name = request.form['new_exercise_name']
     sets = request.form['sets']
@@ -281,20 +284,49 @@ def swap_exercise():
     # Fetch the exercise to be swapped
     exercise = Exercise.query.get(exercise_id)
 
+    # Check if the exercise exists
+    if exercise is None:
+        flash('Exercise not found!', 'danger')
+        return redirect(url_for('views.saved_plans'))
+
     # Find the new exercise by name (or handle by ID if needed)
     new_exercise = Exercise.query.filter_by(name=new_exercise_name).first()
 
     if new_exercise:
-        # Update the exercise with new values
+        # Update the exercise with new values (note this is just for the swap)
         exercise.name = new_exercise.name
         exercise.sets = sets
         exercise.start_reps = start_reps
         exercise.end_reps = end_reps
-        db.session.commit()
+        db.session.commit()  # Commit the exercise update to the database
 
-        # Redirect back to the saved plans view
-        return redirect(url_for('view_saved_plan', plan_id=exercise.plan_id))
+        # Fetch the saved plan containing this exercise from the database
+        saved_plan = SavedPlan.query.filter(SavedPlan.plan.contains(str(exercise_id))).first()
+
+        if saved_plan:
+            # Load the plan data from the JSON stored in the database
+            plan_data = json.loads(saved_plan.plan)
+
+            # Find and update the exercise in the plan data
+            for day in plan_data["days"]:
+                for exercise_entry in day['exercises']:
+                    if exercise_entry['id'] == int(exercise_id):
+                        # Replace the old exercise with the new one
+                        exercise_entry['name'] = new_exercise.name
+                        exercise_entry['sets'] = sets
+                        exercise_entry['start_reps'] = start_reps
+                        exercise_entry['end_reps'] = end_reps
+
+            # Convert the updated plan back to JSON
+            saved_plan.plan = json.dumps(plan_data)
+
+            # Commit the updated plan to the database
+            db.session.commit()
+
+            # Flash success message
+            flash('Exercise swapped successfully!', 'success')
+            return redirect(url_for('views.saved_plans'))
 
     # If the new exercise is not found, show an error
-    flash('Exercise not found!', 'danger')
-    return redirect(url_for('view_saved_plan', plan_id=exercise.plan_id))
+    flash('New exercise not found!', 'danger')
+    return redirect(url_for('views.saved_plan'))

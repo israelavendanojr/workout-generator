@@ -7,7 +7,7 @@
     <h1 class="text-center mb-4" style="color: var(--bs-primary);">Saved Workout Routines</h1>
 
     {% if plans %}
-    <div id="workoutCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div id="workoutCarousel" class="carousel slide" data-bs-ride="false">
         <div class="carousel-inner">
             {% for plan in plans %}
             <div class="carousel-item {% if loop.first %}active{% endif %}">

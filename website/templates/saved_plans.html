@@ -13,9 +13,15 @@
             <div class="carousel-item {% if loop.first %}active{% endif %}">
                 <div class="card mx-auto" style="max-width: 500px;">
                     <div class="card-header text-center">
-                        <h5 class="card-title">{{ plan.split_name }}</h5>
+                        <h5 class="card-title"
+                            data-bs-toggle="modal"
+                            data-bs-target="#renamePlanModal"
+                            data-plan-id="{{ plan.id }}"
+                            data-current-name="{{ plan.split_name }}">
+                            {{ plan.split_name }}
+                        </h5>
                     </div>
-                    <div class="card-body">
+                                        <div class="card-body">
                         <ul class="list-group">
                             {% for day in plan.get_plan_data().days %}
                             <li class="list-group-item">
@@ -110,6 +116,30 @@
         </div>
     </div>
 
+    <!-- Modal for Editing Plan Name -->
+    <div class="modal fade" id="renamePlanModal" tabindex="-1" aria-labelledby="renamePlanModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('views.rename_plan') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="renamePlanModalLabel">Rename Workout Plan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="plan_id" id="renamePlanId">
+                        <div class="mb-3">
+                            <label for="newPlanName" class="form-label">New Name</label>
+                            <input type="text" class="form-control" id="newPlanName" name="new_name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Rename</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
@@ -123,6 +153,7 @@
 </script>
 
 <script>
+    // for exercise swapping modal
     document.addEventListener('DOMContentLoaded', function () {
         const exerciseModal = document.getElementById('exerciseModal');
 
@@ -171,6 +202,23 @@
             }
         });
     });
+
 </script>
+
+<script>
+    // for rename modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const renameModal = document.getElementById('renamePlanModal');
+        renameModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const planId = button.getAttribute('data-plan-id');
+            const currentName = button.getAttribute('data-current-name');
+
+            document.getElementById('renamePlanId').value = planId;
+            document.getElementById('newPlanName').value = currentName;
+        });
+    });
+</script>
+
 
 {% endblock %}

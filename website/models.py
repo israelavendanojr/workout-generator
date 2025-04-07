@@ -12,7 +12,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
 
-    plans = db.relationship('SavedPlan', backref='owner', lazy=True)
+    saved_plans = db.relationship('SavedPlan', backref='owner', lazy=True)
 
 # User selected workout preferences to generate plan from
 class WorkoutPreferences(db.Model):

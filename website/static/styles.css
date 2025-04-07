@@ -3,7 +3,7 @@
 :root {
     --bs-primary: #1e1e24;
     --bs-secondary: #92140c;
-    --bs-light: #fff8f0;
+    --bs-light: #ffffff;
     --bs-dark: #1e1e24;
     --bs-body-color: var(--bs-dark);
 }
@@ -282,3 +282,7 @@ main {
 }
   
 
+
+.form-label {
+    margin-bottom: 8px;
+}

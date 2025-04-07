@@ -198,29 +198,40 @@ def generate_plans(days_available, equipment, approach, see_plans):
 @views.route('/save_plan', methods=['POST'])
 @login_required
 def save_plan():
+    user = current_user  # however you're handling users
     split_name = request.form.get('split_name')
-    plan_data = request.form.get('plan_data')
+    plan_data_raw = request.form.get('plan_data')
 
-    # Print raw received plan data for debugging
-    # print(f"Received plan data: {plan_data}")  # Check what's being passed from the frontend
-
-    if not plan_data:
-        flash("Missing plan data.", "error")
-        return redirect(url_for('views.generated_plans'))
-
-    # Try to load it as JSON
     try:
-        plan_data = json.loads(plan_data)
-    except json.JSONDecodeError as e:
-        flash(f"Error decoding plan data: {str(e)}", "error")
+        new_plan_data = json.loads(plan_data_raw)
+    except json.JSONDecodeError:
+        flash("Invalid plan data.", "danger")
         return redirect(url_for('views.generated_plans'))
 
-    new_plan = SavedPlan(split_name=split_name, plan_data=plan_data, user_id=current_user.id)
+    # Serialize in a normalized way to compare plans
+    def normalize(plan):
+        return json.dumps(plan, sort_keys=True)
+
+    normalized_new = normalize(new_plan_data)
+
+    # Check if this normalized plan already exists
+    for existing_plan in user.saved_plans:  # adjust depending on your ORM structure
+        existing_data = existing_plan.get_plan_data()  # or existing_plan.plan_data
+        if normalize(existing_data) == normalized_new:
+            flash("This plan is already saved.", "info")
+            return redirect(url_for('views.saved_plans'))
+
+    # If it's unique, save it
+    new_plan = SavedPlan(
+        user_id=user.id,
+        split_name=split_name,
+        plan_data=new_plan_data
+    )
     db.session.add(new_plan)
     db.session.commit()
 
-    # flash("Plan saved successfully!", "success")
-    return redirect(url_for('views.generated_plans'))
+    flash("Plan saved successfully!", "success")
+    return redirect(url_for('views.saved_plans'))
 
 @views.route('/saved_plans')
 @login_required
@@ -323,4 +334,20 @@ def swap_exercise():
     db.session.commit()
 
     flash("Exercise swapped successfully!", "success")
+    return redirect(url_for('views.saved_plans'))
+
+@views.route('/rename-plan', methods=['POST'])
+@login_required
+def rename_plan():
+    plan_id = request.form.get('plan_id')
+    new_name = request.form.get('new_name')
+
+    plan = SavedPlan.query.filter_by(id=plan_id, user_id=current_user.id).first()
+    if plan:
+        plan.split_name = new_name
+        db.session.commit()
+        flash('Plan renamed successfully!', category='success')
+    else:
+        flash('Plan not found or access denied.', category='error')
+
     return redirect(url_for('views.saved_plans'))

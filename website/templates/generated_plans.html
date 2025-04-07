@@ -22,8 +22,9 @@
                                 <strong>{{ day.name }}</strong>
                                 <ul>
                                     {% for exercise in day.exercises %}
-                                    <li>{{ exercise.name }} : {{exercise.sets}} x
-                                        {{exercise.start_reps}}-{{exercise.end_reps}}</li>
+                                    <li class="list-group-item">
+                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                    </li>
                                     {% endfor %}
                                 </ul>
                             </li>
@@ -31,7 +32,6 @@
                         </ul>
                     </div>
                     <div class="card-footer text-center d-flex justify-content-center align-items-center">
-                        <!-- Save Form -->
                         <form method="POST" action="{{ url_for('views.save_plan') }}">
                             <input type="hidden" name="split_name" value="{{ plan.split_name }}">
                             <input type="hidden" name="plan_data" id="plan_data_{{ loop.index }}">
@@ -43,28 +43,25 @@
             {% endfor %}
         </div>
 
-        <!-- Controls -->
-        {% if 1 < plans|length %} <button class="carousel-control-prev" type="button" data-bs-target="#workoutCarousel"
-            data-bs-slide="prev">
+        {% if plans|length > 1 %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#workoutCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#workoutCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-            {% endif %}
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#workoutCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        {% endif %}
     </div>
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
 </div>
 
-<!-- Adding a script to fill the hidden input with valid JSON data -->
 <script>
     {% for plan in plans %}
     document.getElementById('plan_data_{{ loop.index }}').value = JSON.stringify({{ plan | tojson }});
     {% endfor %}
 </script>
-
 {% endblock %}

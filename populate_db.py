@@ -76,10 +76,16 @@ def populate():
     chestback_B = WorkoutDay(name="Chest + Back")
     arms_B = WorkoutDay(name="Arms")
 
+    torso_A = WorkoutDay(name="Torso")
+    limb_A = WorkoutDay(name="Limb")
+    torso_B = WorkoutDay(name="Torso")
+    limb_B = WorkoutDay(name="Limb")
+
     db.session.add_all([full_A, full_B, full_C, 
                         upper_A, lower_A, upper_B, lower_B,
                         push_A, pull_A, legs_A, push_B, pull_B, legs_B,
-                        chestback_A, chestback_B, arms_A, arms_B])
+                        chestback_A, chestback_B, arms_A, arms_B,
+                        torso_A, limb_A, torso_B, limb_B])
     db.session.commit()
 
     # Add workout splits with correct order
@@ -88,6 +94,7 @@ def populate():
     add_split("Full Body", 3, [full_A, full_B, full_C])
     add_split("Upper Lower + Full Body", 3, [upper_A, lower_A, full_A])
     add_split("Upper Lower", 4, [upper_A, lower_A, upper_B, lower_B])
+    add_split("Torso Limb", 4, [torso_A, limb_A, torso_B, limb_B])
     add_split("Push Pull Legs + Upper Lower", 5, [push_A, pull_A, legs_A, upper_A, lower_A])
     add_split("Arnold + Upper Lower", 5, [chestback_A, arms_A, legs_A, upper_A, lower_A])
     add_split("Upper Lower + Arms", 5, [upper_A, lower_A, upper_B, lower_B, arms_A])
@@ -119,7 +126,7 @@ def populate():
         horizontal_pull, vertical_pull, rear_delt_isolation, bicep_isolation, lat_isolation, 
         squat, hinge, quad_isolation, hamstring_isolation, calf_isolation
     ])
-    db.session.commit()  # Ensure IDs are assigned
+    db.session.commit()
 
     # Add structure to each workout with correct order
     add_structure_to_day(push_A, [
@@ -267,17 +274,45 @@ def populate():
         bicep_isolation,
         tricep_isolation,
         calf_isolation,
-])
+    ])
 
-    # # add equipment
-    # barbell = Equipment(name="Barbell")
-    # dumbbell = Equipment(name="Dumbbell")
-    # machine = Equipment(name="Machine")
-    # cable = Equipment(name="Cable")
-    # bodyweight = Equipment(name="Bodyweight")
+    add_structure_to_day(torso_A, [
+        horizontal_incline_push, 
+        vertical_pull, 
+        horizontal_push, 
+        horizontal_pull, 
+        side_delt_isolation, 
+        rear_delt_isolation
+    ])
+    
+    add_structure_to_day(limb_A, [
+        bicep_isolation, 
+        tricep_isolation,
+        squat, 
+        hinge, 
+        quad_isolation, 
+        hamstring_isolation, 
+        calf_isolation
+    ])
 
-    # db.session.add_all([barbell, dumbbell, machine, cable, bodyweight])
-    # db.session.commit()
+    add_structure_to_day(torso_B, [
+        horizontal_pull, 
+        horizontal_incline_push, 
+        vertical_pull, 
+        horizontal_push, 
+        rear_delt_isolation,
+        side_delt_isolation 
+    ])
+    
+    add_structure_to_day(limb_B, [
+        tricep_isolation,
+        bicep_isolation, 
+        hinge, 
+        squat, 
+        hamstring_isolation, 
+        quad_isolation, 
+        calf_isolation
+    ])
 
     # Add exercises
     exercises = [

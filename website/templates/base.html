@@ -5,6 +5,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
   <title>{% block title %} Base {% endblock %}</title>
 </head>
 
@@ -13,7 +16,7 @@
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg navbar-light bg-primary">
     <div class="container-fluid">
-      <a class="navbar-brand text-light" href="/">myLiftPlan</a>
+      <a class="navbar-brand text-light" href="/">myliftplan</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -72,14 +75,31 @@
 
   <!-- FOOTER -->
   <footer class="bg-dark text-light text-center py-4 mt-5">
-    <div class="container">
-      <div class="d-flex justify-content-center align-items-center">
-        <p class="mb-0 me-3">&copy; 2025 MyLiftPlan. All Rights Reserved.</p>
-        <a href="https://www.israelavendanojr.com/" target="_blank" class="text-light me-3">@israelavendanojr</a>
+    <div class="container px-1">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <!-- Left side content -->
+        <p class="mb-3 mb-md-0 me-md-3">&copy; 2025 MyLiftPlan. All Rights Reserved.</p>
+  
+        
+        <!-- Right side links -->
+        <div class="d-flex flex-column flex-md-row">
+          <a href="https://www.israelavendanojr.com/" target="_blank" class="text-light mb-2 mb-md-0 text-decoration-none ms-0 ms-md-3" aria-label="Personal Website">
+            @israelavendanojr
+          </a>
+
+          <a href="https://www.linkedin.com/in/israelavendanojr/" target="_blank" class="text-light mb-2 mb-md-0 text-decoration-none ms-0 ms-md-3" aria-label="LinkedIn Profile">
+            <i class="bi bi-linkedin"></i> LinkedIn
+          </a>
+  
+          <a href="mailto:israel@example.com" class="text-light mb-2 mb-md-0 text-decoration-none ms-0 ms-md-3" aria-label="Email">
+            <i class="bi bi-envelope"></i> Email
+          </a>
+  
+        </div>
       </div>
     </div>
   </footer>
-
+          
 </body>
 
 </html>

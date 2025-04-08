@@ -51,6 +51,8 @@ def sign_up():
             flash('Username must be 3 or more characters', category='error')
         elif len(password1) < 5:
             flash('Password must be greater than 5 or more characters', category='error')
+        elif not password1:
+            flash('Password cannot be NONE', category='error')
         elif password1 != password2:
             flash('Passwords do not match', category='error')
         else:

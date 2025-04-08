@@ -23,7 +23,11 @@
                                 <ul>
                                     {% for exercise in day.exercises %}
                                     <li class="list-group-item">
-                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                        {% if exercise.toFailure %}
+                                            {{ exercise.name }} : {{ exercise.sets }} x AMRAP
+                                        {% else %}
+                                            {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                        {% endif %}
                                     </li>
                                     {% endfor %}
                                 </ul>

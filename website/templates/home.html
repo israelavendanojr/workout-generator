@@ -6,105 +6,124 @@
     <h1 class="text-center mb-4" style="color: var(--bs-primary);">Workout Parameters</h1>
 
     <form method="POST">
-    <!-- DAYS AVAILABLE CARD -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <!-- Header of the Card -->
-            <h5 class="card-title">How many days per week?</h5>
+        <!-- DAYS AVAILABLE CARD -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">How many days per week?</h5>
+                <p class="card-text">Select the number of days you can commit to working out each week.</p>
 
-            <!-- Subtitle with more information -->
-            <p class="card-text">Select the number of days you can commit to working out each week.</p>
-
-            <div class="btn-group" role="group" aria-label="Days per Week">
-                <input type="hidden" name="days_available" id="days_available" value="4"> <!-- Default value -->
-                <button type="button" class="btn btn-outline-primary" data-value="1">1</button>
-                <button type="button" class="btn btn-outline-primary" data-value="2">2</button>
-                <button type="button" class="btn btn-outline-primary" data-value="3">3</button>
-                <button type="button" class="btn btn-outline-primary active btn-primary" data-value="4">4</button> <!-- Default selected -->
-                <button type="button" class="btn btn-outline-primary" data-value="5">5</button>
-                <button type="button" class="btn btn-outline-primary" data-value="6">6</button>
+                <div class="btn-group" role="group" aria-label="Days per Week">
+                    <input type="hidden" name="days_available" id="days_available" value="4"> <!-- Default value -->
+                    <button type="button" class="btn btn-outline-primary" data-value="1">1</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="2">2</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="3">3</button>
+                    <button type="button" class="btn btn-outline-primary active btn-primary" data-value="4">4</button>
+                    <!-- Default selected -->
+                    <button type="button" class="btn btn-outline-primary" data-value="5">5</button>
+                    <button type="button" class="btn btn-outline-primary" data-value="6">6</button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- APPROACH CARD -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <!-- Header of the Card -->
-            <h5 class="card-title">What best describes your desired approach?</h5>
+        <!-- APPROACH CARD -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Preferred Training Approach</h5>
+                <p class="card-text">Choose the volume and instensity that best works for you.</p>
 
-            <!-- Subtitle with more information -->
-            <p class="card-text">Choose how you prefer to train: heavy, moderate, or lighter weights with different
-                volumes.</p>
-
-            <label for="approach" class="form-label">Approach</label>
-            <select name="approach" id="approach" class="form-select form-select-lg">
-                <option value="low_volume">Heavy weight, low volume, training very close to or past failure</option>
-                <option value="moderate_volume" selected>Moderate weight, moderate volume, training close to failure
-                </option>
-                <option value="high_volume">Lighter weight, higher volume, training somewhat close to failure</option>
-            </select>
+                <label for="approach" class="form-label">Approach</label>
+                <select name="approach" id="approach" class="form-select form-select-lg">
+                    <option value="low_volume">Heavy weight, low volume, training very close to or past failure</option>
+                    <option value="moderate_volume" selected>Moderate weight, moderate volume, training close to failure
+                    </option>
+                    <option value="high_volume">Lighter weight, higher volume, training somewhat close to failure
+                    </option>
+                </select>
+            </div>
         </div>
-    </div>
 
-    <!-- EQUIPMENT AVAILABLE -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <!-- Header of the Card -->
-            <h5 class="card-title">Equipment Available?</h5>
+        <!-- EQUIPMENT AVAILABLE -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Available Equipment</h5>
+                <p class="card-text">Select the equipment you have access to, so we can tailor your workout plan.</p>
 
-            <!-- Subtitle with more information -->
-            <p class="card-text">Select the equipment you have access to. This helps us create a more tailored workout
-                plan.</p>
-
-            <div class="accordion" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Equipment
-                        </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
-                        data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            {% for label, value in [('Barbell', 'Barbell'), ('Dumbbell', 'Dumbbell'), ('Cable',
-                            'Cable'), ('Machine', 'Machine'), ('Bodyweight', 'Bodyweight')] %}
-                            <div class="form-check">
-                                <input type="checkbox" id="{{ value }}" name="equipment" value="{{ label }}" checked
-                                    class="form-check-input">
-                                <label for="{{ value }}" class="form-check-label">{{ label }}</label>
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Equipment
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                            data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                {% for label, value in [('Barbell', 'Barbell'), ('Dumbbell', 'Dumbbell'), ('Cable',
+                                'Cable'), ('Machine', 'Machine')]%}
+                                <div class="form-check">
+                                    <input type="checkbox" id="{{ value }}" name="equipment" value="{{ label }}"
+                                        class="form-check-input" checked>
+                                    <label for="{{ value }}" class="form-check-label">{{ label }}</label>
+                                </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- SEE PLANS CARD -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <!-- Header of the Card -->
-            <h5 class="card-title">Display Plans</h5>
+        <!-- BODYWEIGHT -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Bodyweight Exercises</h5>
+                <p class="card-text">For bodyweight movements, how would you like to progress?</p>
 
-            <!-- Subtitle with more information -->
-            <p class="card-text">If multiple workout plans are generated, would you like to see all of them?</p>
-
-            <div>
-                <input type="radio" id="No" name="see_plans" value="No" required checked>
-                <label for="No">Choose the best workout for me</label>
-                <input type="radio" id="Yes" name="see_plans" value="Yes">
-                <label for="Yes">Show all possible options</label>
+                <div class="d-flex flex-wrap">
+                    <div class="form-check me-3">
+                        <input type="radio" id="No" name="bodyweight_exercises" value="Weighted"
+                            class="form-check-input">
+                        <label for="No" class="form-check-label">I would like to add weight</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input type="radio" id="Yes" name="bodyweight_exercises" value="Bodyweight"
+                            class="form-check-input">
+                        <label for="Yes" class="form-check-label">I would like to stick to my bodyweight</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input type="radio" id="Absent" name="bodyweight_exercises" value="Absent" required checked
+                            class="form-check-input">
+                        <label for="Absent" class="form-check-label">I would not like to include bodyweight exercises in
+                            my routine</label>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- BUTTON -->
-    <div class="text-center">
-        <button type="submit" class="btn btn-lg btn-primary">Generate Plan</button>
-    </div>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">View Multiple Plans</h5>
+                <p class="card-text">Would you like to see all generated workout plans, or just the best fit?</p>
+
+                <div class="d-flex flex-wrap">
+                    <div class="form-check me-3">
+                        <input type="radio" id="No" name="see_plans" value="No" required checked
+                            class="form-check-input">
+                        <label for="No" class="form-check-label">Choose the best workout for me</label>
+                    </div>
+                    <div class="form-check me-3">
+                        <input type="radio" id="Yes" name="see_plans" value="Yes" class="form-check-input">
+                        <label for="Yes" class="form-check-label">Show all possible options</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BUTTON -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-lg btn-primary">Generate Plan</button>
+        </div>
     </form>
 </div>
 
@@ -114,17 +133,17 @@
 
 <script>
     const buttons = document.querySelectorAll('.btn-group .btn');
-        const daysInput = document.getElementById('days_available');
-        buttons.forEach(button => {
-            button.addEventListener('click', function () {
-                // Remove active class from all buttons
-                buttons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
-                // Add active class to clicked button
-                this.classList.add('active', 'btn-primary');
-                // Update the hidden input value
-                daysInput.value = this.getAttribute('data-value');
-            });
+    const daysInput = document.getElementById('days_available');
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove active class from all buttons
+            buttons.forEach(btn => btn.classList.remove('active', 'btn-primary'));
+            // Add active class to clicked button
+            this.classList.add('active', 'btn-primary');
+            // Update the hidden input value
+            daysInput.value = this.getAttribute('data-value');
         });
+    });
 </script>
-{% endblock %}
 
+{% endblock %}

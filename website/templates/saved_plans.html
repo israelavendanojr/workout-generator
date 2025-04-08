@@ -28,7 +28,12 @@
                                         data-exercise-id="{{ exercise.id }}" data-exercise-name="{{ exercise.name }}"
                                         data-exercise-role="{{ exercise.role.name }}" data-sets="{{ exercise.sets }}"
                                         data-start-reps="{{ exercise.start_reps }}" data-end-reps="{{ exercise.end_reps }}" data-plan-id="{{ plan.id }}">
-                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                        
+                                        {% if exercise.toFailure %}
+                                            {{ exercise.name }} : {{ exercise.sets }} x AMRAP
+                                        {% else %}
+                                            {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                        {% endif %}
                                     </li>
                                     {% endfor %}
                                 </ul>

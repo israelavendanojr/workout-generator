@@ -333,7 +333,7 @@ def populate():
         Exercise(name="Reverse Pec Deck", role=rear_delt_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
         Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
         Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Ring Face Pulls", role=rear_delt_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
 
         # Bicep Isolation
         Exercise(name="Barbell Curl", role=bicep_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),

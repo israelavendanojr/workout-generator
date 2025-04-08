@@ -15,6 +15,7 @@ def home():
         equipment = request.form.getlist("equipment")
         approach = request.form.get("approach")
         see_plans = request.form.get("see_plans")
+        bodyweight_exercises = request.form.get("bodyweight_exercises")
 
         # validate preferences
         if days_available < 1 or 6 < days_available:
@@ -22,7 +23,7 @@ def home():
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            workout_plans = generate_plans(days_available, equipment, approach, see_plans)
+            workout_plans = generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises)
             # flash('Generated workout plan!', category='success')
             
             # session to store across requests, convert to json bc session can only store simple types
@@ -50,7 +51,7 @@ def generated_plans():
     
     return render_template("generated_plans.html", user=current_user, plans=workout_plans)
 
-def generate_plans(days_available, equipment, approach, see_plans):
+def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises):
     import random
 
     # Dictionary to store plan information
@@ -84,6 +85,9 @@ def generate_plans(days_available, equipment, approach, see_plans):
                 .all()
             )
 
+            # if user included bodyweight exercises, add them to equipment list
+            if bodyweight_exercises != "Absent":
+                equipment.append("Bodyweight")
             # find suitable exercises based on exercise role and equipment available
             for role in ordered_roles:
                 exercises = (
@@ -100,6 +104,7 @@ def generate_plans(days_available, equipment, approach, see_plans):
                     sets = 0
                     start_reps = 0
                     end_reps = 0
+                    toFailure = False
                     roll = random.randint(1,2)
                     if approach == "low_volume":
                         if random_exercise.type == ExerciseType.COMPOUND:
@@ -159,6 +164,9 @@ def generate_plans(days_available, equipment, approach, see_plans):
                                 start_reps = 10
                                 end_reps = 15
 
+                    # if user chose bodyweight progression, have them go to failure
+                    if random_exercise.equipment == "Bodyweight" and bodyweight_exercises == "Bodyweight":
+                        toFailure = True
 
                     # insert exercises into dictionary
                     day_info["exercises"].append({
@@ -170,7 +178,8 @@ def generate_plans(days_available, equipment, approach, see_plans):
                             "id": role.id,
                             "name": role.name
                         },
-                        "id": random_exercise.id
+                        "id": random_exercise.id,
+                        "toFailure": toFailure
                     })
                 else:
                     # insert null exercise into dictionary if none found
@@ -180,7 +189,8 @@ def generate_plans(days_available, equipment, approach, see_plans):
                         "sets": 0,
                         "start_reps": 0,
                         "end_reps": 0,
-                        "role": None
+                        "role": None,
+                        "toFailure": None
                     })
 
             # add workout days to current workout plan being constructed

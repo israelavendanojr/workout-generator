@@ -24,9 +24,10 @@
                                     {% for exercise in day.exercises %}
                                     <li class="list-group-item">
                                         {% if exercise.toFailure %}
-                                            {{ exercise.name }} : {{ exercise.sets }} x AMRAP
+                                        {{ exercise.name }} : {{ exercise.sets }} x AMRAP
                                         {% else %}
-                                            {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{ exercise.end_reps }}
+                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{
+                                        exercise.end_reps }}
                                         {% endif %}
                                     </li>
                                     {% endfor %}
@@ -41,7 +42,8 @@
                             <input type="hidden" name="plan_data" id="plan_data_{{ loop.index }}">
                             <button type="submit" class="btn btn-lg btn-primary">Save</button>
                         </form>
-                    </div>                </div>
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </div>

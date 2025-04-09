@@ -28,6 +28,8 @@ def home():
             
             # session to store across requests, convert to json bc session can only store simple types
             session['workout_plans'] = json.dumps(workout_plans)
+            flash("Succesfully generated plan!", "success")
+
             return redirect(url_for('views.generated_plans'))
 
 
@@ -240,7 +242,7 @@ def save_plan():
     db.session.add(new_plan)
     db.session.commit()
 
-    flash("Plan saved successfully!", "success")
+    flash("Plan saved successfully!", "info")
     return redirect(url_for('views.saved_plans'))
 
 @views.route('/saved_plans')
@@ -287,7 +289,7 @@ def delete_plan(plan_id):
     db.session.delete(plan)
     db.session.commit()
 
-    # flash("Plan deleted successfully!", "success")
+    flash("Plan deleted successfully!", category="success")
     return redirect(url_for('views.saved_plans'))
 
 @views.route('/swap-exercise', methods=['POST'])
@@ -343,7 +345,7 @@ def swap_exercise():
     saved_plan.plan = json.dumps(plan_data)
     db.session.commit()
 
-    flash("Exercise swapped successfully!", "success")
+    flash("Changes saved successfully!", "success")
     return redirect(url_for('views.saved_plans'))
 
 @views.route('/rename-plan', methods=['POST'])

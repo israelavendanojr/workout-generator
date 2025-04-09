@@ -14,8 +14,6 @@ def clear():
     db.session.query(WorkoutDay).delete()
     db.session.query(ExerciseRole).delete()
     db.session.query(Exercise).delete()
-    db.session.query(ExerciseType).delete()
-
 
 
     # Commit changes to the database
@@ -435,9 +433,7 @@ def handle_populate():
         populate()
         print("\nDATABASE POPULATED\n")
 
-        
-# if __name__ == "__main__":
-#     with app.app_context():
-#         clear()
-#         populate()
-#         print("\nDATABASE POPULATED\n")
+
+if __name__ == "__main__":
+    with app.app_context():
+        handle_populate()

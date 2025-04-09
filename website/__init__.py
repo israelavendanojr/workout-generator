@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_login import LoginManager
 from dotenv import load_dotenv
-from populate_db import call_populate
 
 db = SQLAlchemy()
 load_dotenv()
@@ -21,11 +20,9 @@ def create_app():
     app.register_blueprint(auth, url_prefix='/')
     
     from .models import User, WorkoutPreferences, WorkoutSplit, WorkoutDay, ExerciseRole, Exercise, SavedPlan
-
-    from populate_db import handle_populate
+    
     with app.app_context():
         db.create_all()
-        handle_populate()
         
 
     login_manager = LoginManager()

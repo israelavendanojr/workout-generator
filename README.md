@@ -6,4 +6,4 @@ Frontend: HTML, CSS, JavaScript, Bootstrap
 
 Backend: Python/Flask
 
-Database: PostgreSQL (for production), SQLite (for development), SQLAlchemy
+Database: PostgreSQL, SQLAlchemy

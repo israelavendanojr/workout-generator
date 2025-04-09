@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType
 
 app = create_app()
 
@@ -13,6 +13,10 @@ def clear():
     db.session.query(WorkoutSplit).delete()
     db.session.query(WorkoutDay).delete()
     db.session.query(ExerciseRole).delete()
+    db.session.query(Exercise).delete()
+    db.session.query(ExerciseType).delete()
+
+
 
     # Commit changes to the database
     db.session.commit()
@@ -426,9 +430,14 @@ def populate():
     db.session.commit()
 
 
-
-if __name__ == "__main__":
-    with app.app_context():
+def handle_populate():
         clear()
         populate()
         print("\nDATABASE POPULATED\n")
+
+        
+# if __name__ == "__main__":
+#     with app.app_context():
+#         clear()
+#         populate()
+#         print("\nDATABASE POPULATED\n")

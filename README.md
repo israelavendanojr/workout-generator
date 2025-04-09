@@ -1,4 +1,4 @@
-myLiftPlan
+myLiftPlan:
 At the start of the year, I noticed many of my friends wanted to start going to the gym as part of their New Year’s resolutions, but without a clear plan, it was hard for them to get started and stay consistent. So, this spring break, I decided to build something to help solve this: myLiftPlan — a full-stack web application that generates personalized weekly workout routines based on user preferences.
 
 Key Features:

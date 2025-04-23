@@ -3,8 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from flask_login import LoginManager
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
+migrate = Migrate()
 load_dotenv()
 
 def create_app():
@@ -12,6 +14,7 @@ def create_app():
     app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
     db.init_app(app)
+    migrate.init_app(app, db)
     
     from .views import views
     from .auth import auth

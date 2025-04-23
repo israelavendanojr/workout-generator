@@ -74,6 +74,41 @@
             </div>
         </div>
 
+        <!-- MUSCLE FOCUS CARD -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Muscle Prioritization</h5>
+                <p class="card-text">Want to focus on specific muscles? <small class="text-muted">(Optional – Pick up to 2)</small></p>
+                
+                <div class="d-flex flex-wrap gap-2" id="muscleButtons">
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Chest</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Back</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Shoulders</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Biceps</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Triceps</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Quads</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Hamstrings</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Glutes</button>
+                    <button type="button" class="btn btn-outline-primary muscle-btn">Calves</button>
+                </div>
+                <input type="hidden" name="priority_muscles" id="priorityMusclesInput">
+
+                <div class="mt-4">
+                    <h6 class="card-subtitle mb-2">Isolation movements before compound lifts if needed? <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="right" title="This can help target specific muscles earlier, but may interfere with strength gains for bigger lifts that follow."></i></h6>
+                    <div class="d-flex flex-wrap">
+                        <div class="form-check me-3">
+                            <input type="radio" id="isolationFirst" name="isolation_first" value="yes" class="form-check-input">
+                            <label for="isolationFirst" class="form-check-label">Yes, I prefer isolation first</label>
+                        </div>
+                        <div class="form-check me-3">
+                            <input type="radio" id="compoundFirst" name="isolation_first" value="no" class="form-check-input" checked>
+                            <label for="compoundFirst" class="form-check-label">No, I prefer compound first</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- BODYWEIGHT -->
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
@@ -101,6 +136,7 @@
             </div>
         </div>
 
+          
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <h5 class="card-title">View Multiple Plans</h5>
@@ -142,6 +178,45 @@
             this.classList.add('active', 'btn-primary');
             // Update the hidden input value
             daysInput.value = this.getAttribute('data-value');
+        });
+    });
+
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+
+    // Handle muscle selection with two-muscle limit
+    const muscleButtons = document.querySelectorAll('.muscle-btn');
+    const priorityMusclesInput = document.getElementById('priorityMusclesInput');
+    let selectedMuscles = [];
+
+    muscleButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const muscle = this.textContent;
+            
+            if (this.classList.contains('active')) {
+                // If already selected, deselect it
+                this.classList.remove('active', 'btn-primary');
+                selectedMuscles = selectedMuscles.filter(m => m !== muscle);
+            } else if (selectedMuscles.length < 2) {
+                // If not selected and under limit, select it
+                this.classList.add('active', 'btn-primary');
+                selectedMuscles.push(muscle);
+            }
+            
+            // Update the hidden input with selected muscles
+            priorityMusclesInput.value = selectedMuscles.join(',');
+            
+            // Update button states
+            muscleButtons.forEach(btn => {
+                if (!selectedMuscles.includes(btn.textContent) && selectedMuscles.length >= 2) {
+                    btn.disabled = true;
+                } else {
+                    btn.disabled = false;
+                }
+            });
         });
     });
 </script>

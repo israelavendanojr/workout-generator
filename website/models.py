@@ -86,13 +86,20 @@ class ExerciseType(enum.Enum):
     COMPOUND = "Compound"
     ISOLATION = "Isolation"
 
+class EquipmentType(enum.Enum):
+    BARBELL = "Barbell"
+    DUMBBELL = "Dumbbell"
+    BODYWEIGHT = "Bodyweight"
+    MACHINE = "Machine"
+    CABLE = "Cable"
+
 # Stores exercise information
 class Exercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False) 
     role = db.relationship('ExerciseRole', backref='exercises')
-    equipment = db.Column(db.String(100), nullable=False)
+    equipment = db.Column(Enum(ExerciseType), nullable=False)
     type = db.Column(Enum(ExerciseType, name="exercise_type_enum"), nullable=False)
     primary_muscles = db.Column(db.String(100), nullable=False)
     secondary_muscles = db.Column(db.String(100), nullable=False)

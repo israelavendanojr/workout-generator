@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType, MuscleGroup, primary_muscle_association, secondary_muscle_association
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType, EquipmentType, MuscleGroup, primary_muscle_association, secondary_muscle_association
 
 app = create_app()
 
@@ -342,108 +342,108 @@ def populate():
     # Add exercises
     exercises = [
         # Horizontal Incline Push (Compound)
-        Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Decline Push-Ups", role=horizontal_incline_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Smith Incline Bench Press", role=horizontal_incline_push, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Incline Barbell Bench Press", role=horizontal_incline_push, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Upper Chest"], secondary=["Front Delts", "Triceps"]),
+        Exercise(name="Incline Dumbbell Press", role=horizontal_incline_push, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Upper Chest"], secondary=["Front Delts", "Triceps"]),
+        Exercise(name="Decline Push-Ups", role=horizontal_incline_push, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Upper Chest"], secondary=["Front Delts", "Triceps"]),
+        Exercise(name="Incline Machine Press", role=horizontal_incline_push, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Upper Chest"], secondary=["Front Delts", "Triceps"]),
+        Exercise(name="Smith Incline Bench Press", role=horizontal_incline_push, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Upper Chest"], secondary=["Front Delts", "Triceps"]),
 
         # Horizontal Push (Compound)
-        Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Flat Dumbbell Press", role=horizontal_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Push-Ups", role=horizontal_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Machine Chest Press", role=horizontal_push, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Smith Flat Bench Press", role=horizontal_push, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Flat Barbell Bench Press", role=horizontal_push, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Chest"], secondary=["Triceps", "Front Delts"]),
+        Exercise(name="Flat Dumbbell Press", role=horizontal_push, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Chest"], secondary=["Triceps", "Front Delts"]),
+        Exercise(name="Push-Ups", role=horizontal_push, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Chest"], secondary=["Triceps", "Front Delts"]),
+        Exercise(name="Machine Chest Press", role=horizontal_push, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Chest"], secondary=["Triceps", "Front Delts"]),
+        Exercise(name="Smith Flat Bench Press", role=horizontal_push, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Chest"], secondary=["Triceps", "Front Delts"]),
 
         # Vertical Push (Compound)
-        Exercise(name="Overhead Barbell Press", role=vertical_push, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Dumbbell Shoulder Press", role=vertical_push, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Pike Push-Ups", role=vertical_push, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Machine Shoulder Press", role=vertical_push, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Overhead Barbell Press", role=vertical_push, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Front Delts"], secondary=["Triceps", "Upper Chest", "Side Delts"]),
+        Exercise(name="Dumbbell Shoulder Press", role=vertical_push, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Front Delts"], secondary=["Triceps", "Upper Chest", "Side Delts"]),
+        Exercise(name="Pike Push-Ups", role=vertical_push, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Front Delts"], secondary=["Triceps", "Upper Chest", "Side Delts"]),
+        Exercise(name="Machine Shoulder Press", role=vertical_push, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Front Delts"], secondary=["Triceps", "Upper Chest", "Side Delts"]),
 
         # Side Delt Isolation
-        Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Cable Lateral Raise", role=side_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Machine Lateral Raise", role=side_delt_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Lateral Raise", role=side_delt_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Side Delts"], secondary=[]),
+        Exercise(name="Cable Lateral Raise", role=side_delt_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Side Delts"], secondary=[]),
+        Exercise(name="Machine Lateral Raise", role=side_delt_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Side Delts"], secondary=[]),
 
         # Tricep Isolation
-        Exercise(name="Barbell Skull Crushers", role=tricep_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Dumbbell Skull Crushers", role=tricep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Tricep Dips", role=tricep_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
-        Exercise(name="Tricep Pushdown", role=tricep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Cable Tricep Kickbacks", role=tricep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Barbell Skull Crushers", role=tricep_isolation, equipment=EquipmentType.BARBELL, type=ExerciseType.ISOLATION, primary=["Triceps"], secondary=[]),
+        Exercise(name="Dumbbell Skull Crushers", role=tricep_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Triceps"], secondary=[]),
+        Exercise(name="Tricep Dips", role=tricep_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Triceps"], secondary=["Chest", "Front Delts"]),
+        Exercise(name="Tricep Pushdown", role=tricep_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Triceps"], secondary=[]),
+        Exercise(name="Cable Tricep Kickbacks", role=tricep_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Triceps"], secondary=[]),
 
         # Horizontal Pull (Compound)
-        Exercise(name="Barbell Row", role=horizontal_pull, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Single Arm Dumbbell Row", role=horizontal_pull, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Inverted Row", role=horizontal_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Chest-Supported Machine Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Seated Cable Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="T-Bar Row", role=horizontal_pull, equipment="Machine", type=ExerciseType.COMPOUND),
+        Exercise(name="Barbell Row", role=horizontal_pull, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Lats", "Mid Traps"], secondary=["Rear Delts", "Biceps"]),
+        Exercise(name="Dumbbell Row", role=horizontal_pull, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Lats", "Mid Traps"], secondary=["Rear Delts", "Biceps"]),
+        Exercise(name="Single Arm Dumbbell Row", role=horizontal_pull, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Lats"], secondary=["Rear Delts", "Biceps"]),
+        Exercise(name="Inverted Row", role=horizontal_pull, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Lats", "Upper Back"], secondary=["Biceps", "Rear Delts"]),
+        Exercise(name="Chest-Supported Machine Row", role=horizontal_pull, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Mid Traps"], secondary=["Biceps", "Rear Delts"]),
+        Exercise(name="Seated Cable Row", role=horizontal_pull, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Lats", "Mid Traps"], secondary=["Biceps"]),
+        Exercise(name="T-Bar Row", role=horizontal_pull, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Lats", "Mid Traps"], secondary=["Biceps", "Rear Delts"]),
 
         # Vertical Pull (Compound)
-        Exercise(name="Pull-Ups", role=vertical_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Chin-Ups", role=vertical_pull, equipment="Bodyweight", type=ExerciseType.COMPOUND),
-        Exercise(name="Lat Pulldown", role=vertical_pull, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Kneeling Lat Pulldown", role=vertical_pull, equipment="Cable", type=ExerciseType.COMPOUND),
+        Exercise(name="Pull-Ups", role=vertical_pull, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Lats"], secondary=["Biceps", "Rear Delts"]),
+        Exercise(name="Chin-Ups", role=vertical_pull, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Lats", "Biceps"], secondary=["Rear Delts"]),
+        Exercise(name="Lat Pulldown", role=vertical_pull, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Lats"], secondary=["Biceps", "Rear Delts"]),
+        Exercise(name="Kneeling Lat Pulldown", role=vertical_pull, equipment=EquipmentType.CABLE, type=ExerciseType.COMPOUND, primary=["Lats"], secondary=["Biceps"]),
 
         # Rear Delt Isolation
-        Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Reverse Pec Deck", role=rear_delt_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Ring Face Pulls", role=rear_delt_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Dumbbell Rear Delt Fly", role=rear_delt_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Rear Delts"], secondary=[]),
+        Exercise(name="Reverse Pec Deck", role=rear_delt_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Rear Delts"], secondary=[]),
+        Exercise(name="Cable Rear Delt Fly", role=rear_delt_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Rear Delts"], secondary=[]),
+        Exercise(name="Face Pulls", role=rear_delt_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Rear Delts", "Mid Traps"], secondary=[]),
+        Exercise(name="Ring Face Pulls", role=rear_delt_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Rear Delts", "Mid Traps"], secondary=[]),
 
         # Bicep Isolation
-        Exercise(name="Barbell Curl", role=bicep_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Dumbbell Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Dumbbell Incline Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Preacher Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Dumbbell Hammer Curl", role=bicep_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Machine Preacher Curl", role=bicep_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Cable Hammer Curl", role=bicep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Bayesian Curl", role=bicep_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
+        Exercise(name="Barbell Curl", role=bicep_isolation, equipment=EquipmentType.BARBELL, type=ExerciseType.ISOLATION, primary=["Biceps"], secondary=[]),
+        Exercise(name="Dumbbell Curl", role=bicep_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Biceps"], secondary=[]),
+        Exercise(name="Dumbbell Incline Curl", role=bicep_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Biceps (Long Head)"], secondary=[]),
+        Exercise(name="Preacher Curl", role=bicep_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Biceps (Short Head)"], secondary=[]),
+        Exercise(name="Dumbbell Hammer Curl", role=bicep_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Biceps", "Brachialis"], secondary=[]),
+        Exercise(name="Machine Preacher Curl", role=bicep_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Biceps"], secondary=[]),
+        Exercise(name="Cable Hammer Curl", role=bicep_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Biceps", "Brachialis"], secondary=[]),
+        Exercise(name="Bayesian Curl", role=bicep_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Biceps (Long Head)"], secondary=[]),
 
         # Lat Isolation
-        Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation, equipment="Cable", type=ExerciseType.ISOLATION),
-        Exercise(name="Machine Lat Pullover", role=lat_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Front Lever Raise", role=lat_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Straight Arm Lat Pulldown", role=lat_isolation, equipment=EquipmentType.CABLE, type=ExerciseType.ISOLATION, primary=["Lats"], secondary=[]),
+        Exercise(name="Machine Lat Pullover", role=lat_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Lats"], secondary=[]),
+        Exercise(name="Front Lever Raise", role=lat_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Lats"], secondary=["Core"]),
 
         # Squat (Compound)
-        Exercise(name="Barbell Squat", role=squat, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Front Squat", role=squat, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Hack Squat", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Smith Squat", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Leg Press", role=squat, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Bulgarian Split Squat", role=squat, equipment="Dumbbell", type=ExerciseType.COMPOUND),
+        Exercise(name="Barbell Squat", role=squat, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Quads", "Glutes"], secondary=["Hamstrings", "Core"]),
+        Exercise(name="Front Squat", role=squat, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Quads"], secondary=["Glutes", "Core"]),
+        Exercise(name="Hack Squat", role=squat, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Quads"], secondary=["Glutes"]),
+        Exercise(name="Smith Squat", role=squat, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Quads"], secondary=["Glutes"]),
+        Exercise(name="Leg Press", role=squat, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Quads"], secondary=["Glutes"]),
+        Exercise(name="Bulgarian Split Squat", role=squat, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Quads"], secondary=["Glutes", "Hamstrings"]),
 
         # Hinge (Compound)
-        Exercise(name="Barbell Deadlift", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Barbell Romanian Deadlift", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Good Mornings", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Dumbbell Romanian Deadlift", role=hinge, equipment="Dumbbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Barbell Hip Thrust", role=hinge, equipment="Barbell", type=ExerciseType.COMPOUND),
-        Exercise(name="Machine Hip Thrust", role=hinge, equipment="Machine", type=ExerciseType.COMPOUND),
-        Exercise(name="Back Extension", role=hinge, equipment="Bodyweight", type=ExerciseType.COMPOUND),
+        Exercise(name="Barbell Deadlift", role=hinge, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Glutes", "Hamstrings"], secondary=["Lats", "Core"]),
+        Exercise(name="Barbell Romanian Deadlift", role=hinge, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Hamstrings"], secondary=["Glutes", "Lower Back"]),
+        Exercise(name="Good Mornings", role=hinge, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Hamstrings", "Lower Back"], secondary=["Glutes"]),
+        Exercise(name="Dumbbell Romanian Deadlift", role=hinge, equipment=EquipmentType.DUMBBELL, type=ExerciseType.COMPOUND, primary=["Hamstrings"], secondary=["Glutes"]),
+        Exercise(name="Barbell Hip Thrust", role=hinge, equipment=EquipmentType.BARBELL, type=ExerciseType.COMPOUND, primary=["Glutes"], secondary=["Hamstrings"]),
+        Exercise(name="Machine Hip Thrust", role=hinge, equipment=EquipmentType.MACHINE, type=ExerciseType.COMPOUND, primary=["Glutes"], secondary=["Hamstrings"]),
+        Exercise(name="Back Extension", role=hinge, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.COMPOUND, primary=["Glutes", "Lower Back"], secondary=["Hamstrings"]),
 
         # Quad Isolation
-        Exercise(name="Leg Extensions", role=quad_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Sissy Squats", role=quad_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
-        Exercise(name="Adduction Machine", role=quad_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Reverse Nordic Curl", role=quad_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Leg Extensions", role=quad_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Quads"], secondary=[]),
+        Exercise(name="Sissy Squats", role=quad_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Quads"], secondary=[]),
+        Exercise(name="Adduction Machine", role=quad_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Adductors"], secondary=[]),
+        Exercise(name="Reverse Nordic Curl", role=quad_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Quads"], secondary=[]),
 
         # Hamstring Isolation
-        Exercise(name="Lying Hamstring Curl", role=hamstring_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Seated Hamstring Curl", role=hamstring_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Nordic Curl", role=hamstring_isolation, equipment="Bodyweight", type=ExerciseType.ISOLATION),
+        Exercise(name="Lying Hamstring Curl", role=hamstring_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Hamstrings"], secondary=[]),
+        Exercise(name="Seated Hamstring Curl", role=hamstring_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Hamstrings"], secondary=[]),
+        Exercise(name="Nordic Curl", role=hamstring_isolation, equipment=EquipmentType.BODYWEIGHT, type=ExerciseType.ISOLATION, primary=["Hamstrings"], secondary=[]),
 
         # Calf Isolation
-        Exercise(name="Standing Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Seated Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Leg Press Calf Raise", role=calf_isolation, equipment="Machine", type=ExerciseType.ISOLATION),
-        Exercise(name="Barbell Calf Raise", role=calf_isolation, equipment="Barbell", type=ExerciseType.ISOLATION),
-        Exercise(name="Calf Raise", role=calf_isolation, equipment="Dumbbell", type=ExerciseType.ISOLATION),
+        Exercise(name="Standing Calf Raise", role=calf_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Calves"], secondary=[]),
+        Exercise(name="Seated Calf Raise", role=calf_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Calves"], secondary=[]),
+        Exercise(name="Leg Press Calf Raise", role=calf_isolation, equipment=EquipmentType.MACHINE, type=ExerciseType.ISOLATION, primary=["Calves"], secondary=[]),
+        Exercise(name="Barbell Calf Raise", role=calf_isolation, equipment=EquipmentType.BARBELL, type=ExerciseType.ISOLATION, primary=["Calves"], secondary=[]),
+        Exercise(name="Calf Raise", role=calf_isolation, equipment=EquipmentType.DUMBBELL, type=ExerciseType.ISOLATION, primary=["Calves"], secondary=[]),
     ]
 
     # Add all exercises to the database

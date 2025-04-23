@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType, MuscleGroup, primary_muscle_association, secondary_muscle_association
 
 app = create_app()
 
@@ -8,13 +8,15 @@ def clear():
     # Delete associations to prevent foreign key errors
     db.session.query(day_role_association).delete()
     db.session.query(split_day_association).delete()
+    db.session.query(primary_muscle_association).delete()
+    db.session.query(secondary_muscle_association).delete()
 
     # Then delete the main tables
     db.session.query(WorkoutSplit).delete()
     db.session.query(WorkoutDay).delete()
     db.session.query(ExerciseRole).delete()
     db.session.query(Exercise).delete()
-
+    db.session.query(MuscleGroup).delete()
 
     # Commit changes to the database
     db.session.commit()
@@ -60,6 +62,27 @@ def populate():
     full_A = WorkoutDay(name="Full Body")
     full_B = WorkoutDay(name="Full Body")
     full_C = WorkoutDay(name="Full Body")
+
+    # Add muscle groups
+    muscle_groups = [
+        MuscleGroup(name="Upper Chest"),
+        MuscleGroup(name="Lower Chest"),
+        MuscleGroup(name="Upper Back"),
+        MuscleGroup(name="Lower Back"),
+        MuscleGroup(name="Lats"),
+        MuscleGroup(name="Traps"),
+        MuscleGroup(name="Front Delts"),
+        MuscleGroup(name="Side Delts"),
+        MuscleGroup(name="Rear Delts"),
+        MuscleGroup(name="Biceps"),
+        MuscleGroup(name="Triceps"),
+        MuscleGroup(name="Quads"),
+        MuscleGroup(name="Hamstrings"),
+        MuscleGroup(name="Glutes"),
+        MuscleGroup(name="Calves")
+    ]
+    db.session.add_all(muscle_groups)
+    db.session.commit()
 
     upper_A = WorkoutDay(name="Upper")
     lower_A = WorkoutDay(name="Lower")

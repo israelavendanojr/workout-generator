@@ -64,6 +64,11 @@ class WorkoutDay(db.Model):
         overlaps="workout_splits_association"
     )
 
+# Muscle groups, e.g. chest, shoulders, etc
+class MuscleGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
 # Defines function of an exercise, e.g. horizontal push, vertical pull, curl, eyc
 class ExerciseRole(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -76,12 +81,7 @@ day_role_association = db.Table('day_role_association',
     db.Column('order', db.Integer, nullable=False) 
 )
 
-# exercise_equipment_association = db.Table(
-#     'exercise_equipment_association',
-#     db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
-#     db.Column('equipment_id', db.Integer, db.ForeignKey('equipment.id'), primary_key=True)
-# )
-
+# Type of exercise, e.g. compound, isolation
 class ExerciseType(enum.Enum):
     COMPOUND = "Compound"
     ISOLATION = "Isolation"
@@ -94,17 +94,21 @@ class Exercise(db.Model):
     role = db.relationship('ExerciseRole', backref='exercises')
     equipment = db.Column(db.String(100), nullable=False)
     type = db.Column(Enum(ExerciseType, name="exercise_type_enum"), nullable=False)
+    primary_muscles = db.Column(db.String(100), nullable=False)
+    secondary_muscles = db.Column(db.String(100), nullable=False)
 
-    # Many-to-Many relationship with Equipment
-    # equipment = db.relationship('Equipment', secondary='exercise_equipment_association', back_populates='exercises')
+# Association tables to define many-to-many relationships
+primary_muscle_association = db.Table(
+    'primary_muscle_association',
+    db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
+    db.Column('muscle_group_id', db.Integer, db.ForeignKey('muscle_group.id'), primary_key=True)
+)
 
-# class Equipment(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String(100), unique=True, nullable=False)
-
-#     # Relationship to Exercise
-#     exercises = db.relationship('Exercise', secondary='exercise_equipment_association', back_populates='equipment')
-
+secondary_muscle_association = db.Table(
+    'secondary_muscle_association',
+    db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
+    db.Column('muscle_group_id', db.Integer, db.ForeignKey('muscle_group.id'), primary_key=True)
+)
 # Saved workout plan attached to user
 class SavedPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -121,8 +125,6 @@ class SavedPlan(db.Model):
     def get_plan_data(self):
             """Ensure the stored plan is returned as a dictionary"""
             try:
-                # print("Encoded JSON:")
                 return json.loads(self.plan)  # Convert JSON string back to dict
             except json.JSONDecodeError as e:
-                # print("Error decoding JSON:", e)
                 return {} 

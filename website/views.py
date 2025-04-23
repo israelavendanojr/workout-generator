@@ -4,6 +4,7 @@ import json
 from website import db
 from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
 from collections import defaultdict
+import random
 
 views = Blueprint('views', __name__)
 
@@ -53,159 +54,6 @@ def generated_plans():
     
     return render_template("generated_plans.html", user=current_user, plans=workout_plans)
 
-def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises):
-    import random
-
-    # Dictionary to store plan information
-    workout_plans = []
-
-    # Find workout splits
-    workout_splits = WorkoutSplit.query.filter_by(days_per_week=days_available).all()
-    
-    # generate plan for each workout split
-    for split in workout_splits:
-
-        # insert split name into dictionary and establish workout days
-        plan = {
-            "split_name": split.name,
-            "days": []
-        }
-        
-        # get workout day from split
-        for day in split.workout_days:
-            # insert day name into dictionary and establish exercises
-            day_info = {
-                "name": day.name,
-                "exercises": []
-            }
-
-            ordered_roles = (
-                db.session.query(ExerciseRole)
-                .join(day_role_association)
-                .filter(day_role_association.c.workout_day_id == day.id)
-                .order_by(day_role_association.c.order)  # Order by the 'order' column in the association table
-                .all()
-            )
-
-            # if user included bodyweight exercises, add them to equipment list
-            if bodyweight_exercises != "Absent":
-                equipment.append("Bodyweight")
-            # find suitable exercises based on exercise role and equipment available
-            for role in ordered_roles:
-                exercises = (
-                    db.session.query(Exercise)
-                    .filter(Exercise.role_id == role.id)
-                    .filter(Exercise.equipment.in_(equipment))
-                    .all()
-                )
-
-                if exercises:
-                    random_index = random.randint(0, len(exercises)-1)
-                    random_exercise = exercises[random_index]
-                    
-                    sets = 0
-                    start_reps = 0
-                    end_reps = 0
-                    toFailure = False
-                    roll = random.randint(1,2)
-                    if approach == "low_volume":
-                        if random_exercise.type == ExerciseType.COMPOUND:
-                            if roll == 1:
-                                sets = 2
-                                start_reps = 4
-                                end_reps = 6
-                            else:
-                                sets = 2
-                                start_reps = 6
-                                end_reps = 8
-                        elif random_exercise.type == ExerciseType.ISOLATION:
-                            if roll == 1:
-                                sets = 2
-                                start_reps = 6
-                                end_reps = 8
-                            else:
-                                sets = 1
-                                start_reps = 8
-                                end_reps = 10
-                    elif approach == "moderate_volume":
-                        if random_exercise.type == ExerciseType.COMPOUND:
-                            if roll == 1:
-                                sets = 3
-                                start_reps = 6
-                                end_reps = 10
-                            else:
-                                sets = 3
-                                start_reps = 8
-                                end_reps = 12
-                        elif random_exercise.type == ExerciseType.ISOLATION:
-                            if roll == 1:
-                                sets = 2
-                                start_reps = 8
-                                end_reps = 10
-                            else:
-                                sets = 3
-                                start_reps = 8
-                                end_reps = 12
-                    elif approach == "high_volume":
-                        if random_exercise.type == ExerciseType.COMPOUND:
-                            if roll == 1:
-                                sets = 4
-                                start_reps = 8
-                                end_reps = 12
-                            else:
-                                sets = 3
-                                start_reps = 10
-                                end_reps = 15
-                        elif random_exercise.type == ExerciseType.ISOLATION:
-                            if roll == 1:
-                                sets = 3
-                                start_reps = 8
-                                end_reps = 12
-                            else:
-                                sets = 3
-                                start_reps = 10
-                                end_reps = 15
-
-                    # if user chose bodyweight progression, have them go to failure
-                    if random_exercise.equipment == "Bodyweight" and bodyweight_exercises == "Bodyweight":
-                        toFailure = True
-
-                    # insert exercises into dictionary
-                    day_info["exercises"].append({
-                        "name": random_exercise.name,
-                        "sets": sets,
-                        "start_reps": start_reps,
-                        "end_reps": end_reps,
-                        "role": {
-                            "id": role.id,
-                            "name": role.name
-                        },
-                        "id": random_exercise.id,
-                        "toFailure": toFailure
-                    })
-                else:
-                    # insert null exercise into dictionary if none found
-                    null_exercise_message = "No suitable exercise for " + role.name + " found"
-                    day_info["exercises"].append({
-                        "name": null_exercise_message,
-                        "sets": 0,
-                        "start_reps": 0,
-                        "end_reps": 0,
-                        "role": None,
-                        "toFailure": None
-                    })
-
-            # add workout days to current workout plan being constructed
-            plan["days"].append(day_info)
-
-        # add completed workout plan to list of generated plans
-        workout_plans.append(plan)
-        #if user does not want to see all plans, only show first plan 
-        if see_plans == "No":
-            break
-
-    # return dictionary of all generated plans
-    return workout_plans
 
 @views.route('/save_plan', methods=['POST'])
 @login_required
@@ -363,3 +211,153 @@ def rename_plan():
         flash('Plan not found or access denied.', category='error')
 
     return redirect(url_for('views.saved_plans'))
+
+# all methods regarding generation logic for plans
+
+def get_workout_splits(days_available):
+    """Get all workout splits for the given number of days."""
+    return WorkoutSplit.query.filter_by(days_per_week=days_available).all()
+
+def get_ordered_roles(day):
+    """Get ordered exercise roles for a workout day."""
+    return (
+        db.session.query(ExerciseRole)
+        .join(day_role_association)
+        .filter(day_role_association.c.workout_day_id == day.id)
+        .order_by(day_role_association.c.order)
+        .all()
+    )
+
+def get_suitable_exercises(role, equipment):
+    """Get exercises that match the role and available equipment."""
+    return (
+        db.session.query(Exercise)
+        .filter(Exercise.role_id == role.id)
+        .filter(Exercise.equipment.in_(equipment))
+        .all()
+    )
+
+def determine_sets_and_reps(exercise, approach):
+    """Determine sets and reps based on exercise type and approach."""
+    roll = random.randint(1, 2)
+    sets = 0
+    start_reps = 0
+    end_reps = 0
+
+    if approach == "low_volume":
+        if exercise.type == ExerciseType.COMPOUND:
+            if roll == 1:
+                sets, start_reps, end_reps = 2, 4, 6
+            else:
+                sets, start_reps, end_reps = 2, 6, 8
+        elif exercise.type == ExerciseType.ISOLATION:
+            if roll == 1:
+                sets, start_reps, end_reps = 2, 6, 8
+            else:
+                sets, start_reps, end_reps = 1, 8, 10
+    elif approach == "moderate_volume":
+        if exercise.type == ExerciseType.COMPOUND:
+            if roll == 1:
+                sets, start_reps, end_reps = 3, 6, 10
+            else:
+                sets, start_reps, end_reps = 3, 8, 12
+        elif exercise.type == ExerciseType.ISOLATION:
+            if roll == 1:
+                sets, start_reps, end_reps = 2, 8, 10
+            else:
+                sets, start_reps, end_reps = 3, 8, 12
+    elif approach == "high_volume":
+        if exercise.type == ExerciseType.COMPOUND:
+            if roll == 1:
+                sets, start_reps, end_reps = 4, 8, 12
+            else:
+                sets, start_reps, end_reps = 3, 10, 15
+        elif exercise.type == ExerciseType.ISOLATION:
+            if roll == 1:
+                sets, start_reps, end_reps = 3, 8, 12
+            else:
+                sets, start_reps, end_reps = 3, 10, 15
+
+    return sets, start_reps, end_reps
+
+def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=False):
+    """Create exercise information dictionary."""
+    return {
+        "name": exercise.name,
+        "sets": sets,
+        "start_reps": start_reps,
+        "end_reps": end_reps,
+        "role": {
+            "id": role.id,
+            "name": role.name
+        },
+        "id": exercise.id,
+        "toFailure": to_failure
+    }
+
+def create_null_exercise_info(role):
+    """Create null exercise information when no suitable exercise is found."""
+    return {
+        "name": f"No suitable exercise for {role.name} found",
+        "sets": 0,
+        "start_reps": 0,
+        "end_reps": 0,
+        "role": None,
+        "toFailure": None
+    }
+
+def generate_day_plan(day, equipment, approach, bodyweight_exercises):
+    """Generate plan for a single workout day."""
+    day_info = {
+        "name": day.name,
+        "exercises": []
+    }
+
+    ordered_roles = get_ordered_roles(day)
+    
+    # Add bodyweight to equipment if specified
+    if bodyweight_exercises != "Absent":
+        equipment = equipment + ["Bodyweight"]
+
+    for role in ordered_roles:
+        exercises = get_suitable_exercises(role, equipment)
+        
+        if exercises:
+            random_exercise = random.choice(exercises)
+            sets, start_reps, end_reps = determine_sets_and_reps(random_exercise, approach)
+            
+            # Handle bodyweight progression
+            to_failure = (random_exercise.equipment == "Bodyweight" and 
+                         bodyweight_exercises == "Bodyweight")
+            
+            exercise_info = create_exercise_info(
+                random_exercise, role, sets, start_reps, end_reps, to_failure
+            )
+        else:
+            exercise_info = create_null_exercise_info(role)
+            
+        day_info["exercises"].append(exercise_info)
+    
+    return day_info
+
+def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises):
+    """Generate workout plans based on user preferences."""
+    workout_plans = []
+    workout_splits = get_workout_splits(days_available)
+    
+    for split in workout_splits:
+        plan = {
+            "split_name": split.name,
+            "days": []
+        }
+        
+        for day in split.workout_days:
+            day_info = generate_day_plan(day, equipment, approach, bodyweight_exercises)
+            plan["days"].append(day_info)
+        
+        workout_plans.append(plan)
+        
+        if see_plans == "No":
+            break
+    
+    return workout_plans

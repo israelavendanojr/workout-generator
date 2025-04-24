@@ -77,7 +77,7 @@ class ExerciseRole(db.Model):
 # Association table for many-to-many relationship, can associate same ExerciseRole to multiple WorkoutDays
 day_role_association = db.Table('day_role_association',
     db.Column('workout_day_id', db.Integer, db.ForeignKey('workout_day.id'), primary_key=True),
-    db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id'), primary_key=True),
+    db.Column('exercise_role_id', db.Integer, db.ForeignKey('exercise_role.id', ondelete='CASCADE'), primary_key=True),
     db.Column('order', db.Integer, nullable=False) 
 )
 
@@ -93,16 +93,11 @@ class EquipmentType(enum.Enum):
     MACHINE = "Machine"
     CABLE = "Cable"
 
-# Stores exercise information
-class Exercise(db.Model):
+# Equipment model
+class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False) 
-    role = db.relationship('ExerciseRole', backref='exercises')
-    equipment = db.Column(Enum(ExerciseType), nullable=False)
-    type = db.Column(Enum(ExerciseType, name="exercise_type_enum"), nullable=False)
-    primary_muscles = db.Column(db.String(100), nullable=False)
-    secondary_muscles = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
 
 # Association tables to define many-to-many relationships
 primary_muscle_association = db.Table(
@@ -116,6 +111,29 @@ secondary_muscle_association = db.Table(
     db.Column('exercise_id', db.Integer, db.ForeignKey('exercise.id'), primary_key=True),
     db.Column('muscle_group_id', db.Integer, db.ForeignKey('muscle_group.id'), primary_key=True)
 )
+
+# Stores exercise information
+class Exercise(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('exercise_role.id'), nullable=False) 
+    role = db.relationship('ExerciseRole', backref='exercises')
+    equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id'), nullable=False)
+    # Relationship to the Equipment model
+    equipment = db.relationship('Equipment', backref='exercises')
+    
+    # Relationships for muscles
+    primary_muscles = db.relationship(
+        'MuscleGroup',
+        secondary=primary_muscle_association,
+        backref=db.backref('primary_exercises', lazy='dynamic')
+    )
+    secondary_muscles = db.relationship(
+        'MuscleGroup',
+        secondary=secondary_muscle_association,
+        backref=db.backref('secondary_exercises', lazy='dynamic')
+    )
+
 # Saved workout plan attached to user
 class SavedPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)

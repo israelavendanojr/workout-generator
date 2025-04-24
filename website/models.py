@@ -86,13 +86,6 @@ class ExerciseType(enum.Enum):
     COMPOUND = "Compound"
     ISOLATION = "Isolation"
 
-class EquipmentType(enum.Enum):
-    BARBELL = "Barbell"
-    DUMBBELL = "Dumbbell"
-    BODYWEIGHT = "Bodyweight"
-    MACHINE = "Machine"
-    CABLE = "Cable"
-
 # Equipment model
 class Equipment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -121,6 +114,7 @@ class Exercise(db.Model):
     equipment_id = db.Column(db.Integer, db.ForeignKey('equipment.id'), nullable=False)
     # Relationship to the Equipment model
     equipment = db.relationship('Equipment', backref='exercises')
+    type = db.Column(Enum(ExerciseType, name="exercise_type_enum"), nullable=False)
     
     # Relationships for muscles
     primary_muscles = db.relationship(

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, SavedPlan, ExerciseType, Equipment
 from collections import defaultdict
 import random
 
@@ -230,12 +230,14 @@ def get_ordered_roles(day):
 
 def get_suitable_exercises(role, equipment):
     """Get exercises that match the role and available equipment."""
-    return (
-        db.session.query(Exercise)
-        .filter(Exercise.role_id == role.id)
-        .filter(Exercise.equipment.in_(equipment))
-        .all()
+    exercises = (
+    db.session.query(Exercise)
+    .join(Exercise.equipment)
+    .filter(Equipment.name.in_(equipment))
+    .filter(Exercise.role == role)
+    .all()
     )
+    return exercises
 
 def determine_sets_and_reps(exercise, approach):
     """Determine sets and reps based on exercise type and approach."""

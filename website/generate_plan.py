@@ -73,6 +73,9 @@ def determine_sets_and_reps(exercise, approach):
 
 def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=False):
     """Create exercise information dictionary."""
+    primary_muscles = [muscle.name for muscle in exercise.primary_muscles]
+    secondary_muscles = [muscle.name for muscle in exercise.secondary_muscles]
+    
     return {
         "name": exercise.name,
         "sets": sets,
@@ -83,7 +86,9 @@ def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=
             "name": role.name
         },
         "id": exercise.id,
-        "toFailure": to_failure
+        "toFailure": to_failure,
+        "primary_muscles": primary_muscles,
+        "secondary_muscles": secondary_muscles
     }
 
 def create_null_exercise_info(role):
@@ -94,10 +99,13 @@ def create_null_exercise_info(role):
         "start_reps": 0,
         "end_reps": 0,
         "role": None,
-        "toFailure": None
+        "toFailure": None,
+        "exercise_obj": None,
+        "primary_muscles": None,
+        "secondary_muscles": None
     }
 
-def generate_day_plan(day, equipment, approach, bodyweight_exercises):
+def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles):
     """Generate plan for a single workout day."""
     day_info = {
         "name": day.name,
@@ -110,6 +118,7 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises):
     if bodyweight_exercises != "Absent":
         equipment = equipment + ["Bodyweight"]
 
+    # Generate exercises for each role
     for role in ordered_roles:
         exercises = get_suitable_exercises(role, equipment)
         
@@ -121,20 +130,59 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises):
             to_failure = (random_exercise.equipment == "Bodyweight" and 
                          bodyweight_exercises == "Bodyweight")
             
-            exercise_info = create_exercise_info(
-                random_exercise, role, sets, start_reps, end_reps, to_failure
-            )
+            exercise_info = create_exercise_info(random_exercise, role, sets, start_reps, end_reps, to_failure)
         else:
             exercise_info = create_null_exercise_info(role)
             
         day_info["exercises"].append(exercise_info)
+
+    # Reorder exercises by priority, bottle neck exercises up if they are given specified priority
+    for i in range(len(day_info["exercises"])):
+        exercise_info = day_info["exercises"][i]
+        # previous_exercise_info = day_info["exercises"][i-1]
+        # hasPriority = False
+        
+        print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
+
+    print(day_info)
+    print("--------------------------------")
+
+    
+
+
+
     
     return day_info
 
-def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises):
+def has_muscle_priority(priority_muscles, primary_muscles, secondary_muscles):
+    """Check if the exercise has a muscle priority."""
+    priority_mapping = {
+        "Shoulders": {"Side Delts", "Front Delts", "Rear Delts"},
+        "Back": {"Upper Back", "Lower Back", "Lats", "Traps"},
+        "Chest": {"Upper Chest", "Lower Chest"},
+        "Biceps": {"Biceps"},
+        "Triceps": {"Triceps"},
+        "Quads": {"Quads"},
+        "Hamstrings": {"Hamstrings"},
+        "Glutes": {"Glutes"},
+        "Calves": {"Calves"}
+    }
+
+    # combine primary and secondary muscles 
+    all_muscles = set(primary_muscles) | set(secondary_muscles)
+    
+    # check if any of the muscles in the priority mapping are in the all_muscles set
+    for priority in priority_muscles:
+        specific_muscles = priority_mapping.get(priority, {priority})
+        if specific_muscles & all_muscles:
+            return True
+    return False
+
+def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises, priority_muscles):
     """Generate workout plans based on user preferences."""
     workout_plans = []
     workout_splits = get_workout_splits(days_available)
+    print("PRIORITY MUSCLES", priority_muscles, "\n")
     
     for split in workout_splits:
         plan = {
@@ -143,7 +191,7 @@ def generate_plans(days_available, equipment, approach, see_plans, bodyweight_ex
         }
         
         for day in split.workout_days:
-            day_info = generate_day_plan(day, equipment, approach, bodyweight_exercises)
+            day_info = generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles)
             plan["days"].append(day_info)
         
         workout_plans.append(plan)

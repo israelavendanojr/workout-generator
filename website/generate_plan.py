@@ -105,7 +105,7 @@ def create_null_exercise_info(role):
         "secondary_muscles": None
     }
 
-def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles):
+def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles, isolation_first):
     """Generate plan for a single workout day."""
     day_info = {
         "name": day.name,
@@ -139,13 +139,16 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_m
     # Reorder exercises by priority, bottle neck exercises up if they are given specified priority
     for i in range(len(day_info["exercises"])):
         exercise_info = day_info["exercises"][i]
-        # previous_exercise_info = day_info["exercises"][i-1]
-        # hasPriority = False
-        
-        print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
+        has_priority = has_muscle_priority(priority_muscles, exercise_info["primary_muscles"])
+        if (has_priority):
+            # move exercise up to top of list
+            day_info["exercises"].pop(i)
+            day_info["exercises"].insert(0, exercise_info)
+            
+            print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
 
     print(day_info)
-    print("--------------------------------")
+    print("--------------------------------\n")
 
     
 
@@ -154,8 +157,8 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_m
     
     return day_info
 
-def has_muscle_priority(priority_muscles, primary_muscles, secondary_muscles):
-    """Check if the exercise has a muscle priority."""
+def has_muscle_priority(priority_muscles, primary_muscles):
+    """Check if the exercise has a muscle priority. If exercise has priority muscle as a primary mover, has priority (return true)"""
     priority_mapping = {
         "Shoulders": {"Side Delts", "Front Delts", "Rear Delts"},
         "Back": {"Upper Back", "Lower Back", "Lats", "Traps"},
@@ -168,17 +171,26 @@ def has_muscle_priority(priority_muscles, primary_muscles, secondary_muscles):
         "Calves": {"Calves"}
     }
 
-    # combine primary and secondary muscles 
-    all_muscles = set(primary_muscles) | set(secondary_muscles)
-    
     # check if any of the muscles in the priority mapping are in the all_muscles set
     for priority in priority_muscles:
         specific_muscles = priority_mapping.get(priority, {priority})
-        if specific_muscles & all_muscles:
+        if specific_muscles & set(primary_muscles):
             return True
     return False
 
-def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises, priority_muscles):
+def has_muscle_interference(exercise_1, exercise_2):
+    """Check if two exercises have muscle interference."""
+    # You can define the muscles involved in each exercise based on primary and secondary muscles
+    muscles_1 = set(exercise_1["primary_muscles"]) | set(exercise_1["secondary_muscles"])
+    muscles_2 = set(exercise_2["primary_muscles"]) | set(exercise_2["secondary_muscles"])
+    
+    # If there's any overlap in the muscles, it's an interference
+    if muscles_1 & muscles_2:
+        return True
+    
+    return False
+
+def generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises, priority_muscles, isolation_first):
     """Generate workout plans based on user preferences."""
     workout_plans = []
     workout_splits = get_workout_splits(days_available)
@@ -191,7 +203,7 @@ def generate_plans(days_available, equipment, approach, see_plans, bodyweight_ex
         }
         
         for day in split.workout_days:
-            day_info = generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles)
+            day_info = generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles, isolation_first)
             plan["days"].append(day_info)
         
         workout_plans.append(plan)

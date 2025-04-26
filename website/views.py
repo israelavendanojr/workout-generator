@@ -19,13 +19,14 @@ def home():
         bodyweight_exercises = request.form.get("bodyweight_exercises")
         priority_muscles_raw = request.form.get("priority_muscles")
         priority_muscles = priority_muscles_raw.split(",") if priority_muscles_raw else []
+        isolation_first = request.form.get("isolation_first")
         # validate preferences
         if days_available < 1 or 6 < days_available:
             flash('Days per week must be within 2-6', category='error')
         elif len(equipment) < 1:
             flash('Must fill equipment field', category='error')
         else:
-            workout_plans = generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises, priority_muscles)
+            workout_plans = generate_plans(days_available, equipment, approach, see_plans, bodyweight_exercises, priority_muscles, isolation_first)
             # flash('Generated workout plan!', category='success')
             
             # session to store across requests, convert to json bc session can only store simple types

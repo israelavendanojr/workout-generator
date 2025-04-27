@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import SavedPlan, Exercise
+from website.models import SavedPlan, Exercise, ExerciseRole
 from collections import defaultdict
 from website.generate_plan import generate_plans
 
@@ -112,7 +112,9 @@ def saved_plans():
             'name': exercise.name,
         })
 
-    return render_template("saved_plans.html", user=current_user, plans=plans, exercises_by_role=exercises_by_role_serializable)
+    exercise_roles = ExerciseRole.query.all()
+
+    return render_template("saved_plans.html", user=current_user, plans=plans, exercises_by_role=exercises_by_role_serializable, exercise_roles=exercise_roles)
 
 @views.route('/delete_plan/<int:plan_id>', methods=['POST'])
 @login_required
@@ -202,3 +204,10 @@ def rename_plan():
         flash('Plan not found or access denied.', category='error')
 
     return redirect(url_for('views.saved_plans'))
+
+@views.route('/add_exercise', methods=['POST'])
+@login_required
+def add_exercise():
+    plan_id = request.form.get('plan_id')
+    exercise_role = request.form.get('exercise_role')
+    exercise_id = request.form.get('exercise_id')

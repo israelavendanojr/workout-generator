@@ -135,6 +135,8 @@ class SavedPlan(db.Model):
     # stored as json 
     plan = db.Column(db.Text, unique=True, nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    days = db.relationship('SavedDay', backref='saved_plan', cascade="all, delete-orphan")
+
 
     def __init__(self, split_name, plan_data, user_id):
         self.split_name = split_name
@@ -147,3 +149,23 @@ class SavedPlan(db.Model):
                 return json.loads(self.plan)  # Convert JSON string back to dict
             except json.JSONDecodeError as e:
                 return {} 
+            
+
+class SavedDay(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saved_plan_id = db.Column(db.Integer, db.ForeignKey('saved_plan.id'), nullable=False)
+    day_name = db.Column(db.String(100), nullable=False)
+
+    exercises = db.relationship('PlanExercise', backref='workout_day', cascade="all, delete-orphan")
+
+class SavedExercise(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saved_day_id = db.Column(db.Integer, db.ForeignKey('saved_day.id'), nullable=False)
+    exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
+    sets = db.Column(db.Integer, nullable=False)
+    start_reps = db.Column(db.Integer, nullable=False)
+    end_reps = db.Column(db.Integer, nullable=False)
+    to_failure = db.Column(db.Boolean, default=False)
+    order = db.Column(db.Integer, nullable=False)
+
+    exercise = db.relationship('Exercise')

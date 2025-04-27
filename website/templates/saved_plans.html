@@ -55,7 +55,12 @@
                                     </div>
                                     {% endfor %}
                                   </div>
-                                  
+
+                                  <!-- Add Exercise Button -->
+                                  <button class="btn btn-primary btn-sm w-100 mt-3" data-bs-toggle="modal" 
+                                        data-bs-target="#addExerciseModal" data-day-id="{{ day.id }}" data-plan-id="{{ plan.id }}">
+                                    Add Exercise
+                                </button>
                             </li>
                             {% endfor %}
                         </ul>
@@ -161,6 +166,62 @@
         </div>
     </div>
 
+    <!-- Add Exercise Modal -->
+    <div class="modal fade" id="addExerciseModal" tabindex="-1" aria-labelledby="addExerciseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('views.add_exercise') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addExerciseModalLabel">Add Exercise</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="plan_id" id="planId">
+    
+                        <!-- Exercise Role Dropdown -->
+                        <div class="mb-3">
+                            <label for="exercise_role" class="form-label">Choose Exercise Role</label>
+                            <select class="form-control" id="exercise_role" name="exercise_role" required>
+                                <option value="">Select Role</option>
+                                {% for role in exercise_roles %}
+                                    <option value="{{ role.name }}">{{ role.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+    
+                        <!-- Exercise Dropdown (populated dynamically) -->
+                        <div class="mb-3">
+                            <label for="exercise" class="form-label">Choose Exercise</label>
+                            <select class="form-control" id="exercise" name="exercise_id" required>
+                                <option value="">Select an Exercise</option>
+                            </select>
+                        </div>
+    
+                        <!-- Sets and Reps Input -->
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <label for="sets" class="form-label">Sets</label>
+                                <input type="number" class="form-control" id="sets" name="sets" required>
+                            </div>
+                            <div class="col-4">
+                                <label for="start_reps" class="form-label">Start Reps</label>
+                                <input type="number" class="form-control" id="start_reps" name="start_reps" required>
+                            </div>
+                            <div class="col-4">
+                                <label for="end_reps" class="form-label">End Reps</label>
+                                <input type="number" class="form-control" id="end_reps" name="end_reps" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Add Exercise</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
@@ -232,6 +293,33 @@
 
             document.getElementById('renamePlanId').value = planId;
             document.getElementById('newPlanName').value = currentName;
+        });
+    });
+</script>
+
+<!-- Populate Exercise Dropdown Based on Exercise Role -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const exerciseRoleDropdown = document.getElementById('exercise_role');
+        const exerciseDropdown = document.getElementById('exercise');
+        const exercisesByRole = {{ exercises_by_role | tojson }};
+        
+        // When the exercise role changes, update the exercise dropdown
+        exerciseRoleDropdown.addEventListener('change', function () {
+            const selectedRole = exerciseRoleDropdown.value;
+            
+            // Clear the current exercise dropdown options
+            exerciseDropdown.innerHTML = '<option value="">Select an Exercise</option>';
+            
+            // If a role is selected, populate the exercise dropdown with the corresponding exercises
+            if (selectedRole && exercisesByRole[selectedRole]) {
+                exercisesByRole[selectedRole].forEach(function(exercise) {
+                    const option = document.createElement('option');
+                    option.value = exercise.id;
+                    option.text = exercise.name;
+                    exerciseDropdown.appendChild(option);
+                });
+            }
         });
     });
 </script>

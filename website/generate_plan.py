@@ -217,7 +217,7 @@ def reorder_exercises_with_priority(day_info, priority_muscles, muscle_exception
                     break  # Stop moving up if they belong to the same muscle group
 
                 # If it's a compound exercise or isolation first is true, ignore muscle interference
-                if exercise_info["isCompound"] or isolation_first:
+                if exercise_info["isCompound"]:
                     day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
                     i -= 1
                 else:

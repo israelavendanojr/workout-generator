@@ -99,7 +99,8 @@ def save_plan():
 @login_required
 def saved_plans():
     plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
-
+    for plan in plans:
+        print(plan.plan)
     # Group exercises by role for dropdown options
     exercises = Exercise.query.all()
     exercises_by_role = defaultdict(list)

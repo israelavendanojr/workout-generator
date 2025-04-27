@@ -101,6 +101,7 @@ def create_null_exercise_info(role):
         "start_reps": 0,
         "end_reps": 0,
         "role": None,
+        "id": None,
         "toFailure": None,
         "exercise_obj": None,
         "primary_muscles": None,

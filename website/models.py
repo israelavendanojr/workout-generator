@@ -150,14 +150,15 @@ class SavedPlan(db.Model):
             except json.JSONDecodeError as e:
                 return {} 
             
-
+# Saved workout day, contains saved exercise information for a single workout day
 class SavedDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saved_plan_id = db.Column(db.Integer, db.ForeignKey('saved_plan.id'), nullable=False)
     day_name = db.Column(db.String(100), nullable=False)
 
-    exercises = db.relationship('PlanExercise', backref='workout_day', cascade="all, delete-orphan")
+    exercises = db.relationship('SavedExercise', backref='workout_day', cascade="all, delete-orphan")
 
+# Saved exercise, contains saved exercise information for a single exercise
 class SavedExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saved_day_id = db.Column(db.Integer, db.ForeignKey('saved_day.id'), nullable=False)

@@ -25,23 +25,37 @@
                                 <!-- Added margin bottom for space between days -->
                                 <strong class="mb-2 d-block text-primary">{{ day.name }}</strong>
                                 <!-- Added margin bottom for spacing between title and exercises -->
-                                <ul>
+                                <div class="list-group">
                                     {% for exercise in day.exercises %}
-                                    <li class="list-group-item" data-bs-toggle="modal" data-bs-target="#exerciseModal"
-                                        data-exercise-id="{{ exercise.id }}" data-exercise-name="{{ exercise.name }}"
-                                        data-exercise-role="{{ exercise.role.name }}" data-sets="{{ exercise.sets }}"
-                                        data-start-reps="{{ exercise.start_reps }}"
-                                        data-end-reps="{{ exercise.end_reps }}" data-plan-id="{{ plan.id }}">
-
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                      <div>
+                                        <h6 class="mb-1">{{ exercise.name }}</h6>
                                         {% if exercise.toFailure %}
-                                        {{ exercise.name }} : {{ exercise.sets }} x AMRAP
+                                        <small class="text-muted">{{ exercise.sets }} × AMRAP</small>
                                         {% else %}
-                                        {{ exercise.name }} : {{ exercise.sets }} x {{ exercise.start_reps }}–{{
-                                        exercise.end_reps }}
+                                        <small class="text-muted">{{ exercise.sets }} × {{ exercise.start_reps }}–{{ exercise.end_reps }} reps</small>
                                         {% endif %}
-                                    </li>
+                                      </div>
+                                      <div class="d-flex">
+                                        <button class="btn btn-sm btn-outline-secondary me-1" disabled>⬆️</button>
+                                        <button class="btn btn-sm btn-outline-secondary me-1" disabled>⬇️</button>
+                                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
+                                                data-bs-target="#exerciseModal"
+                                                data-exercise-id="{{ exercise.id }}"
+                                                data-exercise-name="{{ exercise.name }}"
+                                                data-exercise-role="{{ exercise.role.name }}"
+                                                data-sets="{{ exercise.sets }}"
+                                                data-start-reps="{{ exercise.start_reps }}"
+                                                data-end-reps="{{ exercise.end_reps }}"
+                                                data-plan-id="{{ plan.id }}">
+                                          ✏️
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" disabled>🗑️</button>
+                                      </div>
+                                    </div>
                                     {% endfor %}
-                                </ul>
+                                  </div>
+                                  
                             </li>
                             {% endfor %}
                         </ul>

@@ -160,8 +160,8 @@ def move_exercises_with_priority(day_info, priority_muscles, muscle_exceptions=N
         if has_priority:
             # Move exercise up to the top of the list, until there is muscle interference
             while i > 0:
-                # If it's a compound exercise, ignore muscle interference
-                if exercise_info["isCompound"]:
+                # If it's a compound exercise or isolation first is true, ignore muscle interference
+                if exercise_info["isCompound"] or isolation_first:
                     # If it's compound, allow it to move past interference
                     day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
                     i -= 1  # Update index to the new position of the exercise

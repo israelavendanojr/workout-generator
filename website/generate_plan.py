@@ -140,12 +140,12 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_m
         day_info["exercises"].append(exercise_info)
 
     muscle_exceptions = ["Rear Delts", "Front Delts"]
-    move_exercises_with_priority(day_info, priority_muscles)
+    move_exercises_with_priority(day_info, priority_muscles, muscle_exceptions, isolation_first)
     
     return day_info
 
 
-def move_exercises_with_priority(day_info, priority_muscles, muscle_exceptions=None):
+def move_exercises_with_priority(day_info, priority_muscles, muscle_exceptions=None, isolation_first=False):
     """
     Reorder exercises by priority, moving exercises up if they are given specified priority.
     They will stop moving up when there is muscle interference, unless the exercise is associated with a muscle group in the exceptions list.

@@ -132,9 +132,8 @@ class Exercise(db.Model):
 class SavedPlan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     split_name = db.Column(db.String(100), nullable=False)
-    # stored as json 
-    plan = db.Column(db.Text, unique=True, nullable=False) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
     days = db.relationship('SavedDay', backref='saved_plan', cascade="all, delete-orphan")
 
 
@@ -143,12 +142,6 @@ class SavedPlan(db.Model):
         self.plan = json.dumps(plan_data)  # Convert dict to JSON string
         self.user_id = user_id
 
-    def get_plan_data(self):
-            """Ensure the stored plan is returned as a dictionary"""
-            try:
-                return json.loads(self.plan)  # Convert JSON string back to dict
-            except json.JSONDecodeError as e:
-                return {} 
             
 # Saved workout day, contains saved exercise information for a single workout day
 class SavedDay(db.Model):

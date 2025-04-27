@@ -1,5 +1,5 @@
 from website import create_app, db
-from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType, MuscleGroup, primary_muscle_association, secondary_muscle_association, Equipment
+from website.models import WorkoutSplit, WorkoutDay, split_day_association, Exercise, ExerciseRole, day_role_association, ExerciseType, MuscleGroup, primary_muscle_association, secondary_muscle_association, Equipment, SavedPlan
 
 app = create_app()
 
@@ -10,6 +10,9 @@ def clear():
     db.session.query(split_day_association).delete()
     db.session.query(primary_muscle_association).delete()
     db.session.query(secondary_muscle_association).delete()
+
+    # Delete saved plans
+    # db.session.query(SavedPlan).delete()
 
     # Then delete the main tables in the correct order
     db.session.query(Exercise).delete()  # Delete exercises first
@@ -494,6 +497,7 @@ def populate():
 
 def handle_populate():
         clear()
+        print("\nDATABASE CLEARED\n")
         populate()
         print("\nDATABASE POPULATED\n")
 

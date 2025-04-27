@@ -136,10 +136,8 @@ class SavedPlan(db.Model):
 
     days = db.relationship('SavedDay', backref='saved_plan', cascade="all, delete-orphan")
 
-
-    def __init__(self, split_name, plan_data, user_id):
+    def __init__(self, split_name, user_id):
         self.split_name = split_name
-        self.plan = json.dumps(plan_data)  # Convert dict to JSON string
         self.user_id = user_id
 
             
@@ -156,6 +154,7 @@ class SavedExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saved_day_id = db.Column(db.Integer, db.ForeignKey('saved_day.id'), nullable=False)
     exercise_id = db.Column(db.Integer, db.ForeignKey('exercise.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     sets = db.Column(db.Integer, nullable=False)
     start_reps = db.Column(db.Integer, nullable=False)
     end_reps = db.Column(db.Integer, nullable=False)

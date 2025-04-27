@@ -20,17 +20,15 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
-                            {% for day in plan.get_plan_data().days %}
+                            {% for day in plan.days %}
                             <li class="list-group-item border-top mb-4">
-                                <!-- Added margin bottom for space between days -->
-                                <strong class="mb-2 d-block text-primary">{{ day.name }}</strong>
-                                <!-- Added margin bottom for spacing between title and exercises -->
+                                <strong class="mb-2 d-block text-primary">{{ day.day_name }}</strong>
                                 <div class="list-group">
-                                    {% for exercise in day.exercises %}
+                                    {% for exercise in day.exercises|sort(attribute='order') %}
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
                                       <div>
-                                        <h6 class="mb-1">{{ exercise.name }}</h6>
-                                        {% if exercise.toFailure %}
+                                        <h6 class="mb-1">{{ exercise.exercise.name }}</h6>
+                                        {% if exercise.to_failure %}
                                         <small class="text-muted">{{ exercise.sets }} × AMRAP</small>
                                         {% else %}
                                         <small class="text-muted">{{ exercise.sets }} × {{ exercise.start_reps }}–{{ exercise.end_reps }} reps</small>
@@ -42,8 +40,9 @@
                                         <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal"
                                                 data-bs-target="#exerciseModal"
                                                 data-exercise-id="{{ exercise.id }}"
-                                                data-exercise-name="{{ exercise.name }}"
-                                                data-exercise-role="{{ exercise.role.name }}"
+                                                data-exercise-name="{{ exercise.exercise.name }}"
+                                                data-exercise-role="{{ exercise.exercise.role.name }}"
+                                                data-exercise-exercise-id="{{ exercise.exercise.id }}"
                                                 data-sets="{{ exercise.sets }}"
                                                 data-start-reps="{{ exercise.start_reps }}"
                                                 data-end-reps="{{ exercise.end_reps }}"
@@ -193,7 +192,7 @@
                         <div class="mb-3">
                             <label for="exercise" class="form-label">Choose Exercise</label>
                             <select class="form-control" id="exercise" name="exercise_id" required>
-                                <option value="">Select an Exercise</option>
+                                
                             </select>
                         </div>
     
@@ -221,7 +220,6 @@
         </div>
     </div>
 
-
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
@@ -244,80 +242,71 @@
             const exerciseId = button.getAttribute('data-exercise-id');
             const exerciseName = button.getAttribute('data-exercise-name');
             const exerciseRole = button.getAttribute('data-exercise-role');
+            const exerciseExerciseId = button.getAttribute('data-exercise-exercise-id');
             const sets = button.getAttribute('data-sets');
             const startReps = button.getAttribute('data-start-reps');
             const endReps = button.getAttribute('data-end-reps');
             const planId = button.getAttribute('data-plan-id');
 
-            // Set the values into the modal form fields
-            document.getElementById('exerciseId').value = exerciseId;  // Hidden input for exercise_id
-            document.getElementById('exerciseName').value = `${exerciseName} (${exerciseRole})`;
+            // Update modal fields
+            document.getElementById('exerciseId').value = exerciseId;
+            document.getElementById('planId').value = planId;
+            document.getElementById('exerciseName').value = exerciseName;
             document.getElementById('sets').value = sets;
             document.getElementById('start_reps').value = startReps;
             document.getElementById('end_reps').value = endReps;
-            document.getElementById('planId').value = planId;
 
-            // Populate the dropdown with exercise options
-            const dropdown = document.getElementById('new_exercise');
-            dropdown.innerHTML = '';  // Clear previous options
-
+            // Populate exercise dropdown based on role
+            const exerciseSelect = document.getElementById('new_exercise');
+            // exerciseSelect.innerHTML = '<option value="">Select an Exercise</option>';
+            
             if (allExercises[exerciseRole]) {
-                allExercises[exerciseRole].forEach(ex => {
+                allExercises[exerciseRole].forEach(exercise => {
                     const option = document.createElement('option');
-                    option.value = ex.id;
-                    option.text = ex.name;
-
-                    // Set the current exercise as selected
-                    if (ex.name === exerciseName) {
+                    option.value = exercise.id;
+                    option.textContent = exercise.name;
+                    // Compare with the actual exercise ID
+                    if (parseInt(exercise.id) === parseInt(exerciseExerciseId)) {
                         option.selected = true;
                     }
-
-                    dropdown.appendChild(option);
+                    exerciseSelect.appendChild(option);
                 });
-            } else {
-                const option = document.createElement('option');
-                option.text = 'No exercises available for this role';
-                dropdown.appendChild(option);
             }
         });
-    });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const renameModal = document.getElementById('renamePlanModal');
-        renameModal.addEventListener('show.bs.modal', function (event) {
+        // Handle rename plan modal
+        const renamePlanModal = document.getElementById('renamePlanModal');
+        renamePlanModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const planId = button.getAttribute('data-plan-id');
             const currentName = button.getAttribute('data-current-name');
-
+            
             document.getElementById('renamePlanId').value = planId;
             document.getElementById('newPlanName').value = currentName;
         });
-    });
-</script>
 
-<!-- Populate Exercise Dropdown Based on Exercise Role -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const exerciseRoleDropdown = document.getElementById('exercise_role');
-        const exerciseDropdown = document.getElementById('exercise');
-        const exercisesByRole = {{ exercises_by_role | tojson }};
-        
-        // When the exercise role changes, update the exercise dropdown
-        exerciseRoleDropdown.addEventListener('change', function () {
-            const selectedRole = exerciseRoleDropdown.value;
+        // Handle add exercise modal
+        const addExerciseModal = document.getElementById('addExerciseModal');
+        addExerciseModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const planId = button.getAttribute('data-plan-id');
+            document.getElementById('planId').value = planId;
+        });
+
+        // Handle exercise role change
+        const exerciseRoleSelect = document.getElementById('exercise_role');
+        const exerciseSelect = document.getElementById('exercise');
+
+        exerciseRoleSelect.addEventListener('change', function() {
+            const selectedRole = this.value;
+            exerciseSelect.innerHTML = '<option value="">Select an Exercise</option>';
             
-            // Clear the current exercise dropdown options
-            exerciseDropdown.innerHTML = '<option value="">Select an Exercise</option>';
-            
-            // If a role is selected, populate the exercise dropdown with the corresponding exercises
-            if (selectedRole && exercisesByRole[selectedRole]) {
-                exercisesByRole[selectedRole].forEach(function(exercise) {
+            if (allExercises[selectedRole]) {
+                allExercises[selectedRole].forEach(exercise => {
                     const option = document.createElement('option');
                     option.value = exercise.id;
-                    option.text = exercise.name;
-                    exerciseDropdown.appendChild(option);
+                    option.textContent = exercise.name;
+                    exerciseSelect.appendChild(option);
                 });
             }
         });

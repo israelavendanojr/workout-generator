@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import SavedPlan, Exercise, ExerciseRole
+from website.models import SavedPlan, Exercise, ExerciseRole, SavedDay, SavedExercise
 from collections import defaultdict
 from website.generate_plan import generate_plans
 
@@ -60,7 +60,7 @@ def generated_plans():
 @views.route('/save_plan', methods=['POST'])
 @login_required
 def save_plan():
-    user = current_user  # however you're handling users
+    user = current_user
     split_name = request.form.get('split_name')
     plan_data_raw = request.form.get('plan_data')
 
@@ -70,28 +70,41 @@ def save_plan():
         flash("Invalid plan data.", "danger")
         return redirect(url_for('views.generated_plans'))
 
-    # Serialize in a normalized way to compare plans
-    def normalize(plan):
-        return json.dumps(plan, sort_keys=True)
-
-    normalized_new = normalize(new_plan_data)
-
-    # Check if this normalized plan already exists
-    for existing_plan in user.saved_plans:  # adjust depending on your ORM structure
-        existing_data = existing_plan.get_plan_data()  # or existing_plan.plan_data
-        if normalize(existing_data) == normalized_new:
-            flash("This plan is already saved.", "info")
-            return redirect(url_for('views.saved_plans'))
-
-    # If it's unique, save it
+    # Create new saved plan
     new_plan = SavedPlan(
-        user_id=user.id,
         split_name=split_name,
-        plan_data=new_plan_data
+        user_id=user.id
     )
     db.session.add(new_plan)
-    db.session.commit()
+    db.session.flush()  # Get the new plan's ID
 
+    # Create saved days and exercises
+    for day_data in new_plan_data['days']:
+        saved_day = SavedDay(
+            saved_plan_id=new_plan.id,
+            day_name=day_data['name']
+        )
+        db.session.add(saved_day)
+        db.session.flush()  # Get the new day's ID
+
+        # Add exercises for this day
+        for i, exercise_data in enumerate(day_data['exercises']):
+            # Get the exercise from the database
+            exercise = Exercise.query.get(exercise_data['exercise_id'])
+            if exercise:  # Skip if exercise not found
+                saved_exercise = SavedExercise(
+                    saved_day_id=saved_day.id,
+                    exercise_id=exercise.id,
+                    name=exercise.name,
+                    sets=exercise_data['sets'],
+                    start_reps=exercise_data['start_reps'],
+                    end_reps=exercise_data['end_reps'],
+                    to_failure=exercise_data.get('to_failure', False),  # Default to False if not specified
+                    order=i
+                )
+                db.session.add(saved_exercise)
+
+    db.session.commit()
     flash("Plan saved successfully!", "info")
     return redirect(url_for('views.saved_plans'))
 
@@ -99,15 +112,14 @@ def save_plan():
 @login_required
 def saved_plans():
     plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
-    for plan in plans:
-        print(plan.plan)
+
     # Group exercises by role for dropdown options
     exercises = Exercise.query.all()
     exercises_by_role = defaultdict(list)
     exercises_by_role_serializable = defaultdict(list)
 
     for exercise in exercises:
-        role_name = exercise.role.name  # turn ExerciseRole into plain string
+        role_name = exercise.role.name
         exercises_by_role_serializable[role_name].append({
             'id': exercise.id,
             'name': exercise.name,
@@ -152,41 +164,31 @@ def swap_exercise():
         flash("Unauthorized plan access", "danger")
         return redirect(url_for('views.saved_plans'))
 
-    # Load JSON and find the old exercise
-    plan_data = saved_plan.get_plan_data()
-    found = False
-
-    for day in plan_data['days']:
-        for i, exercise in enumerate(day['exercises']):
-            if exercise['id'] == old_exercise_id:
-                new_exercise = Exercise.query.get(new_exercise_id)
-                if not new_exercise:
-                    flash("New exercise not found", "danger")
-                    return redirect(url_for('views.saved_plans'))
-
-                # Update exercise info in JSON
-                day['exercises'][i] = {
-                    "name": new_exercise.name,
-                    "sets": new_sets,
-                    "start_reps": new_start_reps,
-                    "end_reps": new_end_reps,
-                    "role": {
-                        "id": new_exercise.role.id,
-                        "name": new_exercise.role.name
-                    },
-                    "id": new_exercise.id
-                }
-                found = True
-                break
-
-    if not found:
+    # Find the saved exercise to update
+    saved_exercise = SavedExercise.query.filter_by(id=old_exercise_id).first()
+    if not saved_exercise:
         flash("Exercise not found in plan", "danger")
         return redirect(url_for('views.saved_plans'))
 
-    # Save updated JSON back to the plan
-    saved_plan.plan = json.dumps(plan_data)
-    db.session.commit()
+    # Verify the exercise belongs to the plan
+    if saved_exercise.workout_day.saved_plan_id != plan_id:
+        flash("Exercise does not belong to this plan", "danger")
+        return redirect(url_for('views.saved_plans'))
 
+    # Get the new exercise
+    new_exercise = Exercise.query.get(new_exercise_id)
+    if not new_exercise:
+        flash("New exercise not found", "danger")
+        return redirect(url_for('views.saved_plans'))
+
+    # Update the saved exercise
+    saved_exercise.exercise_id = new_exercise.id
+    saved_exercise.name = new_exercise.name
+    saved_exercise.sets = new_sets
+    saved_exercise.start_reps = new_start_reps
+    saved_exercise.end_reps = new_end_reps
+
+    db.session.commit()
     flash("Changes saved successfully!", "success")
     return redirect(url_for('views.saved_plans'))
 

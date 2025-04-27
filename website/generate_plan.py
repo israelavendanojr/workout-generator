@@ -73,40 +73,26 @@ def determine_sets_and_reps(exercise, approach):
 
 def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=False):
     """Create exercise information dictionary."""
-    primary_muscles = [muscle.name for muscle in exercise.primary_muscles]
-    secondary_muscles = [muscle.name for muscle in exercise.secondary_muscles]
-    is_compound = exercise.type == ExerciseType.COMPOUND
-
     return {
+        "exercise_id": exercise.id,
         "name": exercise.name,
         "sets": sets,
         "start_reps": start_reps,
         "end_reps": end_reps,
-        "role": {
-            "id": role.id,
-            "name": role.name
-        },
-        "id": exercise.id,
-        "toFailure": to_failure,
-        "primary_muscles": primary_muscles,
-        "secondary_muscles": secondary_muscles,
-        "isCompound": is_compound
+        "to_failure": to_failure,
+        "order": 0  # This will be set when saving to the database
     }
 
 def create_null_exercise_info(role):
     """Create null exercise information when no suitable exercise is found."""
     return {
+        "exercise_id": None,
         "name": f"No suitable exercise for {role.name} found",
         "sets": 0,
         "start_reps": 0,
         "end_reps": 0,
-        "role": None,
-        "id": None,
-        "toFailure": None,
-        "exercise_obj": None,
-        "primary_muscles": None,
-        "secondary_muscles": None,
-        "isCompound": None
+        "to_failure": False,
+        "order": 0
     }
 
 def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles, isolation_first):
@@ -124,7 +110,6 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_m
 
     # Generate exercises for the day
     day_info["exercises"] = generate_exercises_for_day(day, equipment, approach, bodyweight_exercises)
-
 
     muscle_exceptions = ["Rear Delts", "Front Delts"]
     reorder_exercises_with_priority(day_info, priority_muscles, muscle_exceptions, isolation_first)
@@ -177,26 +162,39 @@ def reorder_exercises_with_priority(day_info, priority_muscles, muscle_exception
     
     def get_muscle_group(exercise):
         """Return the muscle group the exercise belongs to."""
+        # Get the actual exercise object from the database
+        exercise_obj = Exercise.query.get(exercise["exercise_id"])
+        if not exercise_obj:
+            return "Other"
 
         for group, muscles in priority_mapping.items():
-            if any(muscle in muscles for muscle in exercise["primary_muscles"]):
+            if any(muscle.name in muscles for muscle in exercise_obj.primary_muscles):
                 return group
         return "Other"  # Default to "Other" if no match is found
 
-    def has_muscle_priority(priority_muscles, primary_muscles):
-        """Check if the exercise has a muscle priority. If exercise has priority muscle as a primary mover, has priority (return true)."""
+    def has_muscle_priority(priority_muscles, exercise_id):
+        """Check if the exercise has a muscle priority."""
+        exercise_obj = Exercise.query.get(exercise_id)
+        if not exercise_obj:
+            return False
 
         # Check if any of the muscles in the priority mapping are in the primary_muscles set
         for priority in priority_muscles:
             specific_muscles = priority_mapping.get(priority, {priority})
-            if specific_muscles & set(primary_muscles):
+            if any(muscle.name in specific_muscles for muscle in exercise_obj.primary_muscles):
                 return True
         return False
 
-    def has_muscle_interference(exercise_1, exercise_2):
+    def has_muscle_interference(exercise_1_id, exercise_2_id):
         """Check if two exercises have muscle interference."""
-        muscles_1 = set(exercise_1["primary_muscles"]) | set(exercise_1["secondary_muscles"])
-        muscles_2 = set(exercise_2["primary_muscles"]) | set(exercise_2["secondary_muscles"])
+        exercise_1 = Exercise.query.get(exercise_1_id)
+        exercise_2 = Exercise.query.get(exercise_2_id)
+        
+        if not exercise_1 or not exercise_2:
+            return False
+
+        muscles_1 = {muscle.name for muscle in exercise_1.primary_muscles} | {muscle.name for muscle in exercise_1.secondary_muscles}
+        muscles_2 = {muscle.name for muscle in exercise_2.primary_muscles} | {muscle.name for muscle in exercise_2.secondary_muscles}
 
         if muscles_1 & muscles_2:  # If there's any overlap in the muscles, it's an interference
             return True
@@ -204,7 +202,13 @@ def reorder_exercises_with_priority(day_info, priority_muscles, muscle_exception
 
     for i in range(len(day_info["exercises"])):
         exercise_info = day_info["exercises"][i]
-        has_priority = has_muscle_priority(priority_muscles, exercise_info["primary_muscles"])
+        exercise_obj = Exercise.query.get(exercise_info["exercise_id"])
+        
+        if not exercise_obj:
+            print(f"Warning: Exercise with ID {exercise_info['exercise_id']} not found")
+            continue
+
+        has_priority = has_muscle_priority(priority_muscles, exercise_info["exercise_id"])
         current_muscle_group = get_muscle_group(exercise_info)
 
         # Move exercise up to the top of the list, until there is muscle interference
@@ -218,21 +222,20 @@ def reorder_exercises_with_priority(day_info, priority_muscles, muscle_exception
                     break  # Stop moving up if they belong to the same muscle group
 
                 # If it's a compound exercise or isolation first is true, ignore muscle interference
-                if exercise_info["isCompound"]:
+                if exercise_obj.type == ExerciseType.COMPOUND:
                     day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
                     i -= 1
                 else:
-                    exercise_muscles = set(exercise_info["primary_muscles"]) | set(exercise_info["secondary_muscles"])
-                    if any(muscle in muscle_exceptions for muscle in exercise_muscles) or not has_muscle_interference(day_info["exercises"][i], day_info["exercises"][i - 1]):
+                    if not has_muscle_interference(exercise_info["exercise_id"], prev_exercise_info["exercise_id"]):
                         day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
                         i -= 1
                     else:
                         break  # Stop moving up if there's interference and the exercise is not in the exception group
 
-            print(f"Moved {exercise_info['name']} to top")
+            print(f"Moved {exercise_obj.name} to top")
 
         # Print exercise name and its involved muscles
-        print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
+        print(exercise_obj.name, [m.name for m in exercise_obj.primary_muscles], [m.name for m in exercise_obj.secondary_muscles])
 
     # Print the final order of exercises after prioritization
     print(day_info)

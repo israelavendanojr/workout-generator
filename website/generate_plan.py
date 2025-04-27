@@ -75,7 +75,8 @@ def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=
     """Create exercise information dictionary."""
     primary_muscles = [muscle.name for muscle in exercise.primary_muscles]
     secondary_muscles = [muscle.name for muscle in exercise.secondary_muscles]
-    
+    is_compound = exercise.type == ExerciseType.COMPOUND
+
     return {
         "name": exercise.name,
         "sets": sets,
@@ -88,7 +89,8 @@ def create_exercise_info(exercise, role, sets, start_reps, end_reps, to_failure=
         "id": exercise.id,
         "toFailure": to_failure,
         "primary_muscles": primary_muscles,
-        "secondary_muscles": secondary_muscles
+        "secondary_muscles": secondary_muscles,
+        "isCompound": is_compound
     }
 
 def create_null_exercise_info(role):
@@ -102,7 +104,8 @@ def create_null_exercise_info(role):
         "toFailure": None,
         "exercise_obj": None,
         "primary_muscles": None,
-        "secondary_muscles": None
+        "secondary_muscles": None,
+        "isCompound": None
     }
 
 def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_muscles, isolation_first):
@@ -136,25 +139,51 @@ def generate_day_plan(day, equipment, approach, bodyweight_exercises, priority_m
             
         day_info["exercises"].append(exercise_info)
 
-    # Reorder exercises by priority, bottle neck exercises up if they are given specified priority
+    muscle_exceptions = ["Rear Delts", "Front Delts"]
+    move_exercises_with_priority(day_info, priority_muscles)
+    
+    return day_info
+
+
+def move_exercises_with_priority(day_info, priority_muscles, muscle_exceptions=None):
+    """
+    Reorder exercises by priority, moving exercises up if they are given specified priority.
+    They will stop moving up when there is muscle interference, unless the exercise is associated with a muscle group in the exceptions list.
+    """
+    if muscle_exceptions is None:
+        muscle_exceptions = set()  # No exceptions by default
+    
     for i in range(len(day_info["exercises"])):
         exercise_info = day_info["exercises"][i]
         has_priority = has_muscle_priority(priority_muscles, exercise_info["primary_muscles"])
-        if (has_priority):
-            # move exercise up to top of list
-            day_info["exercises"].pop(i)
-            day_info["exercises"].insert(0, exercise_info)
-            
-            print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
+        
+        if has_priority:
+            # Move exercise up to the top of the list, until there is muscle interference
+            while i > 0:
+                # If it's a compound exercise, ignore muscle interference
+                if exercise_info["isCompound"]:
+                    # If it's compound, allow it to move past interference
+                    day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
+                    i -= 1  # Update index to the new position of the exercise
+                else:
+                    exercise_muscles = set(exercise_info["primary_muscles"]) | set(exercise_info["secondary_muscles"])
+                    # For isolation exercises, check for interference
+                    if any(muscle in muscle_exceptions for muscle in exercise_muscles) or not has_muscle_interference(day_info["exercises"][i], day_info["exercises"][i - 1]):
+                        # Swap the exercise with the one above it
+                        day_info["exercises"][i], day_info["exercises"][i - 1] = day_info["exercises"][i - 1], day_info["exercises"][i]
+                        i -= 1  # Update index to the new position of the exercise
+                    else:
+                        break  # Stop moving up if there's interference and the exercise is not in the exception group
 
+            print(f"Moved {exercise_info['name']} to top")
+
+        # Print exercise name and its involved muscles
+        print(exercise_info["name"], exercise_info["primary_muscles"], exercise_info["secondary_muscles"])
+
+    # Print the final order of exercises after prioritization
     print(day_info)
     print("--------------------------------\n")
-
-    
-
-
-
-    
+        
     return day_info
 
 def has_muscle_priority(priority_muscles, primary_muscles):

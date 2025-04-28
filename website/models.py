@@ -146,6 +146,7 @@ class SavedDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     saved_plan_id = db.Column(db.Integer, db.ForeignKey('saved_plan.id'), nullable=False)
     day_name = db.Column(db.String(100), nullable=False)
+    order = db.Column(db.Integer, nullable=False)
 
     exercises = db.relationship('SavedExercise', backref='workout_day', cascade="all, delete-orphan")
 

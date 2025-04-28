@@ -60,53 +60,50 @@ def generated_plans():
 @views.route('/save_plan', methods=['POST'])
 @login_required
 def save_plan():
-    user = current_user
-    split_name = request.form.get('split_name')
-    plan_data_raw = request.form.get('plan_data')
-
+    data = request.get_json()
+    plan_name = data.get('plan_name')
+    days = data.get('days', [])
+    
+    if not plan_name or not days:
+        return jsonify({'error': 'Missing required fields'}), 400
+    
     try:
-        new_plan_data = json.loads(plan_data_raw)
-    except json.JSONDecodeError:
-        flash("Invalid plan data.", "danger")
-        return redirect(url_for('views.generated_plans'))
-
-    # Create new saved plan
-    new_plan = SavedPlan(
-        split_name=split_name,
-        user_id=user.id
-    )
-    db.session.add(new_plan)
-    db.session.flush()  # Get the new plan's ID
-
-    # Create saved days and exercises
-    for day_data in new_plan_data['days']:
-        saved_day = SavedDay(
-            saved_plan_id=new_plan.id,
-            day_name=day_data['name']
+        # Create new saved plan
+        saved_plan = SavedPlan(
+            user_id=current_user.id,
+            name=plan_name
         )
-        db.session.add(saved_day)
-        db.session.flush()  # Get the new day's ID
-
-        # Add exercises for this day
-        for i, exercise_data in enumerate(day_data['exercises']):
-            # Get the exercise from the database
-            exercise = Exercise.query.get(exercise_data['exercise_id'])
-            if exercise:  # Skip if exercise not found
+        db.session.add(saved_plan)
+        db.session.flush()  # Get the ID of the new plan
+        
+        # Create saved days with order
+        for index, day in enumerate(days):
+            saved_day = SavedDay(
+                saved_plan_id=saved_plan.id,
+                day_name=day['name'],
+                order=index
+            )
+            db.session.add(saved_day)
+            db.session.flush()  # Get the ID of the new day
+            
+            # Create saved exercises
+            for exercise in day['exercises']:
                 saved_exercise = SavedExercise(
                     saved_day_id=saved_day.id,
-                    exercise_id=exercise.id,
-                    name=exercise.name,
-                    sets=exercise_data['sets'],
-                    start_reps=exercise_data['start_reps'],
-                    end_reps=exercise_data['end_reps'],
-                    to_failure=exercise_data.get('to_failure', False),  # Default to False if not specified
-                    order=i
+                    name=exercise['name'],
+                    sets=exercise['sets'],
+                    reps=exercise['reps'],
+                    weight=exercise.get('weight'),
+                    notes=exercise.get('notes')
                 )
                 db.session.add(saved_exercise)
-
-    db.session.commit()
-    flash("Plan saved successfully!", "info")
-    return redirect(url_for('views.saved_plans'))
+        
+        db.session.commit()
+        return jsonify({'message': 'Plan saved successfully', 'plan_id': saved_plan.id})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @views.route('/saved_plans')
 @login_required
@@ -369,3 +366,32 @@ def reorder_exercise():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+@views.route('/rename-day', methods=['POST'])
+@login_required
+def rename_day():
+    try:
+        day_id = int(request.form.get('day_id', 0))
+        new_name = request.form.get('new_name')
+
+        if not day_id or not new_name:
+            flash("Invalid input data", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the day and verify ownership
+        saved_day = SavedDay.query.get_or_404(day_id)
+        saved_plan = saved_day.saved_plan
+
+        if saved_plan.user_id != current_user.id:
+            flash("Unauthorized access", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Update the day name
+        saved_day.day_name = new_name
+        db.session.commit()
+        flash("Day renamed successfully!", "success")
+        return redirect(url_for('views.saved_plans'))
+
+    except Exception as e:
+        flash(f"Error renaming day: {str(e)}", "danger")
+        return redirect(url_for('views.saved_plans'))

@@ -20,9 +20,17 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-group">
-                            {% for day in plan.days %}
+                            {% for day in plan.days|sort(attribute='order') %}
                             <li class="list-group-item border-top mb-4">
-                                <strong class="mb-2 d-block text-primary">{{ day.day_name }}</strong>
+                                <strong class="mb-2 d-block text-primary" 
+                                        style="cursor: pointer;"
+                                        onclick="console.log('Day clicked:', '{{ day.id }}', '{{ day.day_name }}')"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#renameDayModal"
+                                        data-day-id="{{ day.id }}" 
+                                        data-current-name="{{ day.day_name }}">
+                                    {{ day.day_name }}
+                                </strong>
                                 <div class="list-group" data-day-id="{{ day.id }}">
                                     {% for exercise in day.exercises|sort(attribute='order') %}
                                     <div class="list-group-item d-flex justify-content-between align-items-center"
@@ -230,6 +238,30 @@
         </div>
     </div>
 
+    <!-- Modal for Renaming Workout Day -->
+    <div class="modal fade" id="renameDayModal" tabindex="-1" aria-labelledby="renameDayModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="{{ url_for('views.rename_day') }}">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="renameDayModalLabel">Rename Workout Day</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="day_id" id="renameDayId">
+                        <div class="mb-3">
+                            <label for="newDayName" class="form-label">New Name</label>
+                            <input type="text" class="form-control" id="newDayName" name="new_name" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Rename</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {% else %}
     <p class="text-center">No workout plans available. Please generate a plan first.</p>
     {% endif %}
@@ -349,6 +381,24 @@
                 });
             }
         });
+
+        // Handle rename day modal
+        const renameDayModal = document.getElementById('renameDayModal');
+        if (renameDayModal) {
+            console.log('Rename day modal found');
+            renameDayModal.addEventListener('show.bs.modal', function(event) {
+                console.log('Modal show event triggered');
+                const button = event.relatedTarget;
+                const dayId = button.getAttribute('data-day-id');
+                const currentName = button.getAttribute('data-current-name');
+                
+                console.log('Setting modal values:', { dayId, currentName });
+                document.getElementById('renameDayId').value = dayId;
+                document.getElementById('newDayName').value = currentName;
+            });
+        } else {
+            console.log('Rename day modal not found');
+        }
     });
 </script>
 

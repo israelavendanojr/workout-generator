@@ -211,6 +211,76 @@ def rename_plan():
 @views.route('/add_exercise', methods=['POST'])
 @login_required
 def add_exercise():
-    plan_id = request.form.get('plan_id')
-    exercise_role = request.form.get('exercise_role')
+    try:
+        # Debug: Print all form data
+        print("Form data:", request.form)
+        
+        # Get and validate form data
+        plan_id = int(request.form.get('plan_id', 0))
+        day_id = int(request.form.get('day_id', 0))
+        exercise_id = int(request.form.get('exercise_id', 0))
+        sets = int(request.form.get('sets', 3))
+        start_reps = int(request.form.get('start_reps', 8))
+        end_reps = int(request.form.get('end_reps', 12))
+
+        # Debug: Print parsed values
+        print(f"Parsed values: plan_id={plan_id}, day_id={day_id}, exercise_id={exercise_id}, sets={sets}, start_reps={start_reps}, end_reps={end_reps}")
+
+        if not all([plan_id, day_id, exercise_id]):
+            flash("Missing required fields", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the plan and verify ownership
+        saved_plan = SavedPlan.query.get_or_404(plan_id)
+        if saved_plan.user_id != current_user.id:
+            flash("Unauthorized plan access", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the day and verify it belongs to the plan
+        saved_day = SavedDay.query.get_or_404(day_id)
+        if saved_day.saved_plan_id != plan_id:
+            flash("Day does not belong to this plan", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the exercise
+        exercise = Exercise.query.get_or_404(exercise_id)
+
+        # Get the current highest order for this day
+        max_order = db.session.query(db.func.max(SavedExercise.order)).filter_by(saved_day_id=day_id).scalar() or 0
+
+        # Create new saved exercise
+        new_exercise = SavedExercise(
+            saved_day_id=day_id,
+            exercise_id=exercise.id,
+            name=exercise.name,
+            sets=sets,
+            start_reps=start_reps,
+            end_reps=end_reps,
+            to_failure=False,  # Default to False
+            order=max_order + 1  # Add to the end of the list
+        )
+
+        db.session.add(new_exercise)
+        db.session.commit()
+        flash("Exercise added successfully!", "success")
+        return redirect(url_for('views.saved_plans'))
+
+    except ValueError as e:
+        print(f"ValueError: {str(e)}")  # Debug: Print the specific ValueError
+        flash("Invalid input data", "danger")
+        return redirect(url_for('views.saved_plans'))
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")  # Debug: Print any other errors
+        flash(f"Error adding exercise: {str(e)}", "danger")
+        return redirect(url_for('views.saved_plans'))
+
+
+@views.route('/delete_exercise', methods=['POST'])
+@login_required
+def delete_exercise():
     exercise_id = request.form.get('exercise_id')
+    exercise = Exercise.query.get_or_404(exercise_id)
+    db.session.delete(exercise)
+    db.session.commit()
+    flash("Exercise deleted successfully!", "success")
+    return redirect(url_for('views.saved_plans'))

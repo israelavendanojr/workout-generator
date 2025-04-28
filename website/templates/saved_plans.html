@@ -57,9 +57,11 @@
 
                                   <!-- Add Exercise Button -->
                                   <button class="btn btn-primary btn-sm w-100 mt-3" data-bs-toggle="modal" 
-                                        data-bs-target="#addExerciseModal" data-day-id="{{ day.id }}" data-plan-id="{{ plan.id }}">
+                                        data-bs-target="#addExerciseModal" 
+                                        data-day-id="{{ day.id }}" 
+                                        data-plan-id="{{ day.saved_plan.id }}">
                                     Add Exercise
-                                </button>
+                                  </button>
                             </li>
                             {% endfor %}
                         </ul>
@@ -169,13 +171,14 @@
     <div class="modal fade" id="addExerciseModal" tabindex="-1" aria-labelledby="addExerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.add_exercise') }}">
+                <form method="POST" action="{{ url_for('views.add_exercise') }}" onsubmit="console.log('Form submitting with:', { planId: document.getElementById('addPlanId').value, dayId: document.getElementById('addDayId').value });">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addExerciseModalLabel">Add Exercise</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <input type="hidden" name="plan_id" id="planId">
+                        <input type="hidden" name="plan_id" id="addPlanId">
+                        <input type="hidden" name="day_id" id="addDayId">
     
                         <!-- Exercise Role Dropdown -->
                         <div class="mb-3">
@@ -290,7 +293,18 @@
         addExerciseModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
             const planId = button.getAttribute('data-plan-id');
-            document.getElementById('planId').value = planId;
+            const dayId = button.getAttribute('data-day-id');
+            
+            console.log('Modal opened with:', { planId, dayId });  // Debug log
+            
+            // Set the hidden input values
+            document.getElementById('addPlanId').value = planId;
+            document.getElementById('addDayId').value = dayId;
+            
+            console.log('Form values set to:', {  // Debug log
+                planId: document.getElementById('addPlanId').value,
+                dayId: document.getElementById('addDayId').value
+            });
         });
 
         // Handle exercise role change

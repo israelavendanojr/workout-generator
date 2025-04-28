@@ -139,7 +139,11 @@ def saved_plans():
 
     exercise_roles = ExerciseRole.query.all()
 
-    return render_template("saved_plans.html", user=current_user, plans=plans, exercises_by_role=exercises_by_role_serializable, exercise_roles=exercise_roles)
+    return render_template("saved_plans.html", 
+                         user=current_user, 
+                         plans=plans, 
+                         exercises_by_role=exercises_by_role_serializable, 
+                         exercise_roles=exercise_roles)
 
 @views.route('/delete_plan/<int:plan_id>', methods=['POST'])
 @login_required

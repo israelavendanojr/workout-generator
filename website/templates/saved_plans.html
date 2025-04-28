@@ -427,9 +427,6 @@
 
     function initializeExerciseModal() {
         const exerciseModal = document.getElementById('exerciseModal');
-        const notesList = document.getElementById('notesList');
-        const newNoteInput = document.getElementById('newNote');
-        const addNoteButton = document.getElementById('addNote');
         const form = exerciseModal.querySelector('form');
         
         // Store the current exercise data
@@ -440,28 +437,8 @@
             sets: null,
             startReps: null,
             endReps: null,
-            planId: null,
-            notes: []
+            planId: null
         };
-
-        // Make removeNote available globally
-        window.removeNote = function(note) {
-            currentExercise.notes = currentExercise.notes.filter(n => n !== note);
-            renderNotes();
-        };
-
-        function renderNotes() {
-            notesList.innerHTML = '';
-            currentExercise.notes.forEach(note => {
-                const noteItem = document.createElement('div');
-                noteItem.className = 'note-item';
-                noteItem.innerHTML = `
-                    <span>${note}</span>
-                    <i class="bi bi-x-circle remove-note" onclick="removeNote('${note.replace(/'/g, "\\'")}')"></i>
-                `;
-                notesList.appendChild(noteItem);
-            });
-        }
 
         function updateModalFields() {
             document.getElementById('exerciseId').value = currentExercise.id;
@@ -488,23 +465,6 @@
             }
         }
 
-        // Handle adding new notes
-        addNoteButton.addEventListener('click', function() {
-            const note = newNoteInput.value.trim();
-            if (note) {
-                currentExercise.notes.push(note);
-                renderNotes();
-                newNoteInput.value = '';
-            }
-        });
-
-        newNoteInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                addNoteButton.click();
-            }
-        });
-
         // Handle modal opening
         exerciseModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
@@ -517,28 +477,33 @@
                 sets: button.getAttribute('data-sets'),
                 startReps: button.getAttribute('data-start-reps'),
                 endReps: button.getAttribute('data-end-reps'),
-                planId: button.getAttribute('data-plan-id'),
-                notes: JSON.parse(button.getAttribute('data-notes') || '[]')
+                planId: button.getAttribute('data-plan-id')
             };
 
             // Update modal fields
             updateModalFields();
-            renderNotes();
         });
 
         // Handle form submission
-        form.addEventListener('submit', function() {
-            // Update the button's data attributes
+        form.addEventListener('submit', function(event) {
+            // Get the new exercise data from the form
+            const newExerciseId = document.getElementById('new_exercise').value;
+            const newExerciseName = document.getElementById('new_exercise').options[document.getElementById('new_exercise').selectedIndex].text;
+            const newRole = document.getElementById('exercise_role').value;
+            const newSets = document.getElementById('sets').value;
+            const newStartReps = document.getElementById('start_reps').value;
+            const newEndReps = document.getElementById('end_reps').value;
+
+            // Update the button's data attributes with the new data
             const button = document.querySelector(`[data-exercise-id="${currentExercise.id}"]`);
             if (button) {
                 button.setAttribute('data-exercise-id', currentExercise.id);
-                button.setAttribute('data-exercise-name', currentExercise.name);
-                button.setAttribute('data-exercise-role', currentExercise.role);
-                button.setAttribute('data-sets', currentExercise.sets);
-                button.setAttribute('data-start-reps', currentExercise.startReps);
-                button.setAttribute('data-end-reps', currentExercise.endReps);
+                button.setAttribute('data-exercise-name', newExerciseName);
+                button.setAttribute('data-exercise-role', newRole);
+                button.setAttribute('data-sets', newSets);
+                button.setAttribute('data-start-reps', newStartReps);
+                button.setAttribute('data-end-reps', newEndReps);
                 button.setAttribute('data-plan-id', currentExercise.planId);
-                button.setAttribute('data-notes', JSON.stringify(currentExercise.notes));
             }
         });
 
@@ -578,6 +543,21 @@
 
             document.getElementById('addDayId').value = dayId;
             document.getElementById('addPlanId').value = planId;
+        });
+
+        // Handle form submission
+        addExerciseForm.addEventListener('submit', function(event) {
+            // Ensure all required fields are filled
+            const exerciseId = exerciseSelect.value;
+            const sets = document.getElementById('sets').value;
+            const startReps = document.getElementById('start_reps').value;
+            const endReps = document.getElementById('end_reps').value;
+
+            if (!exerciseId || !sets || !startReps || !endReps) {
+                event.preventDefault();
+                alert('Please fill in all required fields');
+                return;
+            }
         });
     });
 </script>

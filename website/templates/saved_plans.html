@@ -19,19 +19,22 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <ul class="list-group">
+                        <ul class="list-group days-list" data-plan-id="{{ plan.id }}">
                             {% for day in plan.days|sort(attribute='order') %}
-                            <li class="list-group-item border-top mb-4">
-                                <strong class="mb-2 d-block text-primary" 
-                                        style="cursor: pointer;"
-                                        onclick="console.log('Day clicked:', '{{ day.id }}', '{{ day.day_name }}')"
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#renameDayModal"
-                                        data-day-id="{{ day.id }}" 
-                                        data-current-name="{{ day.day_name }}">
-                                    {{ day.day_name }}
-                                </strong>
-                                <div class="list-group" data-day-id="{{ day.id }}">
+                            <li class="list-group-item border-top mb-4" data-day-id="{{ day.id }}">
+                                <div class="d-flex align-items-center">
+                                    <span class="drag-handle me-2">⋮⋮</span>
+                                    <strong class="mb-2 d-block text-primary flex-grow-1" 
+                                            style="cursor: pointer;"
+                                            onclick="console.log('Day clicked:', '{{ day.id }}', '{{ day.day_name }}')"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#renameDayModal"
+                                            data-day-id="{{ day.id }}" 
+                                            data-current-name="{{ day.day_name }}">
+                                        {{ day.day_name }}
+                                    </strong>
+                                </div>
+                                <div class="list-group exercises-list" data-day-id="{{ day.id }}">
                                     {% for exercise in day.exercises|sort(attribute='order') %}
                                     <div class="list-group-item d-flex justify-content-between align-items-center"
                                          data-exercise-id="{{ exercise.id }}">
@@ -281,6 +284,10 @@
         font-size: 1.2em;
         user-select: none;
     }
+
+    .days-list {
+        min-height: 50px;
+    }
 </style>
 {% endblock %}
 
@@ -405,7 +412,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Sortable on all exercise lists
-        const exerciseLists = document.querySelectorAll('.list-group');
+        const exerciseLists = document.querySelectorAll('.exercises-list');
         
         exerciseLists.forEach(list => {
             new Sortable(list, {
@@ -425,6 +432,41 @@
                             'Content-Type': 'application/x-www-form-urlencoded',
                         },
                         body: `exercise_id=${exerciseId}&new_order=${newOrder}&new_day_id=${newDayId}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.success) {
+                            console.error('Error reordering:', data.error);
+                            window.location.reload();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        window.location.reload();
+                    });
+                }
+            });
+        });
+
+        // Initialize Sortable on all day lists
+        const dayLists = document.querySelectorAll('.days-list');
+        
+        dayLists.forEach(list => {
+            new Sortable(list, {
+                handle: '.drag-handle',
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                onEnd: function(evt) {
+                    const dayId = evt.item.dataset.dayId;
+                    const newOrder = Array.from(evt.to.children).indexOf(evt.item);
+                    
+                    // Send the update to the server
+                    fetch('/reorder_day', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `day_id=${dayId}&new_order=${newOrder}`
                     })
                     .then(response => response.json())
                     .then(data => {

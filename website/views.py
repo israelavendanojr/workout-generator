@@ -395,3 +395,40 @@ def rename_day():
     except Exception as e:
         flash(f"Error renaming day: {str(e)}", "danger")
         return redirect(url_for('views.saved_plans'))
+
+@views.route('/reorder_day', methods=['POST'])
+@login_required
+def reorder_day():
+    try:
+        # Get the day ID and new order from the form
+        day_id = int(request.form.get('day_id', 0))
+        new_order = int(request.form.get('new_order', 0))
+        
+        if not all([day_id, new_order >= 0]):
+            return jsonify({"success": False, "error": "Invalid input data"}), 400
+
+        # Get the day and verify ownership
+        saved_day = SavedDay.query.get_or_404(day_id)
+        saved_plan = saved_day.saved_plan
+
+        if saved_plan.user_id != current_user.id:
+            return jsonify({"success": False, "error": "Unauthorized access"}), 403
+
+        # Get all days in the plan
+        plan_days = SavedDay.query.filter_by(saved_plan_id=saved_plan.id).order_by(SavedDay.order).all()
+        
+        # Remove the day from its current position
+        plan_days.remove(saved_day)
+        
+        # Insert it at the new position
+        plan_days.insert(new_order, saved_day)
+        
+        # Update all orders
+        for i, day in enumerate(plan_days):
+            day.order = i
+
+        db.session.commit()
+        return jsonify({"success": True})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400

@@ -161,5 +161,6 @@ class SavedExercise(db.Model):
     end_reps = db.Column(db.Integer, nullable=False)
     to_failure = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer, nullable=False)
+    notes = db.Column(db.String(200), nullable=True)
 
     exercise = db.relationship('Exercise')

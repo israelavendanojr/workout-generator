@@ -169,6 +169,7 @@ def swap_exercise():
     new_sets = int(request.form.get('sets', 3))
     new_start_reps = int(request.form.get('start_reps', 8))
     new_end_reps = int(request.form.get('end_reps', 12))
+    notes = request.form.get('notes', '').strip()
 
     # Get the plan
     saved_plan = SavedPlan.query.get_or_404(plan_id)
@@ -199,6 +200,7 @@ def swap_exercise():
     saved_exercise.sets = new_sets
     saved_exercise.start_reps = new_start_reps
     saved_exercise.end_reps = new_end_reps
+    saved_exercise.notes = notes
 
     db.session.commit()
     flash("Changes saved successfully!", "success")

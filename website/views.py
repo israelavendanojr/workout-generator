@@ -60,24 +60,36 @@ def generated_plans():
 @views.route('/save_plan', methods=['POST'])
 @login_required
 def save_plan():
-    data = request.get_json()
-    plan_name = data.get('plan_name')
-    days = data.get('days', [])
-    
-    if not plan_name or not days:
-        return jsonify({'error': 'Missing required fields'}), 400
-    
     try:
+        # Get data from form
+        split_name = request.form.get('split_name')
+        plan_data = request.form.get('plan_data')
+        
+        print("Received data:", {
+            'split_name': split_name,
+            'plan_data': plan_data
+        })
+        
+        if not split_name or not plan_data:
+            return jsonify({'error': 'Missing required fields'}), 400
+        
+        try:
+            plan = json.loads(plan_data)
+            print("Parsed plan:", plan)
+        except json.JSONDecodeError as e:
+            print("JSON decode error:", str(e))
+            return jsonify({'error': 'Invalid plan data format'}), 400
+        
         # Create new saved plan
         saved_plan = SavedPlan(
-            user_id=current_user.id,
-            name=plan_name
+            split_name=split_name,
+            user_id=current_user.id
         )
         db.session.add(saved_plan)
         db.session.flush()  # Get the ID of the new plan
         
         # Create saved days with order
-        for index, day in enumerate(days):
+        for index, day in enumerate(plan['days']):
             saved_day = SavedDay(
                 saved_plan_id=saved_plan.id,
                 day_name=day['name'],
@@ -87,21 +99,24 @@ def save_plan():
             db.session.flush()  # Get the ID of the new day
             
             # Create saved exercises
-            for exercise in day['exercises']:
+            for exercise_index, exercise in enumerate(day['exercises']):
                 saved_exercise = SavedExercise(
                     saved_day_id=saved_day.id,
+                    exercise_id=exercise['exercise_id'],
                     name=exercise['name'],
                     sets=exercise['sets'],
-                    reps=exercise['reps'],
-                    weight=exercise.get('weight'),
-                    notes=exercise.get('notes')
+                    start_reps=exercise['start_reps'],
+                    end_reps=exercise['end_reps'],
+                    to_failure=exercise.get('to_failure', False),
+                    order=exercise_index
                 )
                 db.session.add(saved_exercise)
         
         db.session.commit()
-        return jsonify({'message': 'Plan saved successfully', 'plan_id': saved_plan.id})
-        
+        return redirect(url_for('views.saved_plans'))
+
     except Exception as e:
+        print("Unexpected error:", str(e))
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
 

@@ -161,6 +161,18 @@ class SavedExercise(db.Model):
     end_reps = db.Column(db.Integer, nullable=False)
     to_failure = db.Column(db.Boolean, default=False)
     order = db.Column(db.Integer, nullable=False)
-    notes = db.Column(db.String(200), nullable=True)
 
     exercise = db.relationship('Exercise')
+    notes = db.relationship('Note', backref='saved_exercise', cascade="all, delete-orphan")
+
+# Note model for exercise notes
+class Note(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saved_exercise_id = db.Column(db.Integer, db.ForeignKey('saved_exercise.id'), nullable=False)
+    content = db.Column(db.String(200), nullable=False)
+    order = db.Column(db.Integer, nullable=False)
+
+    def __init__(self, content, saved_exercise_id, order):
+        self.content = content
+        self.saved_exercise_id = saved_exercise_id
+        self.order = order

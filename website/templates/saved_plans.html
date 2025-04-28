@@ -48,7 +48,11 @@
                                                 <small class="text-muted">{{ exercise.sets }} × {{ exercise.start_reps }}–{{ exercise.end_reps }} reps</small>
                                                 {% endif %}
                                                 {% if exercise.notes %}
-                                                <small class="text-muted d-block">{{ exercise.notes }}</small>
+                                                <small class="text-muted d-block">
+                                                    {% for note in exercise.notes|sort(attribute='order') %}
+                                                    • {{ note.content }}<br>
+                                                    {% endfor %}
+                                                </small>
                                                 {% endif %}
                                             </div>
                                         </div>
@@ -62,7 +66,7 @@
                                                     data-start-reps="{{ exercise.start_reps }}"
                                                     data-end-reps="{{ exercise.end_reps }}"
                                                     data-plan-id="{{ plan.id }}"
-                                                    data-notes="{{ exercise.notes }}">
+                                                    data-notes="{{ exercise.notes|map(attribute='content')|list|tojson }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <form method="POST" action="{{ url_for('views.delete_exercise') }}" style="display: inline;">
@@ -127,6 +131,7 @@
                     <div class="modal-body">
                         <input type="hidden" name="exercise_id" id="exerciseId">
                         <input type="hidden" name="plan_id" id="planId">
+                        <div id="notesContainer"></div>
 
                         <div class="mb-3">
                             <label class="form-label">Current Exercise</label>
@@ -167,11 +172,16 @@
                             </div>
                         </div>
 
-                        <!-- Notes Field -->
+                        <!-- Notes Section -->
                         <div class="mb-3">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea class="form-control" id="notes" name="notes" rows="2" maxlength="200" 
-                                    placeholder="Add personal notes about this exercise (e.g., form cues, modifications, etc.)"></textarea>
+                            <label class="form-label">Notes</label>
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" id="newNote" placeholder="Add a note (e.g., Keep core tight)">
+                                <button class="btn btn-outline-secondary" type="button" id="addNote">Add</button>
+                            </div>
+                            <div id="notesList" class="list-group">
+                                <!-- Notes will be added here dynamically -->
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -311,12 +321,20 @@
         min-height: 50px;
     }
 
-    .exercise-notes {
-        font-size: 0.8em;
-        color: #6c757d;
-        font-style: italic;
-        margin-top: 0.25rem;
-        line-height: 1.2;
+    .note-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem;
+        margin-bottom: 0.25rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+
+    .note-item .remove-note {
+        color: #dc3545;
+        cursor: pointer;
+        padding: 0.25rem;
     }
 </style>
 {% endblock %}
@@ -330,122 +348,19 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize all tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl, {
-                html: true
-            });
-        });
+        // Initialize Sortable for days and exercises
+        initializeSortable();
 
-        const exerciseModal = document.getElementById('exerciseModal');
-
-        exerciseModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-
-            // Extract data from the triggering element
-            const exerciseId = button.getAttribute('data-exercise-id');
-            const exerciseName = button.getAttribute('data-exercise-name');
-            const exerciseRole = button.getAttribute('data-exercise-role');
-            const sets = button.getAttribute('data-sets');
-            const startReps = button.getAttribute('data-start-reps');
-            const endReps = button.getAttribute('data-end-reps');
-            const planId = button.getAttribute('data-plan-id');
-            const notes = button.getAttribute('data-notes');
-
-            // Update modal fields
-            document.getElementById('exerciseId').value = exerciseId;
-            document.getElementById('planId').value = planId;
-            document.getElementById('exerciseName').value = exerciseName;
-            document.getElementById('sets').value = sets;
-            document.getElementById('start_reps').value = startReps;
-            document.getElementById('end_reps').value = endReps;
-            document.getElementById('notes').value = notes || '';
-
-            // Set the initial role and populate exercises
-            const roleSelect = document.getElementById('exercise_role');
-            roleSelect.value = exerciseRole;
-            populateExercises(exerciseRole);
-        });
-
-        // Handle exercise role change
-        const exerciseRoleSelect = document.getElementById('exercise_role');
-        exerciseRoleSelect.addEventListener('change', function() {
-            populateExercises(this.value);
-        });
-
-        function populateExercises(role) {
-            const exerciseSelect = document.getElementById('new_exercise');
-            exerciseSelect.innerHTML = '<option value="">Select Exercise</option>';
-            
-            if (allExercises[role]) {
-                allExercises[role].forEach(exercise => {
-                    const option = document.createElement('option');
-                    option.value = exercise.id;
-                    option.textContent = exercise.name;
-                    exerciseSelect.appendChild(option);
-                });
-            }
-        }
-
-        // Handle rename plan modal
-        const renamePlanModal = document.getElementById('renamePlanModal');
-        renamePlanModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const planId = button.getAttribute('data-plan-id');
-            const currentName = button.getAttribute('data-current-name');
-            
-            document.getElementById('renamePlanId').value = planId;
-            document.getElementById('newPlanName').value = currentName;
-        });
-
-        // Handle add exercise modal
-        const addExerciseModal = document.getElementById('addExerciseModal');
-        addExerciseModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const planId = button.getAttribute('data-plan-id');
-            const dayId = button.getAttribute('data-day-id');
-            
-            console.log('Modal opened with:', { planId, dayId });  // Debug log
-            
-            // Set the hidden input values
-            document.getElementById('addPlanId').value = planId;
-            document.getElementById('addDayId').value = dayId;
-            
-            console.log('Form values set to:', {  // Debug log
-                planId: document.getElementById('addPlanId').value,
-                dayId: document.getElementById('addDayId').value
-            });
-        });
-
-        // Handle rename day modal
-        const renameDayModal = document.getElementById('renameDayModal');
-        if (renameDayModal) {
-            console.log('Rename day modal found');
-            renameDayModal.addEventListener('show.bs.modal', function(event) {
-                console.log('Modal show event triggered');
-                const button = event.relatedTarget;
-                const dayId = button.getAttribute('data-day-id');
-                const currentName = button.getAttribute('data-current-name');
-                
-                console.log('Setting modal values:', { dayId, currentName });
-                document.getElementById('renameDayId').value = dayId;
-                document.getElementById('newDayName').value = currentName;
-            });
-        } else {
-            console.log('Rename day modal not found');
-        }
+        // Initialize exercise modal functionality
+        initializeExerciseModal();
     });
-</script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    function initializeSortable() {
         // Initialize Sortable on all exercise lists
         const exerciseLists = document.querySelectorAll('.exercises-list');
-        
         exerciseLists.forEach(list => {
             new Sortable(list, {
-                group: 'exercises', // This allows dragging between lists
+                group: 'exercises',
                 handle: '.drag-handle',
                 animation: 150,
                 ghostClass: 'sortable-ghost',
@@ -454,7 +369,6 @@
                     const newDayId = evt.to.dataset.dayId;
                     const newOrder = Array.from(evt.to.children).indexOf(evt.item);
                     
-                    // Send the update to the server
                     fetch('/reorder_exercise', {
                         method: 'POST',
                         headers: {
@@ -479,7 +393,6 @@
 
         // Initialize Sortable on all day lists
         const dayLists = document.querySelectorAll('.days-list');
-        
         dayLists.forEach(list => {
             new Sortable(list, {
                 handle: '.drag-handle',
@@ -489,7 +402,6 @@
                     const dayId = evt.item.dataset.dayId;
                     const newOrder = Array.from(evt.to.children).indexOf(evt.item);
                     
-                    // Send the update to the server
                     fetch('/reorder_day', {
                         method: 'POST',
                         headers: {
@@ -510,6 +422,162 @@
                     });
                 }
             });
+        });
+    }
+
+    function initializeExerciseModal() {
+        const exerciseModal = document.getElementById('exerciseModal');
+        const notesList = document.getElementById('notesList');
+        const newNoteInput = document.getElementById('newNote');
+        const addNoteButton = document.getElementById('addNote');
+        const form = exerciseModal.querySelector('form');
+        
+        // Store the current exercise data
+        let currentExercise = {
+            id: null,
+            name: null,
+            role: null,
+            sets: null,
+            startReps: null,
+            endReps: null,
+            planId: null,
+            notes: []
+        };
+
+        // Make removeNote available globally
+        window.removeNote = function(note) {
+            currentExercise.notes = currentExercise.notes.filter(n => n !== note);
+            renderNotes();
+        };
+
+        function renderNotes() {
+            notesList.innerHTML = '';
+            currentExercise.notes.forEach(note => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <span>${note}</span>
+                    <i class="bi bi-x-circle remove-note" onclick="removeNote('${note.replace(/'/g, "\\'")}')"></i>
+                `;
+                notesList.appendChild(noteItem);
+            });
+        }
+
+        function updateModalFields() {
+            document.getElementById('exerciseId').value = currentExercise.id;
+            document.getElementById('planId').value = currentExercise.planId;
+            document.getElementById('exerciseName').value = currentExercise.name;
+            document.getElementById('sets').value = currentExercise.sets;
+            document.getElementById('start_reps').value = currentExercise.startReps;
+            document.getElementById('end_reps').value = currentExercise.endReps;
+            document.getElementById('exercise_role').value = currentExercise.role;
+            populateExercises(currentExercise.role);
+        }
+
+        function populateExercises(role) {
+            const exerciseSelect = document.getElementById('new_exercise');
+            exerciseSelect.innerHTML = '<option value="">Select Exercise</option>';
+            
+            if (allExercises[role]) {
+                allExercises[role].forEach(exercise => {
+                    const option = document.createElement('option');
+                    option.value = exercise.id;
+                    option.textContent = exercise.name;
+                    exerciseSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Handle adding new notes
+        addNoteButton.addEventListener('click', function() {
+            const note = newNoteInput.value.trim();
+            if (note) {
+                currentExercise.notes.push(note);
+                renderNotes();
+                newNoteInput.value = '';
+            }
+        });
+
+        newNoteInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addNoteButton.click();
+            }
+        });
+
+        // Handle modal opening
+        exerciseModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            
+            // Update current exercise data
+            currentExercise = {
+                id: button.getAttribute('data-exercise-id'),
+                name: button.getAttribute('data-exercise-name'),
+                role: button.getAttribute('data-exercise-role'),
+                sets: button.getAttribute('data-sets'),
+                startReps: button.getAttribute('data-start-reps'),
+                endReps: button.getAttribute('data-end-reps'),
+                planId: button.getAttribute('data-plan-id'),
+                notes: JSON.parse(button.getAttribute('data-notes') || '[]')
+            };
+
+            // Update modal fields
+            updateModalFields();
+            renderNotes();
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function() {
+            // Update the button's data attributes
+            const button = document.querySelector(`[data-exercise-id="${currentExercise.id}"]`);
+            if (button) {
+                button.setAttribute('data-exercise-id', currentExercise.id);
+                button.setAttribute('data-exercise-name', currentExercise.name);
+                button.setAttribute('data-exercise-role', currentExercise.role);
+                button.setAttribute('data-sets', currentExercise.sets);
+                button.setAttribute('data-start-reps', currentExercise.startReps);
+                button.setAttribute('data-end-reps', currentExercise.endReps);
+                button.setAttribute('data-plan-id', currentExercise.planId);
+                button.setAttribute('data-notes', JSON.stringify(currentExercise.notes));
+            }
+        });
+
+        // Handle exercise role change
+        document.getElementById('exercise_role').addEventListener('change', function() {
+            populateExercises(this.value);
+        });
+    }
+
+    // Initialize add exercise modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const addExerciseModal = document.getElementById('addExerciseModal');
+        const addExerciseForm = addExerciseModal.querySelector('form');
+        const exerciseRoleSelect = addExerciseModal.querySelector('#exercise_role');
+        const exerciseSelect = addExerciseModal.querySelector('#exercise');
+
+        // Handle exercise role change
+        exerciseRoleSelect.addEventListener('change', function() {
+            const role = this.value;
+            exerciseSelect.innerHTML = '<option value="">Select Exercise</option>';
+            
+            if (allExercises[role]) {
+                allExercises[role].forEach(exercise => {
+                    const option = document.createElement('option');
+                    option.value = exercise.id;
+                    option.textContent = exercise.name;
+                    exerciseSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Handle modal opening
+        addExerciseModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const dayId = button.getAttribute('data-day-id');
+            const planId = button.getAttribute('data-plan-id');
+
+            document.getElementById('addDayId').value = dayId;
+            document.getElementById('addPlanId').value = planId;
         });
     });
 </script>

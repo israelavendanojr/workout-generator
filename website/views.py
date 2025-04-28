@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import SavedPlan, Exercise, ExerciseRole, SavedDay, SavedExercise
+from website.models import SavedPlan, Exercise, ExerciseRole, SavedDay, SavedExercise, Note
 from collections import defaultdict
 from website.generate_plan import generate_plans
 
@@ -169,7 +169,7 @@ def swap_exercise():
     new_sets = int(request.form.get('sets', 3))
     new_start_reps = int(request.form.get('start_reps', 8))
     new_end_reps = int(request.form.get('end_reps', 12))
-    notes = request.form.get('notes', '').strip()
+    notes_data = request.form.getlist('notes[]')  # Get notes as a list
 
     # Get the plan
     saved_plan = SavedPlan.query.get_or_404(plan_id)
@@ -178,7 +178,7 @@ def swap_exercise():
         return redirect(url_for('views.saved_plans'))
 
     # Find the saved exercise to update
-    saved_exercise = SavedExercise.query.filter_by(id=old_exercise_id).first()
+    saved_exercise = SavedExercise.query.get_or_404(old_exercise_id)
     if not saved_exercise:
         flash("Exercise not found in plan", "danger")
         return redirect(url_for('views.saved_plans'))
@@ -200,7 +200,21 @@ def swap_exercise():
     saved_exercise.sets = new_sets
     saved_exercise.start_reps = new_start_reps
     saved_exercise.end_reps = new_end_reps
-    saved_exercise.notes = notes
+
+    # Update notes
+    # First, delete all existing notes
+    for note in saved_exercise.notes:
+        db.session.delete(note)
+    
+    # Then add new notes
+    for index, note_content in enumerate(notes_data):
+        if note_content.strip():  # Only add non-empty notes
+            note = Note(
+                content=note_content.strip(),
+                saved_exercise_id=saved_exercise.id,
+                order=index
+            )
+            db.session.add(note)
 
     db.session.commit()
     flash("Changes saved successfully!", "success")

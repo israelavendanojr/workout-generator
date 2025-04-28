@@ -211,10 +211,22 @@ def rename_plan():
 @views.route('/add_exercise', methods=['POST'])
 @login_required
 def add_exercise():
+    def get_saved_plan(plan_id):
+        plan = SavedPlan.query.get_or_404(plan_id)
+        if plan.user_id != current_user.id:
+            raise PermissionError("Unauthorized plan access")
+        return plan
+
+    def get_saved_day(day_id, plan_id):
+        day = SavedDay.query.get_or_404(day_id)
+        if day.saved_plan_id != plan_id:
+            raise ValueError("Day does not belong to plan")
+        return day
+
+    def get_exercise(exercise_id):
+        return Exercise.query.get_or_404(exercise_id)
+
     try:
-        # Debug: Print all form data
-        print("Form data:", request.form)
-        
         # Get and validate form data
         plan_id = int(request.form.get('plan_id', 0))
         day_id = int(request.form.get('day_id', 0))
@@ -223,27 +235,13 @@ def add_exercise():
         start_reps = int(request.form.get('start_reps', 8))
         end_reps = int(request.form.get('end_reps', 12))
 
-        # Debug: Print parsed values
-        print(f"Parsed values: plan_id={plan_id}, day_id={day_id}, exercise_id={exercise_id}, sets={sets}, start_reps={start_reps}, end_reps={end_reps}")
-
         if not all([plan_id, day_id, exercise_id]):
             flash("Missing required fields", "danger")
             return redirect(url_for('views.saved_plans'))
 
-        # Get the plan and verify ownership
-        saved_plan = SavedPlan.query.get_or_404(plan_id)
-        if saved_plan.user_id != current_user.id:
-            flash("Unauthorized plan access", "danger")
-            return redirect(url_for('views.saved_plans'))
-
-        # Get the day and verify it belongs to the plan
-        saved_day = SavedDay.query.get_or_404(day_id)
-        if saved_day.saved_plan_id != plan_id:
-            flash("Day does not belong to this plan", "danger")
-            return redirect(url_for('views.saved_plans'))
-
-        # Get the exercise
-        exercise = Exercise.query.get_or_404(exercise_id)
+        saved_plan = get_saved_plan(plan_id)
+        saved_day = get_saved_day(day_id, plan_id)
+        exercise = get_exercise(exercise_id)
 
         # Get the current highest order for this day
         max_order = db.session.query(db.func.max(SavedExercise.order)).filter_by(saved_day_id=day_id).scalar() or 0
@@ -256,7 +254,7 @@ def add_exercise():
             sets=sets,
             start_reps=start_reps,
             end_reps=end_reps,
-            to_failure=False,  # Default to False
+            to_failure=False,  
             order=max_order + 1  # Add to the end of the list
         )
 
@@ -278,9 +276,96 @@ def add_exercise():
 @views.route('/delete_exercise', methods=['POST'])
 @login_required
 def delete_exercise():
-    exercise_id = request.form.get('exercise_id')
-    exercise = Exercise.query.get_or_404(exercise_id)
-    db.session.delete(exercise)
-    db.session.commit()
-    flash("Exercise deleted successfully!", "success")
-    return redirect(url_for('views.saved_plans'))
+    try:
+        # Get the saved exercise ID from the form
+        saved_exercise_id = int(request.form.get('exercise_id', 0))
+        if not saved_exercise_id:
+            flash("Invalid exercise ID", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the saved exercise and verify it exists
+        saved_exercise = SavedExercise.query.get_or_404(saved_exercise_id)
+        
+        # Get the day and plan to verify ownership
+        saved_day = saved_exercise.workout_day
+        saved_plan = saved_day.saved_plan
+
+        # Verify the plan belongs to the current user
+        if saved_plan.user_id != current_user.id:
+            flash("Unauthorized access", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the day_id and order for reordering
+        day_id = saved_day.id
+        deleted_order = saved_exercise.order
+
+        # Delete the exercise
+        db.session.delete(saved_exercise)
+
+        # Update the order of remaining exercises
+        remaining_exercises = SavedExercise.query.filter(
+            SavedExercise.saved_day_id == day_id,
+            SavedExercise.order > deleted_order
+        ).all()
+
+        for exercise in remaining_exercises:
+            exercise.order -= 1
+
+        db.session.commit()
+        flash("Exercise deleted successfully!", "success")
+        return redirect(url_for('views.saved_plans'))
+
+    except ValueError:
+        flash("Invalid input data", "danger")
+        return redirect(url_for('views.saved_plans'))
+    except Exception as e:
+        flash(f"Error deleting exercise: {str(e)}", "danger")
+        return redirect(url_for('views.saved_plans'))
+
+@views.route('/reorder_exercise', methods=['POST'])
+@login_required
+def reorder_exercise():
+    try:
+        # Get the exercise ID, new order, and new day ID from the form
+        exercise_id = int(request.form.get('exercise_id', 0))
+        new_order = int(request.form.get('new_order', 0))
+        new_day_id = int(request.form.get('new_day_id', 0))
+        
+        if not all([exercise_id, new_day_id, new_order >= 0]):
+            return jsonify({"success": False, "error": "Invalid input data"}), 400
+
+        # Get the exercise and verify ownership
+        saved_exercise = SavedExercise.query.get_or_404(exercise_id)
+        old_day = saved_exercise.workout_day
+        old_plan = old_day.saved_plan
+
+        # Verify the plan belongs to the current user
+        if old_plan.user_id != current_user.id:
+            return jsonify({"success": False, "error": "Unauthorized access"}), 403
+
+        # Get the new day and verify it belongs to the same plan
+        new_day = SavedDay.query.get_or_404(new_day_id)
+        if new_day.saved_plan_id != old_plan.id:
+            return jsonify({"success": False, "error": "Cannot move exercise to different plan"}), 400
+
+        # Get all exercises in the new day
+        day_exercises = SavedExercise.query.filter_by(saved_day_id=new_day_id).order_by(SavedExercise.order).all()
+        
+        # Remove the exercise from its current position
+        if old_day.id == new_day_id:
+            day_exercises.remove(saved_exercise)
+        
+        # Insert it at the new position
+        day_exercises.insert(new_order, saved_exercise)
+        
+        # Update all orders and the day_id
+        for i, exercise in enumerate(day_exercises):
+            exercise.order = i
+            if exercise.id == saved_exercise.id:
+                exercise.saved_day_id = new_day_id
+
+        db.session.commit()
+        return jsonify({"success": True})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400

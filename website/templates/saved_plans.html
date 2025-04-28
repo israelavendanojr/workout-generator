@@ -427,6 +427,9 @@
 
     function initializeExerciseModal() {
         const exerciseModal = document.getElementById('exerciseModal');
+        const notesList = document.getElementById('notesList');
+        const newNoteInput = document.getElementById('newNote');
+        const addNoteButton = document.getElementById('addNote');
         const form = exerciseModal.querySelector('form');
         
         // Store the current exercise data
@@ -437,8 +440,41 @@
             sets: null,
             startReps: null,
             endReps: null,
-            planId: null
+            planId: null,
+            notes: []
         };
+
+        // Make removeNote available globally
+        window.removeNote = function(note) {
+            currentExercise.notes = currentExercise.notes.filter(n => n !== note);
+            renderNotes();
+            updateNotesInput();
+        };
+
+        function updateNotesInput() {
+            const notesContainer = document.getElementById('notesContainer');
+            notesContainer.innerHTML = '';
+            currentExercise.notes.forEach(note => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'notes[]';
+                input.value = note;
+                notesContainer.appendChild(input);
+            });
+        }
+
+        function renderNotes() {
+            notesList.innerHTML = '';
+            currentExercise.notes.forEach(note => {
+                const noteItem = document.createElement('div');
+                noteItem.className = 'note-item';
+                noteItem.innerHTML = `
+                    <span>${note}</span>
+                    <i class="bi bi-x-circle remove-note" onclick="removeNote('${note.replace(/'/g, "\\'")}')"></i>
+                `;
+                notesList.appendChild(noteItem);
+            });
+        }
 
         function updateModalFields() {
             document.getElementById('exerciseId').value = currentExercise.id;
@@ -465,6 +501,24 @@
             }
         }
 
+        // Handle adding new notes
+        addNoteButton.addEventListener('click', function() {
+            const note = newNoteInput.value.trim();
+            if (note) {
+                currentExercise.notes.push(note);
+                renderNotes();
+                updateNotesInput();
+                newNoteInput.value = '';
+            }
+        });
+
+        newNoteInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addNoteButton.click();
+            }
+        });
+
         // Handle modal opening
         exerciseModal.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;
@@ -477,11 +531,14 @@
                 sets: button.getAttribute('data-sets'),
                 startReps: button.getAttribute('data-start-reps'),
                 endReps: button.getAttribute('data-end-reps'),
-                planId: button.getAttribute('data-plan-id')
+                planId: button.getAttribute('data-plan-id'),
+                notes: JSON.parse(button.getAttribute('data-notes') || '[]')
             };
 
             // Update modal fields
             updateModalFields();
+            renderNotes();
+            updateNotesInput();
         });
 
         // Handle form submission
@@ -504,6 +561,7 @@
                 button.setAttribute('data-start-reps', newStartReps);
                 button.setAttribute('data-end-reps', newEndReps);
                 button.setAttribute('data-plan-id', currentExercise.planId);
+                button.setAttribute('data-notes', JSON.stringify(currentExercise.notes));
             }
         });
 

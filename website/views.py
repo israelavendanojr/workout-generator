@@ -467,3 +467,84 @@ def reorder_day():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+@views.route('/add_day', methods=['POST'])
+@login_required
+def add_day():
+    try:
+        # Get and validate form data
+        plan_id = int(request.form.get('plan_id', 0))
+        day_name = request.form.get('day_name')
+
+        if not plan_id or not day_name:
+            flash("Missing required fields", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the plan and verify ownership
+        saved_plan = SavedPlan.query.get_or_404(plan_id)
+        if saved_plan.user_id != current_user.id:
+            flash("Unauthorized access", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the current highest order for this plan
+        max_order = db.session.query(db.func.max(SavedDay.order)).filter_by(saved_plan_id=plan_id).scalar() or 0
+
+        # Create new saved day
+        new_day = SavedDay(
+            saved_plan_id=plan_id,
+            day_name=day_name,
+            order=max_order + 1  # Add to the end of the list
+        )
+
+        db.session.add(new_day)
+        db.session.commit()
+        flash("Day added successfully!", "success")
+        return redirect(url_for('views.saved_plans'))
+
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        flash(f"Error adding day: {str(e)}", "danger")
+        return redirect(url_for('views.saved_plans'))
+
+@views.route('/delete_day', methods=['POST'])
+@login_required
+def delete_day():
+    try:
+        # Get the saved day ID from the form
+        day_id = int(request.form.get('day_id', 0))
+        if not day_id:
+            flash("Invalid day ID", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the saved day and verify it exists
+        saved_day = SavedDay.query.get_or_404(day_id)
+        saved_plan = saved_day.saved_plan
+
+        # Verify the plan belongs to the current user
+        if saved_plan.user_id != current_user.id:
+            flash("Unauthorized access", "danger")
+            return redirect(url_for('views.saved_plans'))
+
+        # Get the plan_id and order for reordering
+        plan_id = saved_plan.id
+        deleted_order = saved_day.order
+
+        # Delete the day (this will cascade delete all exercises in the day)
+        db.session.delete(saved_day)
+
+        # Update the order of remaining days
+        remaining_days = SavedDay.query.filter(
+            SavedDay.saved_plan_id == plan_id,
+            SavedDay.order > deleted_order
+        ).all()
+
+        for day in remaining_days:
+            day.order -= 1
+
+        db.session.commit()
+        flash("Day deleted successfully!", "success")
+        return redirect(url_for('views.saved_plans'))
+
+    except Exception as e:
+        flash(f"Error deleting day: {str(e)}", "danger")
+        return redirect(url_for('views.saved_plans'))

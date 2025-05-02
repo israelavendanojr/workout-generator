@@ -548,3 +548,4 @@ def delete_day():
     except Exception as e:
         flash(f"Error deleting day: {str(e)}", "danger")
         return redirect(url_for('views.saved_plans'))
+

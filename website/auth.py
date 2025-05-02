@@ -70,6 +70,12 @@ def sign_up():
         
     return render_template("sign_up.html", user=current_user)
 
+@auth.route('/account-settings')
+@login_required
+def account_settings():
+    return render_template('account_settings.html', user=current_user)
+
+
 @auth.route('/change-username', methods=['GET', 'POST'])
 @login_required
 def change_username():
@@ -109,7 +115,7 @@ def change_password():
     elif new_password1 != new_password2:
         flash('New passwords do not match', category='error')
     else:
-        current_user.password = generate_password_hash(new_password1)
+        current_user.password = generate_password_hash(new_password1, method='pbkdf2:sha256')
         db.session.commit()
         flash('Password updated successfully', category='success')
         return redirect(url_for('views.home'))

@@ -69,3 +69,29 @@ def sign_up():
             return home_page
         
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        old_password = request.form.get('old_password')
+        new_password1 = request.form.get('new_password1')
+        new_password2 = request.form.get('new_password2')
+
+    if not check_password_hash(current_user.password, old_password):
+        flash('Incorrect old password', category='error')
+    elif len(new_password1) < 5:
+        flash('Password must be greater than 5 or more characters', category='error')
+    elif not new_password1:
+        flash('New password cannot be NONE', category='error')
+    elif new_password1 != new_password2:
+        flash('New passwords do not match', category='error')
+    else:
+        current_user.password = generate_password_hash(new_password1)
+        db.session.commit()
+        flash('Password updated successfully', category='success')
+        return redirect(url_for('views.home'))
+    
+    return render_template("change_password.html", user=current_user)
+        

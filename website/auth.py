@@ -70,6 +70,27 @@ def sign_up():
         
     return render_template("sign_up.html", user=current_user)
 
+@auth.route('/change-username', methods=['GET', 'POST'])
+@login_required
+def change_username():
+    if request.method == 'POST':
+        new_username = request.form.get('new_username')
+        password = request.form.get('password')
+
+        if not check_password_hash(current_user.password, password):
+            flash('Incorrect password', category='error')
+        elif User.query.filter_by(username=new_username).first():
+            flash('Username already taken', category='error')
+        elif len(new_username) < 3:
+            flash('Username too short', category='error')
+        else:
+            current_user.username = new_username
+            db.session.commit()
+            flash('Username updated!', category='success')
+            return redirect(url_for('views.home'))
+
+    return render_template('change_username.html', user=current_user)
+
 @auth.route('/change-password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -94,4 +115,20 @@ def change_password():
         return redirect(url_for('views.home'))
     
     return render_template("change_password.html", user=current_user)
+
+@auth.route('/delete-account', methods=['GET', 'POST'])
+@login_required
+def delete_account():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
         
+    if not check_password_hash(current_user.password, password):
+        flash('Incorrect old password', category='error')
+    else:
+        db.session.delete(current_user)
+        db.session.commit()
+        flash('Account deleted successfully', category='success')
+        return redirect(url_for('auth.login'))
+    
+    return render_template("delete_account.html", user=current_user)

@@ -402,6 +402,28 @@
             const planId = button.getAttribute('data-plan-id');
             document.getElementById('addDayPlanId').value = planId;
         });
+
+        // Handle rename plan modal
+        const renamePlanModal = document.getElementById('renamePlanModal');
+        renamePlanModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const planId = button.getAttribute('data-plan-id');
+            const currentName = button.getAttribute('data-current-name');
+            
+            document.getElementById('renamePlanId').value = planId;
+            document.getElementById('newPlanName').value = currentName;
+        });
+
+        // Handle rename day modal
+        const renameDayModal = document.getElementById('renameDayModal');
+        renameDayModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const dayId = button.getAttribute('data-day-id');
+            const currentName = button.getAttribute('data-current-name');
+            
+            document.getElementById('renameDayId').value = dayId;
+            document.getElementById('newDayName').value = currentName;
+        });
     });
 
     function initializeSortable() {

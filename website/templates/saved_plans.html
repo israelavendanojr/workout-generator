@@ -10,7 +10,7 @@
             <i class="bi bi-chevron-left"></i>
         </button>
         {% endif %}
-        <h1 class="text-primary mb-0 text-center">Saved Workout Routines</h1>
+        <h1 class="text-primary mb-0 text-center">Saved Workout Ro utines</h1>
         {% if 1 < plans|length %}
         <button class="btn btn-outline-primary ms-3" type="button" data-bs-target="#workoutCarousel" data-bs-slide="next">
             <i class="bi bi-chevron-right"></i>
@@ -86,7 +86,7 @@
                                                     data-start-reps="{{ exercise.start_reps }}"
                                                     data-end-reps="{{ exercise.end_reps }}"
                                                     data-plan-id="{{ plan.id }}"
-                                                    data-notes="{{ exercise.notes|map(attribute='content')|list|tojson }}">
+                                                    data-notes="{{ exercise.notes|map(attribute='content')|list|tojson|safe }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <form method="POST" action="{{ url_for('views.delete_exercise') }}" style="display: inline;">
@@ -189,6 +189,7 @@
                         </div>
 
                         <!-- Notes Section -->
+                         
                         <div class="mb-3">
                             <label class="form-label">Notes</label>
                             <div class="input-group mb-2">
@@ -196,7 +197,7 @@
                                 <button class="btn btn-outline-secondary" type="button" id="addNote">Add</button>
                             </div>
                             <div id="notesList" class="list-group">
-                                <!-- Notes will be added here dynamically -->
+                                
                             </div>
                         </div>
                     </div>
@@ -237,7 +238,7 @@
     <div class="modal fade" id="addExerciseModal" tabindex="-1" aria-labelledby="addExerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.add_exercise') }}" onsubmit="console.log('Form submitting with:', { planId: document.getElementById('addPlanId').value, dayId: document.getElementById('addDayId').value });">
+                <form method="POST" action="{{ url_for('views.add_exercise') }}" id="addExerciseForm">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addExerciseModalLabel">Add Exercise</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -248,8 +249,8 @@
     
                         <!-- Exercise Role Dropdown -->
                         <div class="mb-3">
-                            <label for="exercise_role" class="form-label">Choose Exercise Role</label>
-                            <select class="form-control" id="exercise_role" name="exercise_role" required>
+                            <label for="addExerciseRole" class="form-label">Choose Exercise Role</label>
+                            <select class="form-control" id="addExerciseRole" name="exercise_role" required>
                                 <option value="">Select Role</option>
                                 {% for role in exercise_roles %}
                                     <option value="{{ role.name }}">{{ role.name }}</option>
@@ -259,25 +260,25 @@
     
                         <!-- Exercise Dropdown (populated dynamically) -->
                         <div class="mb-3">
-                            <label for="exercise" class="form-label">Choose Exercise</label>
-                            <select class="form-control" id="exercise" name="exercise_id" required>
-                                
+                            <label for="addExercise" class="form-label">Choose Exercise</label>
+                            <select class="form-control" id="addExercise" name="exercise_id" required>
+                                <option value="">Select Exercise</option>
                             </select>
                         </div>
     
                         <!-- Sets and Reps Input -->
                         <div class="row mb-3">
                             <div class="col-4">
-                                <label for="sets" class="form-label">Sets</label>
-                                <input type="number" class="form-control" id="sets" name="sets" required>
+                                <label for="addSets" class="form-label">Sets</label>
+                                <input type="number" class="form-control" id="addSets" name="sets" required>
                             </div>
                             <div class="col-4">
-                                <label for="start_reps" class="form-label">Start Reps</label>
-                                <input type="number" class="form-control" id="start_reps" name="start_reps" required>
+                                <label for="addStartReps" class="form-label">Start Reps</label>
+                                <input type="number" class="form-control" id="addStartReps" name="start_reps" required>
                             </div>
                             <div class="col-4">
-                                <label for="end_reps" class="form-label">End Reps</label>
-                                <input type="number" class="form-control" id="end_reps" name="end_reps" required>
+                                <label for="addEndReps" class="form-label">End Reps</label>
+                                <input type="number" class="form-control" id="addEndReps" name="end_reps" required>
                             </div>
                         </div>
                     </div>
@@ -567,28 +568,6 @@
             }
         });
 
-        // Handle modal opening
-        exerciseModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            
-            // Update current exercise data
-            currentExercise = {
-                id: button.getAttribute('data-exercise-id'),
-                name: button.getAttribute('data-exercise-name'),
-                role: button.getAttribute('data-exercise-role'),
-                sets: button.getAttribute('data-sets'),
-                startReps: button.getAttribute('data-start-reps'),
-                endReps: button.getAttribute('data-end-reps'),
-                planId: button.getAttribute('data-plan-id'),
-                notes: JSON.parse(button.getAttribute('data-notes') || '[]')
-            };
-
-            // Update modal fields
-            updateModalFields();
-            renderNotes();
-            updateNotesInput();
-        });
-
         // Handle form submission
         form.addEventListener('submit', function(event) {
             // Get the new exercise data from the form
@@ -613,6 +592,39 @@
             }
         });
 
+        // Handle modal opening
+        exerciseModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            
+            // Update current exercise data
+            currentExercise = {
+                id: button.getAttribute('data-exercise-id'),
+                name: button.getAttribute('data-exercise-name'),
+                role: button.getAttribute('data-exercise-role'),
+                sets: button.getAttribute('data-sets'),
+                startReps: button.getAttribute('data-start-reps'),
+                endReps: button.getAttribute('data-end-reps'),
+                planId: button.getAttribute('data-plan-id'),
+                notes: []
+            };
+
+            // Safely parse notes
+            try {
+                const notesData = button.getAttribute('data-notes');
+                if (notesData) {
+                    currentExercise.notes = JSON.parse(notesData);
+                }
+            } catch (e) {
+                console.warn('Error parsing notes:', e);
+                currentExercise.notes = [];
+            }
+
+            // Update modal fields
+            updateModalFields();
+            renderNotes();
+            updateNotesInput();
+        });
+
         // Handle exercise role change
         document.getElementById('exercise_role').addEventListener('change', function() {
             populateExercises(this.value);
@@ -622,9 +634,9 @@
     // Initialize add exercise modal
     document.addEventListener('DOMContentLoaded', function() {
         const addExerciseModal = document.getElementById('addExerciseModal');
-        const addExerciseForm = addExerciseModal.querySelector('form');
-        const exerciseRoleSelect = addExerciseModal.querySelector('#exercise_role');
-        const exerciseSelect = addExerciseModal.querySelector('#exercise');
+        const addExerciseForm = document.getElementById('addExerciseForm');
+        const exerciseRoleSelect = document.getElementById('addExerciseRole');
+        const exerciseSelect = document.getElementById('addExercise');
 
         // Handle exercise role change
         exerciseRoleSelect.addEventListener('change', function() {
@@ -653,13 +665,13 @@
 
         // Handle form submission
         addExerciseForm.addEventListener('submit', function(event) {
-            // Ensure all required fields are filled
-            const exerciseId = exerciseSelect.value;
-            const sets = document.getElementById('sets').value;
-            const startReps = document.getElementById('start_reps').value;
-            const endReps = document.getElementById('end_reps').value;
+            const exerciseId = document.getElementById('addExercise').value;
+            const sets = document.getElementById('addSets').value;
+            const startReps = document.getElementById('addStartReps').value;
+            const endReps = document.getElementById('addEndReps').value;
+            const exerciseRole = document.getElementById('addExerciseRole').value;
 
-            if (!exerciseId || !sets || !startReps || !endReps) {
+            if (!exerciseId || !sets || !startReps || !endReps || !exerciseRole) {
                 event.preventDefault();
                 alert('Please fill in all required fields');
                 return;

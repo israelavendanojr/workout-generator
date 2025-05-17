@@ -1,41 +1,57 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import os
 from flask_login import LoginManager
-from dotenv import load_dotenv
 from flask_migrate import Migrate
+from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
+import os
 
+# Initialize extensions
 db = SQLAlchemy()
 migrate = Migrate()
+login_manager = LoginManager()
+csrf = CSRFProtect()
+
+# Set login route
+login_manager.login_view = "auth.login"
+
+# Load environment variables
 load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQLALCHEMY_DATABASE_URI")
+
+    # Config
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+
+    # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    
-    from .views import views
-    from .auth import auth
-    
-    app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(auth, url_prefix='/')
-    
-    from .models import User
-    
-    with app.app_context():
-        db.create_all()
-        
-
-    login_manager = LoginManager()
-    # where we send user if no user logged in
-    login_manager.login_view = 'auth.login' 
+    csrf.init_app(app)
     login_manager.init_app(app)
 
-    # find user by primary key (id)
+    # Models (ensures proper relationship loading)
+    from website.models.user_model import User
+    from website.models.saved_models import SavedPlan, SavedDay, SavedExercise, Note
+    from website.models.generation_models import Exercise, ExerciseRole
+
+    # User loader
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(int(id))
+
+    # Blueprints
+    from website.routes.views import views
+    from website.routes.plan_routes import plan_routes
+    from website.routes.day_routes import day_routes
+    from website.routes.exercise_routes import exercise_routes
+    from website.auth import auth
+
+    app.register_blueprint(views)
+    app.register_blueprint(plan_routes)
+    app.register_blueprint(day_routes)
+    app.register_blueprint(exercise_routes)
+    app.register_blueprint(auth)
 
     return app

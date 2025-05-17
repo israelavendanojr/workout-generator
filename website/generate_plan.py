@@ -1,6 +1,5 @@
 from website import db
-from website.models import WorkoutSplit, WorkoutDay, Exercise, ExerciseRole, ExerciseType, Equipment, day_role_association
-from collections import defaultdict
+from website.models.generation_models import WorkoutSplit, WorkoutDay, Exercise, ExerciseRole, ExerciseType, Equipment, day_role_association
 import random
 
 def get_workout_splits(days_available):

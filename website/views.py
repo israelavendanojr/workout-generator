@@ -2,7 +2,8 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 from flask_login import login_required, current_user
 import json
 from website import db
-from website.models import SavedPlan, Exercise, ExerciseRole, SavedDay, SavedExercise, Note
+from website.models.saved_models import SavedPlan, SavedDay, SavedExercise, Note
+from website.models.generation_models import Exercise, ExerciseRole
 from collections import defaultdict
 from website.generate_plan import generate_plans
 

@@ -46,7 +46,7 @@
                                         {{ day.day_name }}
                                     </strong>
                                     <!-- Delete Day Button -->
-                                    <form method="POST" action="{{ url_for('views.delete_day') }}" style="display: inline;">
+                                    <form method="POST" action="{{ url_for('day_routes.delete_day_route') }}" style="display: inline;">
                                         <input type="hidden" name="day_id" value="{{ day.id }}">
                                         <button type="submit" class="btn btn-sm btn-outline-danger ms-2" 
                                                 onclick="return confirm('Are you sure you want to delete this day? All exercises in this day will be deleted.');">
@@ -89,7 +89,7 @@
                                                     data-notes="{{ exercise.notes|map(attribute='content')|list|tojson|safe }}">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
-                                            <form method="POST" action="{{ url_for('views.delete_exercise') }}" style="display: inline;">
+                                            <form method="POST" action="{{ url_for('exercise_routes.delete_exercise_route') }}" style="display: inline;">
                                                 <input type="hidden" name="exercise_id" value="{{ exercise.id }}">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" 
                                                         onclick="return confirm('Are you sure you want to delete this exercise?');">
@@ -122,7 +122,7 @@
                     <!-- Card Footer Delete Button -->
                     <div class="card-footer text-center">
                         <!-- Delete Form -->
-                        <form method="POST" action="{{ url_for('views.delete_plan', plan_id=plan.id) }}"
+                        <form method="POST" action="{{ url_for('plan_routes.delete_plan_route', plan_id=plan.id) }}"
                             style="display:inline;">
                             <button type="submit" class="btn btn-lg btn-danger"
                                 onclick="return confirm('Are you sure you want to delete this plan?');">Delete</button>
@@ -139,7 +139,7 @@
     <div class="modal fade" id="exerciseModal" tabindex="-1" aria-labelledby="exerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.swap_exercise') }}">
+                <form method="POST" action="{{ url_for('exercise_routes.swap_exercise_route') }}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exerciseModalLabel">Edit Exercise</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -214,7 +214,7 @@
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.rename_plan') }}">
+                <form method="POST" action="{{ url_for('plan_routes.rename_plan_route') }}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="renamePlanModalLabel">Rename Workout Plan</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -238,7 +238,7 @@
     <div class="modal fade" id="addExerciseModal" tabindex="-1" aria-labelledby="addExerciseModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.add_exercise') }}" id="addExerciseForm">
+                <form method="POST" action="{{ url_for('exercise_routes.add_exercise_route') }}" id="addExerciseForm">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addExerciseModalLabel">Add Exercise</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -294,7 +294,7 @@
     <div class="modal fade" id="renameDayModal" tabindex="-1" aria-labelledby="renameDayModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.rename_day') }}">
+                <form method="POST" action="{{ url_for('day_routes.rename_day_route') }}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="renameDayModalLabel">Rename Workout Day</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -318,7 +318,7 @@
     <div class="modal fade" id="addDayModal" tabindex="-1" aria-labelledby="addDayModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST" action="{{ url_for('views.add_day') }}">
+                <form method="POST" action="{{ url_for('day_routes.add_day_route') }}">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addDayModalLabel">Add Day</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

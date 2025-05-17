@@ -8,13 +8,15 @@
 
     <div class="row justify-content-center">
         <div class="col-md-8">
+
             <!-- Change Username Section -->
             <div class="card mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="card-title mb-0">Change Username</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('auth.change_username') }}">
+                    <form method="POST" action="{{ url_for('auth.account_settings') }}">
+                        <input type="hidden" name="action" value="change_username">
                         <div class="mb-3">
                             <label for="new_username" class="form-label">New Username</label>
                             <input type="text" class="form-control" id="new_username" name="new_username" required>
@@ -34,7 +36,8 @@
                     <h5 class="card-title mb-0">Change Password</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('auth.change_password') }}">
+                    <form method="POST" action="{{ url_for('auth.account_settings') }}">
+                        <input type="hidden" name="action" value="change_password">
                         <div class="mb-3">
                             <label for="old_password" class="form-label">Current Password</label>
                             <input type="password" class="form-control" id="old_password" name="old_password" required>
@@ -62,7 +65,8 @@
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
                         Warning: This action cannot be undone. All your data will be permanently deleted.
                     </div>
-                    <form method="POST" action="{{ url_for('auth.delete_account') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                    <form method="POST" action="{{ url_for('auth.account_settings') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+                        <input type="hidden" name="action" value="delete_account">
                         <div class="mb-3">
                             <label for="delete_password" class="form-label">Confirm Password</label>
                             <input type="password" class="form-control" id="delete_password" name="password" required>
@@ -71,6 +75,7 @@
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -95,4 +100,4 @@
         margin-bottom: 1.5rem;
     }
 </style>
-{% endblock %} 
+{% endblock %}

@@ -36,7 +36,7 @@
                         </ul>
                     </div>
                     <div class="card-footer text-center">
-                        <form method="POST" action="{{ url_for('views.save_plan') }}">
+                        <form method="POST" action="{{ url_for('plan_routes.save_plan') }}">
                             <input type="hidden" name="split_name" value="{{ plan.split_name }}">
                             <input type="hidden" name="plan_data" id="plan_data_{{ loop.index }}">
                             <button type="submit" class="btn btn-lg btn-primary">Save</button>

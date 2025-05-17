@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
-from flask_wtf.csrf import CSRFProtect
+# from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
 
@@ -10,7 +10,7 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
-csrf = CSRFProtect()
+# csrf = CSRFProtect()
 
 # Set login route
 login_manager.login_view = "auth.login"
@@ -28,7 +28,7 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
-    csrf.init_app(app)
+    # csrf.init_app(app)
     login_manager.init_app(app)
 
     # Models (ensures proper relationship loading)

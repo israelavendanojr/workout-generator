@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from flask_login import login_required, current_user
 import json
-from website.generate_plan import generate_plans
+from website.services.generation_service import generate_plans
 
 views = Blueprint('views', __name__)
 

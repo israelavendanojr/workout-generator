@@ -5,7 +5,7 @@ from .generation_models import (
     primary_muscle_association, secondary_muscle_association
 )
 from .saved_models import SavedPlan, SavedDay, SavedExercise, Note
-from .logging_models import WeeklyLog, WorkoutLog, LoggedExercise, LoggedSet
+from .logging_models import LoggedWeek, LoggedDay, LoggedExercise, LoggedSet
 
 __all__ = [
     "User",
@@ -13,5 +13,5 @@ __all__ = [
     "Equipment", "ExerciseType", "split_day_association", "day_role_association",
     "primary_muscle_association", "secondary_muscle_association",
     "SavedPlan", "SavedDay", "SavedExercise", "Note",
-    "WeeklyLog", "WorkoutLog", "LoggedExercise", "LoggedSet"
+    "LoggedWeek", "LoggedDay", "LoggedExercise", "LoggedSet"
 ]

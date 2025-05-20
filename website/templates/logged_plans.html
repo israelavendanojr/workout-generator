@@ -5,6 +5,22 @@
 <div class="container mt-4">
   <h2>Workout Logs</h2>
 
+  <div class="mt-5">
+    <h4>Your Logged Weeks</h4>
+    {% if logged_weeks %}
+      <ul class="list-group mt-2">
+        {% for week in logged_weeks %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            Week starting {{ week.start_date }}
+            <a href="{{ url_for('log_routes.view_logged_week', week_id=week.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No logged weeks yet. Start by logging a new week.</p>
+    {% endif %}
+  </div>
+  
   <!-- Trigger Button -->
   <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addWeekModal">
     Add Workout Week

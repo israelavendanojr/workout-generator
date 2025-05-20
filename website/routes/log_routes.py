@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from website.models.saved_models import *
 from website.models.logging_models import *
 from website import db
-from datetime import date
+from datetime import date, timedelta
 
 log_routes = Blueprint('log_routes', __name__)
 
@@ -18,6 +18,8 @@ def logged_plans():
 @login_required
 def add_logged_week():
     data = request.get_json()
+    print("Received POST to /add_week with:", data)
+
     plan_id = data.get('plan_id')
 
     saved_plan = SavedPlan.query.filter_by(id=plan_id, user_id=current_user.id).first()
@@ -34,7 +36,7 @@ def add_logged_week():
     db.session.flush()  # So we can reference new_week.id before committing
 
     # Get all SavedDays for this plan
-    saved_days = SavedDay.query.filter_by(plan_id=saved_plan.id).order_by(SavedDay.day_number).all()
+    saved_days = SavedDay.query.filter_by(saved_plan_id=saved_plan.id).order_by(SavedDay.order).all()
 
     for i, saved_day in enumerate(saved_days):
         log_date = date.today() + timedelta(days=i)
@@ -62,3 +64,11 @@ def add_logged_week():
     db.session.commit()
     flash("Workout week successfully logged!", "success")
     return ('', 204)
+
+@log_routes.route('/logged_plans/<int:week_id>', methods=['GET'])
+@login_required
+def view_logged_week(week_id):
+    logged_week = LoggedWeek.query.filter_by(id=week_id, user_id=current_user.id).first_or_404()
+
+    # Optionally fetch associated days and exercises here
+    return render_template("view_logged_week.html", user=current_user, week=logged_week)

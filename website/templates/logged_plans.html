@@ -62,20 +62,27 @@ function submitPlan() {
     return;
   }
 
-  fetch('/logged_plans/add_week', {
+    fetch('/logged_plans/add_week', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
+        'Content-Type': 'application/json',
     },
     body: JSON.stringify({ plan_id: selectedId })
-  })
-  .then(response => {
+    })
+    .then(response => {
     if (response.ok) {
-      location.reload();
+        location.reload();
     } else {
-      alert("Failed to log workout week.");
+        return response.json().then(err => {
+        console.error("Error:", err);
+        alert("Failed to log workout week: " + (err.error || "Unknown error"));
+        });
     }
-  });
+    })
+    .catch(err => {
+    console.error("Request failed:", err);
+    alert("Network error while logging week.");
+    });
 }
 </script>
 {% endblock %}

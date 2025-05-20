@@ -15,9 +15,20 @@ def logged_plans():
     .order_by(LoggedWeek.start_date.desc()) \
     .options(
         db.joinedload(LoggedWeek.logged_days)
-        .joinedload(LoggedDay.logged_exercises)
-        .joinedload(LoggedExercise.sets)
+            .joinedload(LoggedDay.saved_day),  # ensure we load this for sorting
+        db.joinedload(LoggedWeek.logged_days)
+            .joinedload(LoggedDay.logged_exercises)
+            .joinedload(LoggedExercise.saved_exercise),
+        db.joinedload(LoggedWeek.logged_days)
+            .joinedload(LoggedDay.logged_exercises)
+            .joinedload(LoggedExercise.sets)
     ).all()
+
+    for week in logged_weeks:
+        week.logged_days.sort(key=lambda d: d.saved_day.order if d.saved_day else 0)
+        for day in week.logged_days:
+            day.logged_exercises.sort(key=lambda e: e.saved_exercise.order if e.saved_exercise else 0)
+
 
     return render_template("logged_plans.html", user=current_user, saved_plans=saved_plans, logged_weeks=logged_weeks)
 
@@ -37,7 +48,7 @@ def add_logged_week():
     new_week = LoggedWeek(
         user_id=current_user.id,
         saved_plan_id=saved_plan.id,
-        start_date=date.today()
+        # start_date=date.today()
     )
     db.session.add(new_week)
     db.session.flush()  # So we can reference new_week.id before committing
@@ -72,14 +83,6 @@ def add_logged_week():
     flash("Workout week successfully logged!", "success")
     return ('', 204)
 
-@log_routes.route('/logged_plans/<int:week_id>', methods=['GET'])
-@login_required
-def view_logged_week(week_id):
-    logged_week = LoggedWeek.query.filter_by(id=week_id, user_id=current_user.id).first_or_404()
-
-    # Optionally fetch associated days and exercises here
-    return render_template("view_logged_week.html", user=current_user, week=logged_week)
-
 @log_routes.route('/logged_plans/delete_week/<int:week_id>', methods=['POST'])
 @login_required
 def delete_logged_week(week_id):
@@ -89,4 +92,29 @@ def delete_logged_week(week_id):
     db.session.commit()
 
     flash("Workout week deleted.", "success")
+    return redirect(url_for('log_routes.logged_plans'))
+
+@log_routes.route('/logged_plans/log_day_sets/<int:day_id>', methods=['POST'])
+@login_required
+def log_day_sets(day_id):
+    day = LoggedDay.query.filter_by(id=day_id, user_id=current_user.id).first_or_404()
+
+    # Remove existing sets
+    for exercise in day.logged_exercises:
+        LoggedSet.query.filter_by(logged_exercise_id=exercise.id).delete()
+
+    # Process new inputs
+    for exercise in day.logged_exercises:
+        for i in range(exercise.saved_exercise.sets):
+            reps = request.form.get(f"reps_{exercise.id}_{i}")
+            weight = request.form.get(f"weight_{exercise.id}_{i}")
+            if reps and weight:
+                db.session.add(LoggedSet(
+                    logged_exercise_id=exercise.id,
+                    reps=int(reps),
+                    weight=float(weight)
+                ))
+
+    db.session.commit()
+    flash("Sets logged for the day!", "success")
     return redirect(url_for('log_routes.logged_plans'))

@@ -1,11 +1,18 @@
 from website import db
 from sqlalchemy.sql import func
+from datetime import datetime
 
 class LoggedWeek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     saved_plan_id = db.Column(db.Integer, db.ForeignKey('saved_plan.id'), nullable=False)
-    start_date = db.Column(db.Date, nullable=False)
+    
+    start_date = db.Column(
+        db.DateTime(timezone=True),
+        nullable=False,
+        default=datetime.utcnow,            # Python-level default
+        server_default=func.now()           # DB-level default
+    )
 
     user = db.relationship('User', backref='logged_weeks')
     saved_plan = db.relationship('SavedPlan', backref='logged_weeks')

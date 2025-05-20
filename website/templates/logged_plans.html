@@ -30,16 +30,23 @@
                 <h6 class="mt-3">{{ day.saved_day.day_name }}</h6>
                 <ul>
                   {% for exercise in day.logged_exercises %}
-                    <li>
-                      {{ exercise.name }}
-                      {% if exercise.sets %}
-                        <ul>
-                          {% for s in exercise.sets %}
-                            <li>{{ s.reps }} reps @ {{ s.weight }} lbs</li>
-                          {% endfor %}
-                        </ul>
-                      {% endif %}
-                    </li>
+                  <li>
+                    {{ exercise.name }}
+                    {% if exercise.saved_exercise %}
+                      <div class="text-muted small">
+                        {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
+                      </div>
+                    {% endif %}
+                  
+                    {% if exercise.sets %}
+                      <ul class="mt-1">
+                        {% for s in exercise.sets %}
+                          <li>{{ s.reps }} reps @ {{ s.weight }} lbs</li>
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
+                  </li>
+                  
                   {% endfor %}
                 </ul>
               {% endfor %}

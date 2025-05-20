@@ -14,7 +14,7 @@ class LoggedWeek(db.Model):
 
 class LoggedDay(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    logged_week_id = db.Column(db.Integer, db.ForeignKey('logged_week.id'), nullable=False)  # ✅ Match default table name
+    logged_week_id = db.Column(db.Integer, db.ForeignKey('logged_week.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     saved_day_id = db.Column(db.Integer, db.ForeignKey('saved_day.id'), nullable=False)
     date = db.Column(db.Date, default=func.current_date(), nullable=False)
@@ -26,18 +26,19 @@ class LoggedDay(db.Model):
 
 class LoggedExercise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    logged_day_id = db.Column(db.Integer, db.ForeignKey('logged_day.id'), nullable=False)  # ✅ Match default table name
+    logged_day_id = db.Column(db.Integer, db.ForeignKey('logged_day.id'), nullable=False) 
     saved_exercise_id = db.Column(db.Integer, db.ForeignKey('saved_exercise.id'), nullable=False)
 
     name = db.Column(db.String(100), nullable=False)
     notes = db.Column(db.String(300), nullable=True)
 
     sets = db.relationship('LoggedSet', backref='logged_exercise', cascade="all, delete-orphan")
+    saved_exercise = db.relationship('SavedExercise', backref='logged_exercises')
 
 
 class LoggedSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    logged_exercise_id = db.Column(db.Integer, db.ForeignKey('logged_exercise.id'), nullable=False)  # ✅ Match default table name
+    logged_exercise_id = db.Column(db.Integer, db.ForeignKey('logged_exercise.id'), nullable=False)  
 
     reps = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float, nullable=False)

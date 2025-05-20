@@ -11,7 +11,14 @@ log_routes = Blueprint('log_routes', __name__)
 @login_required
 def logged_plans():
     saved_plans = SavedPlan.query.filter_by(user_id=current_user.id).all()
-    logged_weeks = LoggedWeek.query.filter_by(user_id=current_user.id).order_by(LoggedWeek.start_date.desc()).all()
+    logged_weeks = LoggedWeek.query.filter_by(user_id=current_user.id) \
+    .order_by(LoggedWeek.start_date.desc()) \
+    .options(
+        db.joinedload(LoggedWeek.logged_days)
+        .joinedload(LoggedDay.logged_exercises)
+        .joinedload(LoggedExercise.sets)
+    ).all()
+
     return render_template("logged_plans.html", user=current_user, saved_plans=saved_plans, logged_weeks=logged_weeks)
 
 @log_routes.route('/logged_plans/add_week', methods=['POST'])
@@ -72,3 +79,14 @@ def view_logged_week(week_id):
 
     # Optionally fetch associated days and exercises here
     return render_template("view_logged_week.html", user=current_user, week=logged_week)
+
+@log_routes.route('/logged_plans/delete_week/<int:week_id>', methods=['POST'])
+@login_required
+def delete_logged_week(week_id):
+    week = LoggedWeek.query.filter_by(id=week_id, user_id=current_user.id).first_or_404()
+
+    db.session.delete(week)  # Cascades will delete related days, exercises, and sets
+    db.session.commit()
+
+    flash("Workout week deleted.", "success")
+    return redirect(url_for('log_routes.logged_plans'))

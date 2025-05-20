@@ -30,6 +30,25 @@ def logged_plans():
             day.logged_exercises.sort(key=lambda e: e.saved_exercise.order if e.saved_exercise else 0)
 
 
+    # Inside your /logged_plans view function after querying `logged_weeks`
+    if len(logged_weeks) >= 2:
+        prev_week = logged_weeks[1]  # because weeks are ordered DESC
+        prev_sets = {}
+        for day in prev_week.logged_days:
+            for ex in day.logged_exercises:
+                prev_sets[ex.saved_exercise_id] = ex.sets
+
+        curr_week = logged_weeks[0]
+        for day in curr_week.logged_days:
+            for ex in day.logged_exercises:
+                if ex.saved_exercise_id in prev_sets:
+                    for i in range(len(ex.sets)):
+                        # Only fill if reps/weight not logged
+                        if i < len(prev_sets[ex.saved_exercise_id]):
+                            if ex.sets[i].reps is None and ex.sets[i].weight is None:
+                                ex.sets[i].weight = prev_sets[ex.saved_exercise_id][i].weight
+
+
     return render_template("logged_plans.html", user=current_user, saved_plans=saved_plans, logged_weeks=logged_weeks)
 
 @log_routes.route('/logged_plans/add_week', methods=['POST'])
@@ -76,8 +95,16 @@ def add_logged_week():
                 notes=""
             )
             db.session.add(new_logged_exercise)
-            # Optionally prefill sets here if needed
-            # db.session.add(LoggedSet(...))
+            db.session.flush()  # Get new_logged_exercise.id
+
+            for _ in range(saved_exercise.sets):
+                new_set = LoggedSet(
+                    logged_exercise_id=new_logged_exercise.id,
+                    reps=None,
+                    weight=None
+                )
+                db.session.add(new_set)
+
 
     db.session.commit()
     flash("Workout week successfully logged!", "success")

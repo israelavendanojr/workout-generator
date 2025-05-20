@@ -40,35 +40,39 @@
                 <form method="POST" action="{{ url_for('log_routes.log_day_sets', day_id=day.id) }}">
                   <ul>
                     {% for exercise in day.logged_exercises %}
-                    <li class="mb-3">
-                      <strong>{{ exercise.name }}</strong>
-                      {% if exercise.saved_exercise %}
-                        <div class="text-muted small">
-                          {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
-                        </div>
-                      {% endif %}
-                      
-                      <div class="mt-2">
-                        {% for i in range(exercise.saved_exercise.sets) %}
-                        <div class="row mb-2">
-                            {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
-                            <div class="col">
-                              <input type="number" step="0.1" class="form-control" name="weight_{{ exercise.id }}_{{ i }}"
-                                     placeholder="Weight (lbs)"
-                                     value="{{ logged_set.weight if logged_set }}">
+                        {% set is_logged = exercise.sets|selectattr("reps")|select("defined")|list|length == exercise.saved_exercise.sets %}
+
+                        <li class="mb-3" {% if is_logged %}style="opacity: 0.5;"{% endif %}>
+                            <strong>{{ exercise.name }}</strong>
+                            {% if exercise.saved_exercise %}
+                            <div class="text-muted small">
+                                {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
                             </div>
-                            <div class="col">
-                              <input type="number" class="form-control" name="reps_{{ exercise.id }}_{{ i }}"
-                                     placeholder="Reps"
-                                     value="{{ logged_set.reps if logged_set }}">
+                            {% endif %}
+
+                            <div class="mt-2">
+                            {% for i in range(exercise.saved_exercise.sets) %}
+                                {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
+                                <div class="row mb-2">
+                                <div class="col">
+                                    <input type="number" step="0.1" class="form-control"
+                                        name="weight_{{ exercise.id }}_{{ i }}"
+                                        placeholder="Weight (lbs)"
+                                        value="{{ logged_set.weight if logged_set }}"
+                                    >
+                                </div>
+                                <div class="col">
+                                    <input type="number" class="form-control"
+                                        name="reps_{{ exercise.id }}_{{ i }}"
+                                        placeholder="Reps"
+                                        value="{{ logged_set.reps if logged_set }}">
+                                </div>
+                                </div>
+                            {% endfor %}
                             </div>
-                            
-                        </div>
+                        </li>
                         {% endfor %}
-                      </div>
-              
-                    </li>
-                    {% endfor %}
+
                   </ul>
                   <button type="submit" class="btn btn-success btn-sm mt-2">Commit logs for the day</button>
                 </form>

@@ -47,6 +47,6 @@ class LoggedSet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     logged_exercise_id = db.Column(db.Integer, db.ForeignKey('logged_exercise.id'), nullable=False)  
 
-    reps = db.Column(db.Integer, nullable=False)
-    weight = db.Column(db.Float, nullable=False)
+    reps = db.Column(db.Integer, nullable=True)
+    weight = db.Column(db.Float, nullable=True)
     rest_time = db.Column(db.Integer, nullable=True)

@@ -51,26 +51,22 @@
                       <div class="mt-2">
                         {% for i in range(exercise.saved_exercise.sets) %}
                         <div class="row mb-2">
-                          <div class="col">
-                            <input type="number" step="0.1" class="form-control" name="weight_{{ exercise.id }}_{{ i }}" placeholder="Weight (lbs)">
-                          </div>
-                          <div class="col">
-                            <input type="number" class="form-control" name="reps_{{ exercise.id }}_{{ i }}" placeholder="Reps">
-                          </div>
+                            {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
+                            <div class="col">
+                              <input type="number" step="0.1" class="form-control" name="weight_{{ exercise.id }}_{{ i }}"
+                                     placeholder="Weight (lbs)"
+                                     value="{{ logged_set.weight if logged_set }}">
+                            </div>
+                            <div class="col">
+                              <input type="number" class="form-control" name="reps_{{ exercise.id }}_{{ i }}"
+                                     placeholder="Reps"
+                                     value="{{ logged_set.reps if logged_set }}">
+                            </div>
+                            
                         </div>
                         {% endfor %}
                       </div>
               
-                      {% if exercise.sets %}
-                      <div class="mt-2">
-                        <strong>Logged Sets:</strong>
-                        <ul>
-                          {% for s in exercise.sets %}
-                            <li>{{ s.reps }} reps @ {{ s.weight }} lbs</li>
-                          {% endfor %}
-                        </ul>
-                      </div>
-                      {% endif %}
                     </li>
                     {% endfor %}
                   </ul>

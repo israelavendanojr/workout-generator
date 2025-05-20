@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Logged Plans{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Workout Logs</h2>
+
+  <!-- Trigger Button -->
+  <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addWeekModal">
+    Add Workout Week
+  </button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="addWeekModal" tabindex="-1" aria-labelledby="addWeekModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addWeekModalLabel">Select a Saved Plan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <label for="planSelect">Choose a plan to log this week from:</label>
+          <select id="planSelect" class="form-select mt-2">
+            <option value="" disabled selected>Select a plan</option>
+            {% for plan in saved_plans %}
+              <option value="{{ plan.id }}">{{ plan.split_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="submitPlan()">Log Week</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function submitPlan() {
+  const selectedId = document.getElementById("planSelect").value;
+  if (!selectedId) {
+    alert("Please select a plan.");
+    return;
+  }
+
+  fetch('/logged_plans/add_week', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ plan_id: selectedId })
+  })
+  .then(response => {
+    if (response.ok) {
+      location.reload();
+    } else {
+      alert("Failed to log workout week.");
+    }
+  });
+}
+</script>
+{% endblock %}

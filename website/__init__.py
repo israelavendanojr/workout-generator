@@ -47,11 +47,13 @@ def create_app():
     from website.routes.day_routes import day_routes
     from website.routes.exercise_routes import exercise_routes
     from website.auth import auth
+    from website.routes.log_routes import log_routes
 
     app.register_blueprint(views)
     app.register_blueprint(plan_routes)
     app.register_blueprint(day_routes)
     app.register_blueprint(exercise_routes)
     app.register_blueprint(auth)
+    app.register_blueprint(log_routes)
 
     return app

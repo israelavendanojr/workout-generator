@@ -48,6 +48,7 @@ def create_app():
     from website.routes.exercise_routes import exercise_routes
     from website.auth import auth
     from website.routes.log_routes import log_routes
+    from website.routes.progress_routes import progress_routes
 
     app.register_blueprint(views)
     app.register_blueprint(plan_routes)
@@ -55,5 +56,6 @@ def create_app():
     app.register_blueprint(exercise_routes)
     app.register_blueprint(auth)
     app.register_blueprint(log_routes)
+    app.register_blueprint(progress_routes)
 
     return app

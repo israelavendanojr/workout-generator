@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Progress{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>Your Progression</h2>
+  {% if progression %}
+    <div class="form-group mt-3">
+      <label for="exerciseSelect">Select an Exercise:</label>
+      <select class="form-select" id="exerciseSelect" onchange="updateChart()">
+        {% for name in progression %}
+          <option value="{{ name }}">{{ name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <canvas id="progressChart" height="100" class="mt-4"></canvas>
+  {% else %}
+    <p>You don't have any logged exercises yet.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const progression = {{ progression|tojson }};
+  const ctx = document.getElementById('progressChart').getContext('2d');
+  let chart;
+
+  function updateChart() {
+    const selected = document.getElementById('exerciseSelect').value;
+    const data = progression[selected];
+
+    const labels = data.map(entry => entry.date);
+    const values = data.map(entry => entry.e1rm);
+
+    if (chart) chart.destroy();
+
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `${selected} Estimated 1RM`,
+          data: values,
+          borderWidth: 2,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            title: { display: true, text: 'E1RM (lbs)' },
+            beginAtZero: false
+          },
+          x: {
+            title: { display: true, text: 'Date' }
+          }
+        }
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', updateChart);
+</script>
+{% endblock %}

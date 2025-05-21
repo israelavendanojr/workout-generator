@@ -6,6 +6,7 @@ from website.services.log_services import (
     delete_logged_week_by_id,
     update_logged_sets_for_day
 )
+from website.models.generation_models import Exercise    
 
 log_routes = Blueprint('log_routes', __name__)
 
@@ -13,7 +14,8 @@ log_routes = Blueprint('log_routes', __name__)
 @login_required
 def logged_plans():
     saved_plans, logged_weeks = get_logged_data_for_display(current_user.id)
-    return render_template("logged_plans.html", user=current_user, saved_plans=saved_plans, logged_weeks=logged_weeks)
+    all_exercises = Exercise.query.order_by(Exercise.name.asc()).all()
+    return render_template("logged_plans.html", user=current_user, saved_plans=saved_plans, logged_weeks=logged_weeks, all_exercises=all_exercises)
 
 @log_routes.route('/logged_plans/add_week', methods=['POST'])
 @login_required

@@ -36,62 +36,55 @@
           <div class="border rounded p-3 mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0">{{ day.saved_day.day_name }}</h6>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleEditMode(this, {{ day.id }})">
-                ✏️ Edit
-              </button>
-            </div>
-
-            <!-- Edit Controls -->
-            <div class="edit-controls edit-controls-{{ day.id }} d-none mb-3">
-              <form method="POST" action="{{ url_for('log_routes.add_exercise_to_day', day_id=day.id) }}" class="d-flex gap-2 flex-wrap">
-                <select name="exercise_id" class="form-select form-select-sm" required>
-                  {% for exercise in all_exercises %}
-                    <option value="{{ exercise.id }}">{{ exercise.name }}</option>
-                  {% endfor %}
-                </select>
-                <input type="number" name="sets" class="form-control form-control-sm" placeholder="Sets" min="1" max="10" value="3">
-                <button type="submit" class="btn btn-sm btn-outline-success">+ Add</button>
-              </form>
             </div>
 
             <form method="POST" action="{{ url_for('log_routes.log_day_sets', day_id=day.id) }}">
-              <ul class="list-unstyled mb-2">
-                {% for exercise in day.logged_exercises %}
-                {% set is_logged = exercise.sets|selectattr("reps")|select("defined")|list|length == exercise.saved_exercise.sets %}
-                <li class="mb-3 border rounded p-3 {% if is_logged %}text-muted{% endif %}" {% if is_logged %}style="opacity: 0.6;"{% endif %}>
-                  <div class="d-flex justify-content-between align-items-start flex-wrap">
-                    <div class="pe-2">
-                      <strong>{{ exercise.name }}</strong>
-                      {% if exercise.saved_exercise %}
-                      <div class="text-muted small">
-                        {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
+                <ul class="list-unstyled mb-2">
+                    {% for exercise in day.logged_exercises %}
+                    {% set is_logged = exercise.sets|selectattr("reps")|select("defined")|list|length == exercise.saved_exercise.sets %}
+                    <li class="mb-3 border rounded p-3 {% if is_logged %}text-muted{% endif %}" {% if is_logged %}style="opacity: 0.6;"{% endif %}>
+                      <div class="d-flex justify-content-between align-items-start flex-wrap">
+                        <div class="flex-grow-1 pe-3">
+                          <strong>{{ exercise.name }}</strong>
+                          {% if exercise.saved_exercise %}
+                          <div class="text-muted small">
+                            {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
+                          </div>
+                          {% endif %}
+                  
+                          {% for i in range(exercise.saved_exercise.sets) %}
+                          {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
+                          <div class="d-flex gap-2 mb-1">
+                            <input type="number" step="0.1" class="form-control form-control-sm" style="width: 90px"
+                              name="weight_{{ exercise.id }}_{{ i }}" placeholder="lbs"
+                              value="{{ logged_set.weight if logged_set }}">
+                            <input type="number" class="form-control form-control-sm" style="width: 70px"
+                              name="reps_{{ exercise.id }}_{{ i }}" placeholder="reps"
+                              value="{{ logged_set.reps if logged_set }}">
+                          </div>
+                          {% endfor %}
+                        </div>
+                  
+                        <form method="POST" action="{{ url_for('log_routes.delete_logged_exercise', exercise_id=exercise.id) }}">
+                          <button type="submit" class="btn btn-sm btn-outline-danger mt-1">✖</button>
+                        </form>
                       </div>
-                      {% endif %}
-                    </div>
-                    <div>
-                      {% for i in range(exercise.saved_exercise.sets) %}
-                      {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
-                      <div class="d-flex gap-2 mb-1">
-                        <input type="number" step="0.1" class="form-control form-control-sm" style="width: 90px"
-                          name="weight_{{ exercise.id }}_{{ i }}" placeholder="lbs"
-                          value="{{ logged_set.weight if logged_set }}">
-                        <input type="number" class="form-control form-control-sm" style="width: 70px"
-                          name="reps_{{ exercise.id }}_{{ i }}" placeholder="reps"
-                          value="{{ logged_set.reps if logged_set }}">
-                      </div>
-                      {% endfor %}
-                    </div>
-                  </div>
+                    </li>
+                    {% endfor %}
+                  </ul>
 
-                  <div class="mt-2 edit-controls edit-controls-{{ day.id }} d-none text-end">
-                    <form method="POST" action="{{ url_for('log_routes.delete_logged_exercise', exercise_id=exercise.id) }}">
-                      <button type="submit" class="btn btn-sm btn-outline-danger">Remove Exercise</button>
-                    </form>
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-              <div class="text-center mt-4">
+                  <form method="POST" action="{{ url_for('log_routes.add_exercise_to_day', day_id=day.id) }}" class="d-flex align-items-center gap-2 flex-wrap mb-3">
+                    <select name="exercise_id" class="form-select form-select-sm w-auto" required>
+                      {% for exercise in all_exercises %}
+                        <option value="{{ exercise.id }}">{{ exercise.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <input type="number" name="sets" class="form-control form-control-sm w-auto" placeholder="Sets" min="1" max="10" value="3">
+                    <button type="submit" class="btn btn-sm btn-outline-success">+ Add</button>
+                  </form>
+                  
+                  
+              <div class="text-center mt-3">
                 <button type="submit" class="btn btn-primary btn-sm">Commit logs for the day</button>
               </div>
             </form>
@@ -150,30 +143,11 @@ function submitPlan() {
 
   fetch('/logged_plans/add_week', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ plan_id: selectedId })
   })
-  .then(response => {
-    if (response.ok) {
-      location.reload();
-    } else {
-      return response.json().then(err => {
-        console.error("Error:", err);
-        alert("Failed to log workout week: " + (err.error || "Unknown error"));
-      });
-    }
-  })
-  .catch(err => {
-    console.error("Request failed:", err);
-    alert("Network error while logging week.");
-  });
-}
-
-function toggleEditMode(btn, dayId) {
-  document.querySelectorAll(`.edit-controls-${dayId}`).forEach(el => el.classList.toggle('d-none'));
-  btn.innerText = btn.innerText.includes("Edit") ? "✔️ Done" : "✏️ Edit";
+  .then(response => response.ok ? location.reload() : response.json().then(err => alert("Failed: " + (err.error || "Unknown error"))))
+  .catch(() => alert("Network error while logging week."));
 }
 </script>
 {% endblock %}

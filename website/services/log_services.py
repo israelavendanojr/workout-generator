@@ -104,3 +104,4 @@ def update_logged_sets_for_day(user_id, day_id, form_data):
                 ))
 
     db.session.commit()
+

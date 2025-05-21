@@ -7,86 +7,105 @@
 
   <div class="mt-5">
     <h4>Your Logged Weeks</h4>
+
     {% if logged_weeks %}
-      <ul class="list-group mt-2">
-        {% for week in logged_weeks %}
-        <div class="card mt-3">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <a 
-              class="text-decoration-none text-dark flex-grow-1"
-              data-bs-toggle="collapse" 
-              href="#week{{ week.id }}" 
-              role="button" 
-              aria-expanded="true" 
-              aria-controls="week{{ week.id }}"
-            >
-              Week {{ loop.revindex }}
-              {% if week.start_date %}
-                ({{ week.start_date.strftime('%b %d, %Y') }})
-              {% else %}
-                (No date)
-              {% endif %}
-            </a>
-            <form method="POST" action="{{ url_for('log_routes.delete_logged_week', week_id=week.id) }}" onsubmit="return confirm('Are you sure you want to delete this week?')">
-              <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+    <ul class="list-group mt-2">
+      {% for week in logged_weeks %}
+      <div class="card mt-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <a class="text-decoration-none text-dark flex-grow-1"
+             data-bs-toggle="collapse"
+             href="#week{{ week.id }}"
+             role="button"
+             aria-expanded="true"
+             aria-controls="week{{ week.id }}">
+            Week {{ loop.revindex }}
+            {% if week.start_date %}
+              ({{ week.start_date.strftime('%b %d, %Y') }})
+            {% else %}
+              (No date)
+            {% endif %}
+          </a>
+          <form method="POST" action="{{ url_for('log_routes.delete_logged_week', week_id=week.id) }}" onsubmit="return confirm('Are you sure you want to delete this week?')">
+            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </div>
+
+        <div id="week{{ week.id }}" class="collapse show card-body">
+          {% for day in week.logged_days %}
+          <div class="border rounded p-3 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">{{ day.saved_day.day_name }}</h6>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleEditMode(this, {{ day.id }})">
+                ✏️ Edit
+              </button>
+            </div>
+
+            <!-- Edit Controls -->
+            <div class="edit-controls edit-controls-{{ day.id }} d-none mb-3">
+              <form method="POST" action="{{ url_for('log_routes.add_exercise_to_day', day_id=day.id) }}" class="d-flex gap-2 flex-wrap">
+                <select name="exercise_id" class="form-select form-select-sm" required>
+                  {% for exercise in all_exercises %}
+                    <option value="{{ exercise.id }}">{{ exercise.name }}</option>
+                  {% endfor %}
+                </select>
+                <input type="number" name="sets" class="form-control form-control-sm" placeholder="Sets" min="1" max="10" value="3">
+                <button type="submit" class="btn btn-sm btn-outline-success">+ Add</button>
+              </form>
+            </div>
+
+            <form method="POST" action="{{ url_for('log_routes.log_day_sets', day_id=day.id) }}">
+              <ul class="list-unstyled mb-2">
+                {% for exercise in day.logged_exercises %}
+                {% set is_logged = exercise.sets|selectattr("reps")|select("defined")|list|length == exercise.saved_exercise.sets %}
+                <li class="mb-3 border rounded p-3 {% if is_logged %}text-muted{% endif %}" {% if is_logged %}style="opacity: 0.6;"{% endif %}>
+                  <div class="d-flex justify-content-between align-items-start flex-wrap">
+                    <div class="pe-2">
+                      <strong>{{ exercise.name }}</strong>
+                      {% if exercise.saved_exercise %}
+                      <div class="text-muted small">
+                        {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
+                      </div>
+                      {% endif %}
+                    </div>
+                    <div>
+                      {% for i in range(exercise.saved_exercise.sets) %}
+                      {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
+                      <div class="d-flex gap-2 mb-1">
+                        <input type="number" step="0.1" class="form-control form-control-sm" style="width: 90px"
+                          name="weight_{{ exercise.id }}_{{ i }}" placeholder="lbs"
+                          value="{{ logged_set.weight if logged_set }}">
+                        <input type="number" class="form-control form-control-sm" style="width: 70px"
+                          name="reps_{{ exercise.id }}_{{ i }}" placeholder="reps"
+                          value="{{ logged_set.reps if logged_set }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <div class="mt-2 edit-controls edit-controls-{{ day.id }} d-none text-end">
+                    <form method="POST" action="{{ url_for('log_routes.delete_logged_exercise', exercise_id=exercise.id) }}">
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Remove Exercise</button>
+                    </form>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-sm">Commit logs for the day</button>
+              </div>
             </form>
           </div>
-
-          <div id="week{{ week.id }}" class="collapse show card-body">
-            {% for day in week.logged_days %}
-<div class="border rounded p-3 mb-4">
-  <h6 class="mb-3">{{ day.saved_day.day_name }}</h6>
-  <form method="POST" action="{{ url_for('log_routes.log_day_sets', day_id=day.id) }}">
-    <ul class="list-unstyled mb-2">
-      {% for exercise in day.logged_exercises %}
-        {% set is_logged = exercise.sets|selectattr("reps")|select("defined")|list|length == exercise.saved_exercise.sets %}
-        <li class="mb-3 border rounded p-3 {% if is_logged %}text-muted{% endif %}" {% if is_logged %}style="opacity: 0.6;"{% endif %}>
-
-          <div class="d-flex justify-content-between align-items-start flex-wrap">
-            <div class="pe-2">
-              <strong>{{ exercise.name }}</strong>
-              {% if exercise.saved_exercise %}
-              <div class="text-muted small">
-                {{ exercise.saved_exercise.sets }} sets of {{ exercise.saved_exercise.start_reps }}–{{ exercise.saved_exercise.end_reps }} reps
-              </div>
-              {% endif %}
-            </div>
-            <div>
-              {% for i in range(exercise.saved_exercise.sets) %}
-                {% set logged_set = exercise.sets[i] if i < exercise.sets|length else None %}
-                <div class="d-flex gap-2 mb-1">
-                  <input type="number" step="0.1" class="form-control form-control-sm" style="width: 90px"
-                    name="weight_{{ exercise.id }}_{{ i }}"
-                    placeholder="lbs"
-                    value="{{ logged_set.weight if logged_set }}">
-                  <input type="number" class="form-control form-control-sm" style="width: 70px"
-                    name="reps_{{ exercise.id }}_{{ i }}"
-                    placeholder="reps"
-                    value="{{ logged_set.reps if logged_set }}">
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-        </li>
+          {% endfor %}
+        </div>
+      </div>
       {% endfor %}
     </ul>
-    <div class="text-center mt-4">
-      <button type="submit" class="btn btn-primary btn-sm">Commit logs for the day</button>
-    </div>
-  </form>
-</div>
-{% endfor %}
-
-          </div>
-        </div>
-        {% endfor %}
-      </ul>
     {% else %}
-      <p>No logged weeks yet. Start by logging a new week.</p>
+    <p>No logged weeks yet. Start by logging a new week.</p>
     {% endif %}
   </div>
 
-  <!-- Trigger Button -->
   <div class="text-center mt-4">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addWeekModal">
       Add Workout Week
@@ -150,6 +169,11 @@ function submitPlan() {
     console.error("Request failed:", err);
     alert("Network error while logging week.");
   });
+}
+
+function toggleEditMode(btn, dayId) {
+  document.querySelectorAll(`.edit-controls-${dayId}`).forEach(el => el.classList.toggle('d-none'));
+  btn.innerText = btn.innerText.includes("Edit") ? "✔️ Done" : "✏️ Edit";
 }
 </script>
 {% endblock %}

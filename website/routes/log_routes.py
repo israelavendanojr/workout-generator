@@ -41,3 +41,35 @@ def log_day_sets(day_id):
     update_logged_sets_for_day(current_user.id, day_id, request.form)
     flash("Sets logged for the day!", "success")
     return redirect(url_for('log_routes.logged_plans'))
+
+# CRUD for logging
+
+@log_routes.route('/logged_plans/add_exercise/<int:day_id>', methods=['POST'])
+@login_required
+def add_exercise_to_day(day_id):
+    exercise_id = request.form.get("exercise_id")
+    sets = int(request.form.get("sets", 3))
+    
+    from website.models.logging_models import LoggedExercise, LoggedSet
+    new_ex = LoggedExercise(logged_day_id=day_id, exercise_id=exercise_id)
+    db.session.add(new_ex)
+    db.session.flush()
+    for _ in range(sets):
+        db.session.add(LoggedSet(logged_exercise_id=new_ex.id))
+    db.session.commit()
+    
+    flash("Exercise added!", "success")
+    return redirect(url_for('log_routes.logged_plans'))
+
+@log_routes.route('/logged_plans/delete_exercise/<int:exercise_id>', methods=['POST'])
+@login_required
+def delete_logged_exercise(exercise_id):
+    from website.models.logging_models import LoggedExercise
+    ex = LoggedExercise.query.get(exercise_id)
+    if ex:
+        db.session.delete(ex)
+        db.session.commit()
+        flash("Exercise deleted!", "success")
+    else:
+        flash("Exercise not found.", "error")
+    return redirect(url_for('log_routes.logged_plans'))

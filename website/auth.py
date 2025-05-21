@@ -17,7 +17,7 @@ def login():
             if check_password_hash(user.password, password):
                 login_user(user, remember=True)
                 flash('Logged in!', category='success')
-                return redirect(url_for('views.home'))
+                return redirect(url_for('views.generator'))
             else:
                 flash('Incorrect password, try again', category='error')
         else:
@@ -55,7 +55,7 @@ def sign_up():
             db.session.commit()
             login_user(new_user, remember=True)
             flash('Account successfully created!', category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.generator'))
 
     return render_template("sign_up.html", user=current_user)
 

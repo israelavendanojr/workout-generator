@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Welcome | myLiftPlan{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Hero -->
+  <div class="text-center py-5">
+    <h1 class="display-4 fw-bold">Build Smarter Workouts</h1>
+    <p class="lead mt-3 mb-4">Create personalized training plans, track your progress, and optimize your gains — all in one place.</p>
+    <a href="{{ url_for('views.generator') }}" class="btn btn-primary btn-lg me-2">Get Started</a>
+    <a href="#features" class="btn btn-outline-secondary btn-lg">Learn More</a>
+  </div>
+
+  <!-- Features -->
+  <div id="features" class="row text-center mt-5">
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-person-lines-fill fs-1 text-primary"></i>
+      <h4 class="mt-3">Personalized Plans</h4>
+      <p>Create training splits based on your goals, schedule, and available equipment.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-pencil-square fs-1 text-primary"></i>
+      <h4 class="mt-3">Workout Logging</h4>
+      <p>Track your sets, reps, and weight as you train — quickly and easily.</p>
+    </div>
+    <div class="col-md-4 mb-4">
+      <i class="bi bi-bar-chart-line-fill fs-1 text-primary"></i>
+      <h4 class="mt-3">Progression Insights</h4>
+      <p>Visualize your improvement and make informed decisions about how to train next.</p>
+    </div>
+  </div>
+
+  <!-- Testimonials / Quote -->
+  <div class="row mt-5 py-5 bg-light text-center rounded">
+    <div class="col">
+      <blockquote class="blockquote">
+        <p>"Since using myLiftPlan, I've finally stuck to a routine — and seen real progress."</p>
+        <footer class="blockquote-footer">Beta User</footer>
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- Footer CTA -->
+  <div class="text-center mt-5">
+    <h5>Ready to get started?</h5>
+    <a href="{{ url_for('auth.sign_up') }}" class="btn btn-success btn-lg mt-2">Create Your Account</a>
+  </div>
+</div>
+{% endblock %}

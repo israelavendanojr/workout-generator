@@ -5,8 +5,8 @@ from website.services.generation_service import generate_plans
 
 views = Blueprint('views', __name__)
 
-@views.route('/', methods=['GET', 'POST'])
-def home():
+@views.route('/generator', methods=['GET', 'POST'])
+def generator():
     if request.method == "POST":
         # get preferences from form
         days_available = int(request.form.get("days_available"))
@@ -51,3 +51,7 @@ def generated_plans():
         return redirect(url_for('views.home'))
     
     return render_template("generated_plans.html", user=current_user, plans=workout_plans)
+
+@views.route('/')
+def landing():
+    return render_template("landing.html", user=current_user)

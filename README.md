@@ -1,18 +1,17 @@
-myLiftPlan:
-At the start of the year, I noticed many of my friends wanted to start going to the gym as part of their New Year’s resolutions, but without a clear plan, it was hard for them to get started and stay consistent. So, this spring break, I decided to build something to help solve this: myLiftPlan — a full-stack web application that generates personalized weekly workout routines based on user preferences.
+# myLiftPlan
 
-Key Features:
-Users can create a workout plan without an account.
+Live Demo - https://myliftplan.com
 
-Logging in allows users to save, update, and delete their workout plans, making it easier to stay on track with their fitness goals.
+## Personalized Fitness Training Platform
+Full-stack web application that generates customized weekly workout routines based on individual user preferences and fitness goals. Built to solve the common problem of fitness beginners lacking structured workout plans to maintain consistency and progress.
 
-Tech Stack:
-Frontend: HTML, CSS, Bootstrap
+- Normalized PostgreSQL exercise library with 75+ exercises and comprehensive metadata management
+- Secure authentication system with industry-standard password hashing and session management
+- Interactive goal assessment generating personalized training plans for 10+ active users
 
-Backend: Python/Flask for workout plan generation and user session management
+## Tech Stack
+Frontend: HTML, CSS, Bootstrap, JavaScript, Jinja2
 
-Database: PostgreSQL with SQLAlchemy to manage user data and workout plans
+Backend: Python, Flask
 
-I hope it becomes a solid starting point for many on their fitness journeys!
-
-Check it out here 👉 myliftplan.com
+Database: PostgreSQL with SQLAlchemy ORM
